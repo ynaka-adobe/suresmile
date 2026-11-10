@@ -179,6 +179,93 @@
           ]
         }
       ]
+    },
+    {
+      "name": "find-a-doctor",
+      "urls": [
+        "https://www.suresmile.com/en-us/find-a-doctor"
+      ],
+      "representativeUrl": "https://www.suresmile.com/en-us/find-a-doctor",
+      "description": "SureSmile find-a-doctor page: compact light-blue hero, doctor search bar, API-driven results list + map, Why straighten promo cards",
+      "blocks": [
+        {
+          "name": "hero-split",
+          "instances": [
+            "section.section-hero .section-row"
+          ]
+        },
+        {
+          "name": "search-locator",
+          "instances": [
+            "section.doctor-search"
+          ]
+        },
+        {
+          "name": "search-results-map",
+          "instances": [
+            "section.doctor-body"
+          ]
+        },
+        {
+          "name": "cards-promo",
+          "instances": [
+            "#carousel-why-sureSmile + .carousel-container"
+          ]
+        }
+      ],
+      "urlPattern": "/en-us/*",
+      "sections": [
+        {
+          "id": "rc1",
+          "name": "Hero",
+          "selector": [
+            "section.section-hero"
+          ],
+          "style": "light-blue",
+          "blocks": [
+            "hero-split"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc2a",
+          "name": "Doctor search bar",
+          "selector": [
+            "section.doctor-search"
+          ],
+          "style": "blue-gradient",
+          "blocks": [
+            "search-locator"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc2b",
+          "name": "Doctor results and map",
+          "selector": [
+            "section.doctor-body"
+          ],
+          "style": "porcelain",
+          "blocks": [
+            "search-results-map"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc3",
+          "name": "Why straighten with SureSmile",
+          "selector": [
+            "section:has(#carousel-why-sureSmile)"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-promo"
+          ],
+          "defaultContent": [
+            "#carousel-why-sureSmile"
+          ]
+        }
+      ]
     }
   ]
 }

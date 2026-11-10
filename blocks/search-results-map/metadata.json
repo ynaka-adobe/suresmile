@@ -1,0 +1,45 @@
+{
+  "variantName": "search-results-map",
+  "baseBlock": "search",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "standalone",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us/find-a-doctor",
+    "originPage": "SureSmile Find a doctor",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "comfortable",
+    "purpose": "API-driven doctor search results: result cards (name, service tags Aligners/Braces/Retainers with tooltip, distance, address, phone link, Google Maps driving instructions), pagination and a results count, beside a sticky Google Map with a marker and info window per doctor. Renders nothing until the page URL carries a search",
+    "imagePattern": "none (map only)",
+    "layout": "two columns from 900px (results left, sticky map right); stacked below with a 'Doctor map' toggle; list takes full width when no Google Maps key is configured"
+  },
+  "contentPattern": {
+    "structure": "key | value rows: source (doctors API URL, default https://www.suresmile.com/api/location/doctors); no-results (heading + message, e.g. '**We're sorry**' / 'We couldn't find any SureSmile doctors in this area. Try expanding your search.'); results-label ('{count} results for'); per-page (20). Optional rows: maps-api-key (Google Maps JS key; enables map and address geocoding), map-id, geocode (on/off), directions-label ('Driving instructions'), map-label ('Doctor map'), services-tooltip, aligners, braces, retainers, previous-label, next-label, pagination-label, loading-label, location-label. A single-cell first row is read as the source URL. Reads ?lat=&lng=&radius= or ?address=&radius= from the page URL and calls GET {source}?lat=&lng=&radius=&page=&per_page=&unit=mi",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": false,
+    "interactive": "fetches results, pagination, tooltip, Google Map markers and info windows, mobile map toggle"
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "doctor, provider or store locator results pages fed by a lat/lng/radius JSON API",
+      "the results half of a search-locator hand-off page"
+    ],
+    "notSuitableFor": [
+      "site content search over a query index (use search)",
+      "the search form itself (use search-locator)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/en-us/find-a-doctor"
+    ],
+    "reuseCount": 1,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

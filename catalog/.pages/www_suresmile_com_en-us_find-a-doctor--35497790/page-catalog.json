@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 2,
+  "url": "https://www.suresmile.com/en-us/find-a-doctor",
+  "title": "Find a SureSmile® doctor near you | SureSmile® USA",
+  "timestamp": "2026-11-10T05:50:42.476Z",
+  "duration": "7.5s",
+  "cleanup": {
+    "elementsRemoved": 5,
+    "types": [
+      "overlay",
+      "cookie-banner",
+      "announcement-bar"
+    ],
+    "cookieConsentDismissed": true,
+    "lateConsentOverlaysRemoved": 0,
+    "removed": [
+      {
+        "selector": "#onetrust-banner-sdk",
+        "type": "overlay"
+      },
+      {
+        "selector": "#onetrust-style",
+        "type": "cookie-banner",
+        "rule": "[id*=\"onetrust\"]"
+      },
+      {
+        "selector": "#onetrust-consent-sdk",
+        "type": "cookie-banner",
+        "rule": "[id*=\"onetrust\"]"
+      },
+      {
+        "selector": "#header",
+        "type": "announcement-bar",
+        "rule": "[class*=\"announcement-bar\"]"
+      }
+    ]
+  },
+  "snapshot": {
+    "html": "page.html",
+    "unresolvedSelectors": []
+  },
+  "images": [
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-purple-bg.webp&w=1080&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-purple-bg.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-purple-bg.webp&w=1080&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=3840&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=3840&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=3840&q=85",
+      "type": "srcset"
+    }
+  ],
+  "skeleton": {
+    "signature": "sB(2x1B,sB(3x1B,s),s(s,3x1))",
+    "nodeMap": {
+      "r": "body",
+      "rc1": "#main-content > section.overflow-x-clip.section-hero.py-8.md\\:py-16.hero-compact.bg-light-blues-95.pt-4.pb-6.md\\:\\!py-12.\\[\\&_\\.section-row\\]\\:gap-y-4.md\\:\\[\\&_\\.section-row\\]\\:gap-y-6",
+      "rc2": "#main-content > section.relative.bg-neutrals-porcelain",
+      "rc2c1": "#main-content > section.relative.bg-neutrals-porcelain > section.w-full.doctor-search.group\\/searchform.bg-gradient-primary-90.text-white.z-40.py-10",
+      "rc2c2": "#main-content > section.relative.bg-neutrals-porcelain > section.doctor-body",
+      "rc3": "#main-content > section.py-16.md\\:py-24.overflow-x-clip",
+      "rc3c1": "#carousel-why-sureSmile",
+      "rc3c2": "#main-content > section.py-16.md\\:py-24.overflow-x-clip > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.carousel-container.relative"
+    },
+    "sections": [
+      {
+        "id": "rc1",
+        "selector": "#main-content > section.overflow-x-clip.section-hero.py-8.md\\:py-16.hero-compact.bg-light-blues-95.pt-4.pb-6.md\\:\\!py-12.\\[\\&_\\.section-row\\]\\:gap-y-4.md\\:\\[\\&_\\.section-row\\]\\:gap-y-6",
+        "layout": "2x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#e6f8ff",
+        "backgroundImage": null,
+        "colored": true,
+        "paintSelector": "#main-content > section.overflow-x-clip.section-hero.py-8.md\\:py-16.hero-compact.bg-light-blues-95.pt-4.pb-6.md\\:\\!py-12.\\[\\&_\\.section-row\\]\\:gap-y-4.md\\:\\[\\&_\\.section-row\\]\\:gap-y-6"
+      },
+      {
+        "id": "rc2",
+        "selector": "#main-content > section.relative.bg-neutrals-porcelain",
+        "layout": null,
+        "hasBg": true,
+        "hint": "block",
+        "background": "#fbfaf9",
+        "backgroundImage": null,
+        "colored": true,
+        "paintSelector": "#main-content > section.relative.bg-neutrals-porcelain"
+      },
+      {
+        "id": "rc3",
+        "selector": "#main-content > section.py-16.md\\:py-24.overflow-x-clip",
+        "layout": null,
+        "hasBg": false,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": null,
+        "colored": false,
+        "paintSelector": null
+      }
+    ],
+    "invalidIgnore": []
+  },
+  "pageLayout": {
+    "box": {
+      "y": 0,
+      "height": 1504.078125
+    },
+    "splits": [
+      {
+        "selector": "div.section-row.grid > img.w-full.h-full",
+        "sides": [
+          [
+            0.5911067708333333,
+            1
+          ]
+        ],
+        "top": 48,
+        "bottom": 538.671875,
+        "cover": 0.32622765190471736,
+        "above": 0
+      },
+      {
+        "selector": "form.flex.flex-col > header.header.flex, form.flex.flex-col > button.inline-flex.items-center",
+        "sides": [
+          [
+            0,
+            0.10666666666666667
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "top": 626.671875,
+        "bottom": 682.671875,
+        "cover": 0.03723210853824498,
+        "above": 1
+      }
+    ],
+    "start": {
+      "kind": "side by side"
+    }
+  },
+  "blocks": [
+    {
+      "id": "84008f6c1975",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > section.overflow-x-clip.section-hero.py-8.md\\:py-16.hero-compact.bg-light-blues-95.pt-4.pb-6.md\\:\\!py-12.\\[\\&_\\.section-row\\]\\:gap-y-4.md\\:\\[\\&_\\.section-row\\]\\:gap-y-6",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 587
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "text + heading + image"
+      },
+      "description": "overflow-x-clip",
+      "features": {
+        "skeleton": "[T*1.5|T]",
+        "variant": "[Tk*1.5|T]",
+        "variantClean": "[Tk*1.5|T]"
+      },
+      "screenshot": "blocks/84008f6c1975.jpg",
+      "html": "blocks/84008f6c1975.html"
+    },
+    {
+      "id": "514f9dd0f1f4",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > section.relative.bg-neutrals-porcelain",
+      "bounds": {
+        "x": 0,
+        "y": 587,
+        "width": 1440,
+        "height": 136
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "field + button"
+      },
+      "description": "relative",
+      "features": {
+        "skeleton": "~(form)",
+        "variant": "~b(form)",
+        "variantClean": "~b(form)"
+      },
+      "screenshot": "blocks/514f9dd0f1f4.jpg",
+      "html": "blocks/514f9dd0f1f4.html"
+    },
+    {
+      "id": "0b1a70e1e33b",
+      "type": "default-content",
+      "detectionTier": 1,
+      "selector": "#carousel-why-sureSmile",
+      "bounds": {
+        "x": 120,
+        "y": 819,
+        "width": 1200,
+        "height": 48
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": false,
+        "structure": "heading"
+      },
+      "description": "text-40px",
+      "features": {
+        "skeleton": "T",
+        "variant": "Tk",
+        "variantClean": "Tk"
+      },
+      "screenshot": null,
+      "html": "blocks/0b1a70e1e33b.html"
+    },
+    {
+      "id": "65a9e3f6d6bd",
+      "type": "cards",
+      "detectionTier": 1,
+      "selector": "#main-content > section.py-16.md\\:py-24.overflow-x-clip > div > div",
+      "bounds": {
+        "x": 120,
+        "y": 915,
+        "width": 1200,
+        "height": 493
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image + heading + link + button"
+      },
+      "description": "carousel-container",
+      "features": {
+        "skeleton": "[~(T)]",
+        "variant": "[~n(Tk)]",
+        "variantClean": "[~n(Tk)]",
+        "set": true
+      },
+      "screenshot": "blocks/65a9e3f6d6bd.jpg",
+      "html": "blocks/65a9e3f6d6bd.html"
+    }
+  ]
+}

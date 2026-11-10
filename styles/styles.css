@@ -395,6 +395,16 @@ main > .section.light-blue {
   padding: var(--section-padding-colored) 0;
 }
 
+/* off-white band behind the find-a-doctor results */
+main > .section.porcelain {
+  background-color: #fbfaf9;
+}
+
+/* before a search the results block is idle: collapse its section like the source */
+main > .section:has(> .search-results-map-wrapper > .search-results-map-idle) {
+  display: none;
+}
+
 main > .section.blue-gradient {
   background-image: var(--brand-gradient-145);
   color: #fff;

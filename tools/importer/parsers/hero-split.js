@@ -14,11 +14,14 @@ export default function parse(element, { document }) {
 
   const content = [];
   const heading = textSection.querySelector('h1, h2');
-  if (heading) content.push(heading);
+  const headingIsChild = heading && heading.parentElement === textSection;
+  if (heading && !headingIsChild) content.push(heading);
 
-  // intro copy: direct child divs/paragraphs that hold text and no links
+  // direct children in document order: optional eyebrow <p> before the heading,
+  // the heading itself, then intro copy (children that hold text and no links)
   [...textSection.children].forEach((child) => {
-    if (child === heading) return;
+    if (child === heading) { content.push(heading); return; }
+    if (child.contains(heading)) return;
     if (child.querySelector('a') || child.tagName === 'A') return;
     const text = child.textContent.trim();
     if (!text) return;
