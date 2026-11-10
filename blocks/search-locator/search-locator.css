@@ -1,0 +1,207 @@
+/* search-locator: doctor finder form (values from suresmile.com/en-us .section-cta form) */
+.search-locator .search-locator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 24px;
+}
+
+.search-locator .search-locator-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.search-locator .search-locator-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* address input with search icon and right fade overlay */
+.search-locator .search-locator-input {
+  position: relative;
+  width: 100%;
+}
+
+.search-locator .search-locator-input::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  margin-top: -1px;
+  transform: translateY(-50%);
+  background-color: rgb(82 97 117 / 50%);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.search-locator .search-locator-input:focus-within::before {
+  background-color: var(--brand-neutral-39);
+}
+
+.search-locator .search-locator-input::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 8px;
+  background-image: linear-gradient(to right, transparent 70%, var(--brand-neutral-92));
+  pointer-events: none;
+}
+
+.search-locator .search-locator-input input {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  height: 56px;
+  margin: 0;
+  padding: 12px 0 12px 40px;
+  border: 1.5px solid rgb(150 163 182);
+  border-radius: 8px;
+  background-color: rgb(246 247 249);
+  box-shadow: none;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.48px;
+  text-transform: uppercase;
+}
+
+.search-locator .search-locator-input input::placeholder {
+  opacity: 1;
+  color: var(--brand-neutral-39);
+}
+
+.search-locator .search-locator-input input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--brand-ring);
+}
+
+.search-locator .search-locator-input input:focus::placeholder {
+  color: var(--brand-primary);
+}
+
+/* the source hides the radius picker in this CTA; the select still submits its default */
+.search-locator .search-locator-radius {
+  display: none;
+}
+
+/* "Find a doctor": white outlined pill */
+.search-locator .search-locator-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+  padding: 20px 40px;
+  border: 1px solid var(--brand-border);
+  border-radius: var(--button-radius);
+  background-color: #fff;
+  color: #171717;
+  font-family: var(--heading-font-family);
+  font-size: var(--button-font-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--button-letter-spacing);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--button-transition);
+}
+
+.search-locator .search-locator-submit:hover {
+  background-color: var(--brand-neutral-92);
+}
+
+.search-locator .search-locator-submit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-ring);
+}
+
+/* "Use my current location": map-pin icon + animated underline */
+.search-locator .search-locator-geolocate {
+  position: relative;
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background: none;
+  color: #fff;
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-m);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.search-locator .search-locator-geolocate::before {
+  content: '';
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.search-locator .search-locator-geolocate::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 -4px 24px;
+  background-image: linear-gradient(currentcolor 0, currentcolor);
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition: background-size 0.3s cubic-bezier(0.47, 0, 0.745, 0.715);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .search-locator .search-locator-geolocate:hover::after,
+  .search-locator .search-locator-geolocate:focus-visible::after {
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    transition: background-size 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
+  }
+}
+
+.search-locator .search-locator-geolocate:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-ring);
+}
+
+.search-locator .search-locator-geolocate:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.search-locator .search-locator-status {
+  margin: 0;
+  color: #fff;
+  font-size: var(--body-font-size-s);
+}
+
+.search-locator .search-locator-status:empty {
+  display: none;
+}
+
+@media (width >= 768px) {
+  .search-locator .search-locator-submit {
+    box-sizing: border-box;
+    height: 56px;
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "url": "https://www.suresmile.com/en-us",
+  "path": "en-us",
+  "timestamp": "2026-11-10T02:58:56.042Z",
+  "title": "Ready to love your smile? | SureSmile® USA",
+  "template": "home",
+  "blocks": [
+    "hero-split",
+    "cards-callouts",
+    "cards-promo",
+    "accordion-stepper",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "search-locator",
+    "cards-beforeafter"
+  ],
+  "importScript": "b5de0e56b28d"
+}

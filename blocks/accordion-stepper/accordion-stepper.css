@@ -1,0 +1,138 @@
+/* accordion-stepper: values from https://www.suresmile.com/en-us "How it works" stepper */
+.accordion-stepper {
+  position: relative;
+}
+
+.accordion-stepper .accordion-stepper-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* vertical progress rail: track + gradient fill clipped to the last open step */
+.accordion-stepper .accordion-stepper-list::before,
+.accordion-stepper .accordion-stepper-list::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 8px;
+  height: 100%;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.accordion-stepper .accordion-stepper-list::before {
+  background-color: var(--brand-blue-93);
+}
+
+.accordion-stepper .accordion-stepper-list::after {
+  background-image: linear-gradient(rgb(134 82 255), rgb(255 120 255) 64%, rgb(255 190 100) 81%, rgb(235 255 81) 100%);
+  clip-path: inset(0 0 calc(100% - var(--progress, 0%)));
+  transition: clip-path 0.3s cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+
+.accordion-stepper .accordion-stepper-item {
+  display: grid;
+  padding: 16px 0 16px 16px;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.accordion-stepper .accordion-stepper-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 32px;
+  padding: 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--heading-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 120%;
+  color: var(--text-color);
+}
+
+.accordion-stepper .accordion-stepper-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-stepper .accordion-stepper-item summary::marker {
+  content: '';
+}
+
+.accordion-stepper .accordion-stepper-thumb {
+  flex: 0 0 auto;
+}
+
+.accordion-stepper .accordion-stepper-thumb picture {
+  display: block;
+}
+
+.accordion-stepper .accordion-stepper-thumb img {
+  display: block;
+  width: 96px;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.accordion-stepper .accordion-stepper-text {
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.accordion-stepper .accordion-stepper-text > * {
+  margin: 0;
+}
+
+.accordion-stepper .accordion-stepper-eyebrow {
+  display: block;
+  font-family: var(--heading-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-color);
+}
+
+.accordion-stepper .accordion-stepper-item[open] .accordion-stepper-eyebrow {
+  color: rgb(0 65 204);
+}
+
+.accordion-stepper .accordion-stepper-title {
+  display: block;
+  font-family: var(--heading-font-family);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 120%;
+  text-wrap: balance;
+}
+
+.accordion-stepper .accordion-stepper-body {
+  margin-top: 32px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+.accordion-stepper .accordion-stepper-body > * {
+  margin: 0;
+}
+
+@media (width >= 768px) {
+  .accordion-stepper .accordion-stepper-item {
+    padding: 16px 32px;
+  }
+}
+
+@media (width >= 1280px) {
+  .accordion-stepper .accordion-stepper-thumb img {
+    width: 128px;
+  }
+}

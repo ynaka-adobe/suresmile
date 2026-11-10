@@ -1,11 +1,12 @@
-/* cards-callouts — horizontal strip of icon + short label items */
+/* cards-callouts — single-row strip of icon + short label items */
 .cards-callouts > ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
 }
 
 .cards-callouts > ul > li {
@@ -18,6 +19,16 @@
 
 .cards-callouts .cards-callouts-card-body {
   margin: 0;
+  font-size: var(--body-font-size-m);
+  line-height: 24px;
+}
+
+.cards-callouts .cards-callouts-card-body > :first-child {
+  margin-top: 0;
+}
+
+.cards-callouts .cards-callouts-card-body > :last-child {
+  margin-bottom: 0;
 }
 
 .cards-callouts .cards-callouts-card-body h2,
@@ -31,24 +42,44 @@
 }
 
 .cards-callouts .cards-callouts-card-image {
+  flex-shrink: 0;
   line-height: 0;
-  color: var(--brand-yellow);
 }
 
-/* hide empty image cell (source icons are web-component glyphs, not imgs) */
+/* hide empty image cell */
 .cards-callouts .cards-callouts-card-image:empty {
   display: none;
 }
 
-.cards-callouts .cards-callouts-card-image img {
+/* picture-based cards */
+.cards-callouts .cards-callouts-card-image picture img {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
 
-@media (width >= 900px) {
+/* icon-based cards: 24px glyph box (source w-6 h-6) */
+.cards-callouts .cards-callouts-card-image .icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.cards-callouts .cards-callouts-card-image .icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* icon SVGs use fill="currentColor", which an <img> cannot inherit: render them white on the gradient band */
+.blue-gradient .cards-callouts .cards-callouts-card-image .icon img {
+  filter: brightness(0) invert(1);
+}
+
+@media (width >= 768px) {
   .cards-callouts > ul {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: center;
+    gap: 64px;
   }
 }

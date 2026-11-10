@@ -1,0 +1,105 @@
+/*
+ * columns-media: media cell (logo, photo or stat graphic) beside a text cell.
+ * Source: .section-row grid (1 col, gap 48px; md: 12 cols, gap 16px, 5 / 7 split).
+ */
+.columns-media .columns-media-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 48px;
+}
+
+.columns-media .columns-media-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.columns-media .columns-media-media picture {
+  display: contents;
+}
+
+/* logo (default): source img.h-[64px] object-contain */
+.columns-media .columns-media-media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 64px;
+  object-fit: contain;
+  object-position: top;
+}
+
+.columns-media .columns-media-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: var(--body-font-size-l);
+  line-height: 1.5;
+}
+
+.columns-media .columns-media-text > * {
+  margin: 0;
+}
+
+/* body copy: source div.mt-4 text-xl leading-[1.5] */
+.columns-media .columns-media-text p {
+  margin-top: 16px;
+}
+
+.columns-media .columns-media-text h2 {
+  font-size: var(--heading-font-size-xl);
+  line-height: 1.2;
+}
+
+/* photo with heading: source img.h-[181px], copy 16px/24px (md: 20px/28px) */
+.columns-media .columns-media-row:has(.columns-media-text h2) img {
+  height: 181px;
+}
+
+.columns-media .columns-media-text:has(h2) {
+  font-size: var(--body-font-size-m);
+}
+
+/* stat graphic in the light-orange band: source gap-8, img.h-12 */
+main .section.light-orange .columns-media .columns-media-row {
+  gap: 32px;
+}
+
+main .section.light-orange .columns-media .columns-media-media img {
+  height: 48px;
+}
+
+@media (width >= 768px) {
+  .columns-media .columns-media-text:has(h2) {
+    font-size: var(--body-font-size-l);
+    line-height: 1.4;
+  }
+
+  .columns-media .columns-media-row {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  main .section.light-orange .columns-media .columns-media-row {
+    gap: 16px;
+  }
+
+  .columns-media .columns-media-row > :first-child {
+    grid-column: span 5;
+  }
+
+  .columns-media .columns-media-row > :last-child {
+    grid-column: span 7;
+  }
+
+  .columns-media .columns-media-row > .columns-media-text:last-child {
+    padding: 0 24px 0 48px;
+  }
+
+  .columns-media .columns-media-row > .columns-media-text:first-child {
+    padding-left: 24px;
+  }
+
+  main .section.light-orange .columns-media .columns-media-media {
+    padding: 0 48px;
+  }
+}

@@ -1,113 +1,224 @@
-/* cards-promo — promotional feature cards: 1 yellow (tall) + 2 navy (split) */
+/*
+ * cards-promo: "Why straighten with SureSmile" feature cards.
+ * Source: 3 white bordered cards in a row (>= 1024px); below that the row
+ * scrolls horizontally (282px cards) with prev/next controls shown on hover.
+ */
+.cards-promo {
+  position: relative;
+  color: var(--text-color);
+}
+
 .cards-promo > ul {
+  display: flex;
+  gap: 24px;
+  margin: 0 calc(-1 * var(--section-inline-padding));
+  padding: 0 var(--section-inline-padding);
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--section-inline-padding);
+  scrollbar-width: none;
+}
+
+.cards-promo > ul::-webkit-scrollbar {
+  display: none;
 }
 
 .cards-promo > ul > li {
+  position: relative;
+  box-sizing: border-box;
   display: flex;
+  flex: 1 0 282px;
   flex-direction: column;
+  min-width: 0;
   overflow: hidden;
-  border: none;
-  border-radius: var(--border-radius);
-  background-color: var(--cat-neutral-10);
+  border: 1px solid #bccacd;
+  border-radius: 24px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  background-color: var(--background-color);
+  scroll-snap-align: start;
 }
 
+/* figure: fixed-height cover image */
 .cards-promo .cards-promo-card-image {
-  line-height: 0;
+  position: relative;
+  width: 100%;
+  height: 236px;
+  overflow: hidden;
+}
+
+.cards-promo .cards-promo-card-image picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .cards-promo .cards-promo-card-image img {
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
+/* text area */
 .cards-promo .cards-promo-card-body {
-  margin: 0;
-  padding: 24px;
   display: flex;
+  flex: 1 1 0%;
   flex-direction: column;
-  flex: 1;
+  justify-content: flex-start;
   gap: 8px;
-}
-
-.cards-promo .cards-promo-card-body h2,
-.cards-promo .cards-promo-card-body h3,
-.cards-promo .cards-promo-card-body h4 {
-  margin: 0;
-  font-family: var(--heading-font-family);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--heading-font-size-l);
-  line-height: 1.2;
-}
-
-.cards-promo .cards-promo-card-body p {
-  margin: 0;
+  padding: 24px 16px;
   font-size: var(--body-font-size-m);
   line-height: 1.5;
 }
 
-.cards-promo .cards-promo-card-body a:any-link {
-  align-self: flex-start;
+.cards-promo .cards-promo-card-body h3 {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-l);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12px;
+  color: var(--text-color);
+}
+
+.cards-promo .cards-promo-card-body p {
+  margin: 0;
+}
+
+/* footer link row: pushed to the card bottom, 40px above */
+.cards-promo .cards-promo-card-body .button-container {
+  display: flex;
+  align-items: center;
   margin-top: auto;
+  padding-top: 40px;
 }
 
-/* first card = Cat Yellow (black text) */
-.cards-promo > ul > li:first-child {
-  background-color: var(--brand-yellow);
-  color: var(--text-strong-color);
+/* text link: Montserrat 600 uppercase, chevron, animated underline */
+main .cards-promo a.button:any-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 0;
+  font-family: var(--heading-font-family);
+  font-size: var(--button-font-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--button-letter-spacing);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: currentcolor;
+  transition: var(--button-transition);
 }
 
-/* remaining cards = navy (knockout text) */
-.cards-promo > ul > li:not(:first-child) {
-  background-color: var(--brand-navy);
-  color: var(--background-color);
+main .cards-promo a.button:any-link::after {
+  content: '';
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-.cards-promo > ul > li:not(:first-child) h2,
-.cards-promo > ul > li:not(:first-child) h3,
-.cards-promo > ul > li:not(:first-child) h4 {
-  color: var(--background-color);
+main .cards-promo a.button:any-link::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 -4px;
+  background-image: linear-gradient(currentcolor 0, currentcolor);
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition: background-size 0.3s cubic-bezier(0.47, 0, 0.745, 0.715) 0s;
+  pointer-events: none;
 }
 
-/* CTA inside navy cards uses yellow button */
-.cards-promo > ul > li a.button:any-link {
-  background-color: var(--brand-yellow);
-  border-color: var(--brand-yellow);
-  color: var(--text-strong-color);
+@media (hover: hover) {
+  main .cards-promo a.button:hover::before,
+  main .cards-promo a.button:focus::before {
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    transition: background-size 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) 0s;
+  }
 }
 
-@media (width >= 900px) {
+/* prev/next controls (small screens, revealed on hover/focus) */
+.cards-promo .cards-promo-nav {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background-color: rgb(9 13 12 / 60%);
+  color: #000;
+  transform: translateY(-50%);
+  visibility: hidden;
+}
+
+.cards-promo .cards-promo-prev {
+  left: 32px;
+}
+
+.cards-promo .cards-promo-next {
+  right: 48px;
+}
+
+.cards-promo .cards-promo-nav svg {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.cards-promo .cards-promo-nav:hover {
+  background-color: var(--brand-neutral-92);
+}
+
+.cards-promo .cards-promo-nav:disabled {
+  background-color: var(--brand-neutral-92);
+  pointer-events: none;
+}
+
+.cards-promo:hover .cards-promo-nav,
+.cards-promo:focus-within .cards-promo-nav {
+  visibility: visible;
+}
+
+@media (width >= 768px) {
+  .cards-promo .cards-promo-card-image {
+    height: 225px;
+  }
+}
+
+@media (width >= 1024px) {
   .cards-promo > ul {
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
   }
 
-  /* left yellow card spans both rows */
-  .cards-promo > ul > li:first-child {
-    grid-row: span 2;
+  .cards-promo > ul > li {
+    flex: 1 0 calc(25% - 24px);
   }
 
-  /* navy cards: image left, text right */
-  .cards-promo > ul > li:not(:first-child) {
-    flex-direction: row;
-  }
-
-  .cards-promo > ul > li:not(:first-child) .cards-promo-card-image {
-    flex: 0 0 45%;
-  }
-
-  .cards-promo > ul > li:not(:first-child) .cards-promo-card-image img {
-    height: 100%;
-    aspect-ratio: auto;
-  }
-
-  .cards-promo > ul > li:not(:first-child) .cards-promo-card-body {
-    flex: 1;
+  .cards-promo .cards-promo-nav,
+  .cards-promo:hover .cards-promo-nav,
+  .cards-promo:focus-within .cards-promo-nav {
+    visibility: hidden;
   }
 }

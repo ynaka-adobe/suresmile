@@ -15,3 +15,5 @@ tools/target/config.json
 .aio
 dist/
 .claude/
+migration-work/navigation-validation/
+migration-work/footer-validation/

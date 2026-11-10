@@ -1,0 +1,43 @@
+{
+  "variantName": "cards-beforeafter",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "collection",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us",
+    "originPage": "SureSmile US homepage",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "comfortable",
+    "purpose": "before/after case results shown as a scrolling card carousel",
+    "imagePattern": "two stacked photos per card with BEFORE / AFTER tags",
+    "layout": "horizontal scroll-snap track (4 across on desktop) with previous/next controls when it overflows"
+  },
+  "contentPattern": {
+    "structure": "before image | after image | text (H3 condition title, duration paragraph); the two images may share one cell (first = before, second = after)",
+    "buttonCount": 0,
+    "imageCount": 2,
+    "hasDescription": true,
+    "interactive": "scroll-snap carousel with previous/next buttons"
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "before/after treatment or renovation galleries",
+      "case-result cards pairing two images with a short caption"
+    ],
+    "notSuitableFor": [
+      "single-image promo cards (use cards-promo)",
+      "interactive drag-to-compare image sliders"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/en-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

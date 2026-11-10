@@ -1,0 +1,43 @@
+{
+  "variantName": "accordion-stepper",
+  "baseBlock": "accordion",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "collection",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us",
+    "originPage": "SureSmile US homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "comfortable",
+    "purpose": "numbered process stepper whose steps expand independently",
+    "imagePattern": "thumbnail",
+    "layout": "vertical list with a progress rail; each step shows thumbnail, eyebrow and title"
+  },
+  "contentPattern": {
+    "structure": "label cell (optional thumbnail image, 'Step N' eyebrow paragraph, title) | body cell (description paragraph)",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true,
+    "interactive": "independent expand/collapse per step, first step open by default; progress rail fills to the last open step"
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "how-it-works sequences of 2-6 steps",
+      "onboarding or treatment journeys with a short description per step"
+    ],
+    "notSuitableFor": [
+      "FAQ lists without a step sequence or thumbnails (use accordion)",
+      "long-form content inside each item"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/en-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

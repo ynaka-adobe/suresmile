@@ -1,0 +1,211 @@
+/*
+ * cards-beforeafter: before / after case cards in a horizontally scrolling track.
+ * Values from https://www.suresmile.com/en-us "Real transformations" carousel (computed styles).
+ */
+.cards-beforeafter {
+  position: relative;
+}
+
+/* track bleeds to the section edge (source clips at the section, not the container) */
+.cards-beforeafter .cards-beforeafter-track {
+  display: flex;
+  gap: 24px;
+  margin: 0 calc(-1 * var(--section-inline-padding)) -2px;
+  padding: 0 var(--section-inline-padding) 2px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-padding-inline: var(--section-inline-padding);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.cards-beforeafter .cards-beforeafter-track::-webkit-scrollbar {
+  display: none;
+}
+
+.cards-beforeafter .cards-beforeafter-card {
+  flex: 1 0 282px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid #bccacd;
+  border-radius: 24px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  scroll-snap-align: start;
+}
+
+/* stacked BEFORE / AFTER photos with a 1px seam */
+.cards-beforeafter .cards-beforeafter-media {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+}
+
+.cards-beforeafter .cards-beforeafter-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  aspect-ratio: 282 / 140;
+}
+
+.cards-beforeafter .cards-beforeafter-image picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cards-beforeafter .cards-beforeafter-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.cards-beforeafter .cards-beforeafter-tag {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 9999px;
+  background-color: rgb(255 255 255 / 80%);
+  color: var(--text-color);
+  font-family: var(--heading-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.36px;
+  text-transform: uppercase;
+}
+
+/* text area */
+.cards-beforeafter .cards-beforeafter-body {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 24px 16px;
+}
+
+.cards-beforeafter .cards-beforeafter-body > * {
+  margin: 0;
+}
+
+.cards-beforeafter .cards-beforeafter-body h3 {
+  color: var(--text-color);
+  font-family: var(--heading-font-family);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12px;
+}
+
+.cards-beforeafter .cards-beforeafter-body .cards-beforeafter-duration {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 48px;
+  color: var(--text-color);
+  font-size: var(--body-font-size-m);
+  font-weight: 400;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+/* lucide clock-3 icon (stroke 1.5) */
+.cards-beforeafter .cards-beforeafter-duration::before {
+  content: '';
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  background-color: #3d4a5c;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16.5 12'/%3E%3C/svg%3E") center / 24px 24px no-repeat;
+}
+
+/*
+ * prev / next: 64px circles overlaid on the card row, vertically centred.
+ * The source keeps them invisible; here they appear on hover / keyboard focus when the track overflows.
+ */
+.cards-beforeafter .cards-beforeafter-nav {
+  display: none;
+}
+
+.cards-beforeafter.cards-beforeafter-scrollable .cards-beforeafter-nav {
+  display: block;
+}
+
+.cards-beforeafter .cards-beforeafter-nav button {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  background-color: rgb(9 13 12 / 60%);
+  color: #000;
+  visibility: hidden;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.cards-beforeafter .cards-beforeafter-prev {
+  left: 32px;
+}
+
+.cards-beforeafter .cards-beforeafter-next {
+  right: 48px;
+}
+
+.cards-beforeafter:hover .cards-beforeafter-nav button,
+.cards-beforeafter .cards-beforeafter-nav:focus-within button {
+  visibility: visible;
+}
+
+.cards-beforeafter .cards-beforeafter-nav button:hover {
+  background-color: var(--brand-neutral-92);
+}
+
+.cards-beforeafter .cards-beforeafter-nav button:disabled,
+.cards-beforeafter .cards-beforeafter-nav button:disabled:hover {
+  border: 0;
+  background-color: var(--brand-neutral-92);
+  color: #000;
+  pointer-events: none;
+}
+
+.cards-beforeafter .cards-beforeafter-nav button::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-color: currentcolor;
+  mask: var(--cards-beforeafter-arrow) center / 24px 24px no-repeat;
+}
+
+.cards-beforeafter .cards-beforeafter-prev::before {
+  --cards-beforeafter-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 19-7-7 7-7'/%3E%3Cpath d='M19 12H5'/%3E%3C/svg%3E");
+}
+
+.cards-beforeafter .cards-beforeafter-next::before {
+  --cards-beforeafter-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E");
+}
+
+/* lg: four cards share the row (source flex 1 0 calc(25% - 1.5rem)) */
+@media (width >= 1024px) {
+  .cards-beforeafter .cards-beforeafter-card {
+    flex-basis: calc(25% - 24px);
+  }
+}

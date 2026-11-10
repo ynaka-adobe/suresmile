@@ -1,20 +1,308 @@
+/*
+ * SureSmile footer. Mobile-first; values measured from https://www.suresmile.com/en-us.
+ * Inner content uses the site gutter (--section-inline-padding: 16 / 32 / 120px).
+ */
+
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  background-color: #191e24;
+  color: #fff;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  line-height: 24px;
 }
 
-footer .footer > div {
-  margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+/* flow-root keeps child margins inside each band (no collapse into the next band) */
+footer .footer-band {
+  display: flow-root;
 }
 
-footer .footer p {
+footer .footer-inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--section-inline-padding);
+}
+
+footer ul,
+footer ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+footer p {
   margin: 0;
 }
 
+footer a:any-link {
+  color: #fff;
+}
+
+footer a:hover {
+  color: #fff;
+}
+
+/* ---------- primary link band ---------- */
+footer .footer-links {
+  padding: 40px 16px 0;
+}
+
+footer .footer-links ul {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 40px;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+footer .footer-links a:any-link {
+  display: inline-block;
+  padding-left: 16px;
+  text-decoration: none;
+}
+
+/* underline grows left to right on hover */
+footer .footer-link-label {
+  position: relative;
+  display: inline-flex;
+}
+
+footer .footer-link-label::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 28px;
+  background-image: linear-gradient(#fff, #fff);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition: background-size 0.3s cubic-bezier(0.47, 0, 0.745, 0.715);
+  pointer-events: none;
+}
+
+footer .footer-links a:hover .footer-link-label::after,
+footer .footer-links a:focus-visible .footer-link-label::after {
+  background-size: 100% 1px;
+  transition-timing-function: cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+
+/* ---------- slim legal bar ---------- */
+footer .footer-slim {
+  padding: 48px 0;
+}
+
+footer .footer-slim .footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 calc(var(--section-inline-padding) + 16px);
+}
+
+footer .footer-logo {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 190px;
+  line-height: 0;
+}
+
+footer .footer-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* small screens: partner logo first, underlined */
+footer .footer-logo-partner {
+  order: -1;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #fff;
+}
+
+footer .footer-logo-brand {
+  margin: 36px 0 44px;
+}
+
+footer .footer-legal ul {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+footer .footer-legal ul li {
+  display: flex;
+  align-items: center;
+}
+
+footer .footer-legal li:not(:last-child)::after {
+  content: '|';
+  margin: 0 8px;
+}
+
+footer .footer-legal a:any-link,
+footer .footer-cookie-settings {
+  font-size: 12px;
+  line-height: 1.5;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* cookie preferences control looks like the other legal links */
+footer .footer-cookie-settings {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: #fff;
+  font-family: var(--body-font-family);
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+}
+
+footer .footer-cookie-settings:hover {
+  background: none;
+  color: #fff;
+}
+
+footer .footer-copyright {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.24px;
+}
+
+/* ---------- footnotes band ---------- */
+footer .footer-footnotes {
+  padding: 40px 0;
+  background-color: #333e4d;
+}
+
+footer .footer-footnotes .footer-inner li {
+  width: fit-content;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+footer .footer-footnotes .footer-inner li + li {
+  margin-top: 8px;
+}
+
+footer .footer-footnotes .footer-inner li:focus {
+  outline: none;
+}
+
+footer .footer-footnotes sup {
+  font-size: 0.75em;
+}
+
+footer .footnote-back {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+}
+
+footer .footnote-back:hover {
+  background: none;
+}
+
+/* in-page reference buttons (the ¹ next to a claim) */
+main .footnote-ref {
+  display: inline-block;
+  margin: 0;
+  padding: 0 1px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.6em;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: none;
+  vertical-align: super;
+  cursor: pointer;
+}
+
+/* the button carries the superscript position; keep the inner sup at its natural size */
+main .footnote-ref sup {
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+main .footnote-ref:hover {
+  background: none;
+}
+
+@media (width >= 600px) {
+  footer .footer-links {
+    padding: 48px 16px;
+  }
+
+  footer .footer-links a:any-link {
+    padding-left: 0;
+  }
+
+  footer .footer-slim .footer-inner {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 var(--section-inline-padding);
+  }
+
+  footer .footer-logo {
+    max-width: 123px;
+  }
+
+  footer .footer-logo-brand {
+    margin: 0;
+  }
+
+  footer .footer-legal {
+    margin-left: 64px;
+  }
+
+  footer .footer-logo-partner {
+    order: 0;
+    justify-content: flex-end;
+    margin-left: auto;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  footer .footer-legal li:not(:last-child)::after {
+    margin: 0 12px;
+  }
+
+  footer .footer-legal a:any-link,
+  footer .footer-cookie-settings {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
 @media (width >= 900px) {
-  footer .footer > div {
-    padding: 40px 32px 24px;
+  footer .footer-links ul {
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  footer .footer-logo {
+    max-width: 190px;
   }
 }

@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "projectType": "da"
+  },
+  "templates": [
+    {
+      "name": "home",
+      "urls": [
+        "https://www.suresmile.com/en-us"
+      ],
+      "representativeUrl": "https://www.suresmile.com/en-us",
+      "description": "SureSmile homepage: split hero, treatment strip, promo cards, how-it-works stepper, media columns, doctor locator and before/after transformations",
+      "urlPattern": "/*",
+      "blocks": [
+        {
+          "name": "hero-split",
+          "instances": [
+            "section.section-hero .section-row"
+          ]
+        },
+        {
+          "name": "cards-callouts",
+          "instances": [
+            "section.section-marquee .section-row"
+          ]
+        },
+        {
+          "name": "cards-promo",
+          "instances": [
+            "#carousel-why-sureSmile + .carousel-container"
+          ]
+        },
+        {
+          "name": "accordion-stepper",
+          "instances": [
+            "section:has(.bg-gradient-progress) .section-row > div.flex.flex-row.relative"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            "section.bg-blues-93 .section-row",
+            "section:not(.bg-blues-93):has(.section-row > div.flex.items-center.justify-center + .text-section h2) .section-row",
+            "section.bg-oranges-90:not(.section-hero) .section-row"
+          ]
+        },
+        {
+          "name": "search-locator",
+          "instances": [
+            "section.section-cta section:has(form)"
+          ]
+        },
+        {
+          "name": "cards-beforeafter",
+          "instances": [
+            "#carousel-real-transformations + .carousel-container"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc1",
+          "name": "Hero",
+          "selector": [
+            "section.section-hero"
+          ],
+          "style": "light-orange",
+          "blocks": [
+            "hero-split"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc2",
+          "name": "Treatment types strip",
+          "selector": [
+            "section.section-marquee"
+          ],
+          "style": "blue-gradient",
+          "blocks": [
+            "cards-callouts"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc3",
+          "name": "Why straighten with SureSmile",
+          "selector": [
+            "section:has(#carousel-why-sureSmile)"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-promo"
+          ],
+          "defaultContent": [
+            "#carousel-why-sureSmile"
+          ]
+        },
+        {
+          "id": "rc4",
+          "name": "How it works",
+          "selector": [
+            "section:has(.bg-gradient-progress)"
+          ],
+          "style": "split",
+          "blocks": [
+            "accordion-stepper"
+          ],
+          "defaultContent": [
+            "section:has(.bg-gradient-progress) .section-row .text-section h2",
+            "section:has(.bg-gradient-progress) .section-row:nth-of-type(2) a"
+          ]
+        },
+        {
+          "id": "rc5",
+          "name": "Dentsply Sirona backing",
+          "selector": [
+            "section.bg-blues-93"
+          ],
+          "style": "light-blue",
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc6",
+          "name": "What about braces",
+          "selector": [
+            "section:not(.bg-blues-93):has(.section-row > div.flex.items-center.justify-center + .text-section h2)",
+            "#main-content > div.min-h-screen > section:nth-of-type(6)"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc7",
+          "name": "Find a doctor",
+          "selector": [
+            "section.section-cta"
+          ],
+          "style": "blue-gradient, split",
+          "blocks": [
+            "search-locator"
+          ],
+          "defaultContent": [
+            "section.section-cta .section-row > img",
+            "section.section-cta .section-row > .text-section h2"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "1 million patients",
+          "selector": [
+            "section.bg-oranges-90:not(.section-hero)"
+          ],
+          "style": "light-orange",
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc9",
+          "name": "Real transformations",
+          "selector": [
+            "section:has(#carousel-real-transformations)"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-beforeafter"
+          ],
+          "defaultContent": [
+            "#carousel-real-transformations",
+            "section:has(#carousel-real-transformations) > div > .section-row a"
+          ]
+        }
+      ]
+    }
+  ]
+}

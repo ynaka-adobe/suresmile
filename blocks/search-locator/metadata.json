@@ -1,0 +1,43 @@
+{
+  "variantName": "search-locator",
+  "baseBlock": "search",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "standalone",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us",
+    "originPage": "SureSmile US homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "compact",
+    "purpose": "doctor location finder (address input, radius select, submit, use current location) that hands off to the find-a-doctor page; not a site content search",
+    "imagePattern": "none",
+    "layout": "stacked form fields; usually placed in a split section beside an image and heading"
+  },
+  "contentPattern": {
+    "structure": "one setting per row in this order, or key | value rows: (1) label text 'Search by address or postal code'; (2) input placeholder 'Your location'; (3) radius list in miles, e.g. '5, 10, 25, 50' (a bold value is the default, otherwise 10); (4) submit link 'Find a doctor' to /en-us/find-a-doctor (link text is the button label); (5) 'Use my current location' text (omit the row to hide the geolocation button). Sends address, radius, lat and lng query parameters",
+    "buttonCount": 2,
+    "imageCount": 0,
+    "hasDescription": false,
+    "interactive": "form submit and browser geolocation"
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "doctor, provider or store locator entry points that redirect to a results page",
+      "postal-code plus radius search calls to action"
+    ],
+    "notSuitableFor": [
+      "site content search over a query index (use search)",
+      "full results pages with maps and listings"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/en-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "variantName": "columns-media",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "standalone",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us",
+    "originPage": "SureSmile US homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "comfortable",
+    "purpose": "media (logo, photo or stat graphic) side by side with a short text column",
+    "imagePattern": "logo / photo / stat graphic",
+    "layout": "two equal columns on desktop, stacked on mobile"
+  },
+  "contentPattern": {
+    "structure": "one row, two cells: image | text (optional H2 heading + paragraph)",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "brand/partner logo next to a statement",
+      "image beside a heading and paragraph",
+      "stat graphic beside a supporting sentence"
+    ],
+    "notSuitableFor": [
+      "three or more equal content columns (use columns)",
+      "repeating card grids (use cards)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/en-us"],
+    "reuseCount": 3,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

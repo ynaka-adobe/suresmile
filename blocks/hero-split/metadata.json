@@ -1,0 +1,43 @@
+{
+  "variantName": "hero-split",
+  "baseBlock": "hero",
+  "version": "1.0.0",
+  "created": "2026-11-10T00:00:00.000Z",
+  "canonicalModel": "standalone",
+  "sourceContext": {
+    "originUrl": "https://www.suresmile.com/en-us",
+    "originPage": "SureSmile US homepage",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "above-the-fold hero with headline, intro, CTA and an inline image beside the text",
+    "imagePattern": "inline-portrait",
+    "layout": "text left, image right (stacks on mobile)"
+  },
+  "contentPattern": {
+    "structure": "row 1: image; row 2: H1 title, paragraph, CTA link (or one row with an image cell and a text cell)",
+    "buttonCount": 1,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "reuseGuidance": {
+    "suitableFor": [
+      "page-opening heroes with the image beside the text",
+      "campaign intros with a single CTA and a cut-out or framed image"
+    ],
+    "notSuitableFor": [
+      "full-bleed background-photo heroes (use hero-banner)",
+      "multi-slide hero carousels"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/en-us"],
+    "reuseCount": 1,
+    "lastUsed": "2026-11-10T00:00:00.000Z"
+  }
+}

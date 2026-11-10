@@ -1,0 +1,11 @@
+{
+  "type": "da",
+  "sites": {
+    "suresmile": {
+      "previewOrg": "ynaka-adobe",
+      "previewSite": "suresmile",
+      "contentHostUrl": "https://content.da.live/ynaka-adobe/suresmile/",
+      "libraryUrl": "https://main--sta-boilerplate--aemdemos.aem.page/tools/sidekick/library.json"
+    }
+  }
+}

@@ -1,0 +1,944 @@
+{
+  "schemaVersion": 2,
+  "url": "https://www.suresmile.com/en-us",
+  "title": "Ready to love your smile? | SureSmile® USA",
+  "timestamp": "2026-11-10T02:39:28.233Z",
+  "duration": "9.5s",
+  "cleanup": {
+    "elementsRemoved": 5,
+    "types": [
+      "overlay",
+      "cookie-banner",
+      "announcement-bar"
+    ],
+    "cookieConsentDismissed": true,
+    "lateConsentOverlaysRemoved": 0,
+    "removed": [
+      {
+        "selector": "#onetrust-banner-sdk",
+        "type": "overlay"
+      },
+      {
+        "selector": "#onetrust-style",
+        "type": "cookie-banner",
+        "rule": "[id*=\"onetrust\"]"
+      },
+      {
+        "selector": "#onetrust-consent-sdk",
+        "type": "cookie-banner",
+        "rule": "[id*=\"onetrust\"]"
+      },
+      {
+        "selector": "#header",
+        "type": "announcement-bar",
+        "rule": "[class*=\"announcement-bar\"]"
+      }
+    ]
+  },
+  "snapshot": {
+    "html": "page.html",
+    "unresolvedSelectors": []
+  },
+  "images": [
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhero-woman-holding-aligner.webp&w=1080&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhero-woman-holding-aligner.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhero-woman-holding-aligner.webp&w=1080&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-smiling-at-mirror.webp&w=3840&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Ftennis-1.webp&w=3840&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=3840&q=85",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=256&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=384&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=640&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=750&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=828&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1080&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1200&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=1920&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=2048&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fman-with-dog-computer.webp&w=3840&q=85",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-1.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-1.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-1.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-2.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-2.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-2.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-3.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-3.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fhow-it-works-3.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/assets/logos/dentsplysirona-blue.svg",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fgirl-smiling-braces.webp&w=384&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fgirl-smiling-braces.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fgirl-smiling-braces.webp&w=384&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-aligner.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-aligner.webp&w=384&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fwoman-yellow-shirt-aligner.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2F1million.png&w=828&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2F1million.png&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2F1million.png&w=828&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-before.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-before.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-before.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-after.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-after.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-after.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-before.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-before.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-before.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-after.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-after.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fcrossbite-after.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-before.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-before.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-before.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-after.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-after.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Foverbite-after.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-before.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-before.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-before.webp&w=640&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-after.webp&w=640&q=75",
+      "type": "img"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-after.webp&w=256&q=75",
+      "type": "srcset"
+    },
+    {
+      "url": "https://www.suresmile.com/_next/image?url=%2Fassets%2Fimages%2Fspacing-two-after.webp&w=640&q=75",
+      "type": "srcset"
+    }
+  ],
+  "skeleton": {
+    "signature": "sB(2x1B,3x1B,s(s,3x1),2x2(2x1,2x1),2x1B,2x1,3x1B,2x1B,2x3(s,4x1,s))",
+    "nodeMap": {
+      "r": "body",
+      "rc1": "#main-content > div.min-h-screen > section.overflow-x-clip.section-hero.py-8.pb-16.md\\:py-16.hero-compact.bg-oranges-90",
+      "rc2": "#main-content > div.min-h-screen > section.overflow-x-clip.section-marquee.py-3.md\\:py-3.bg-gradient-primary-90.text-white",
+      "rc3": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(3)",
+      "rc3c1": "#carousel-why-sureSmile",
+      "rc3c2": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(3) > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.carousel-container.relative",
+      "rc4": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(4)",
+      "rc4c1": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(4) > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.section-row.grid.grid-cols-1.md\\:grid-cols-12.gap-12.md\\:gap-4.md\\:\\[\\&\\>\\*\\:first-child\\]\\:col-span-5.md\\:\\[\\&\\>\\*\\:last-child\\]\\:col-span-7.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pl-12.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pr-6.md\\:\\[\\&\\>\\.text-section\\:first-child\\]\\:pl-6:nth-of-type(1)",
+      "rc4c2": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(4) > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.section-row.grid.grid-cols-1.md\\:grid-cols-12.gap-12.md\\:gap-4.md\\:\\[\\&\\>\\*\\:first-child\\]\\:col-span-5.md\\:\\[\\&\\>\\*\\:last-child\\]\\:col-span-7.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pl-12.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pr-6.md\\:\\[\\&\\>\\.text-section\\:first-child\\]\\:pl-6:nth-of-type(2)",
+      "rc5": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.bg-blues-93.md\\:py-16",
+      "rc6": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(6)",
+      "rc7": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip.section-cta.bg-gradient-primary-145.text-white",
+      "rc8": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.md\\:py-16.bg-oranges-90",
+      "rc9": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(9)",
+      "rc9c1": "#carousel-real-transformations",
+      "rc9c2": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(9) > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.carousel-container.relative",
+      "rc9c3": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(9) > div.m-auto.w-full.px-4.lg\\:px-8.xl\\:px-\\[120px\\].xl\\:max-w-\\[var\\(--content-max-w\\)\\].relative > div.section-row.grid-cols-1.md\\:grid-cols-12.gap-12.md\\:gap-4.md\\:\\[\\&\\>\\*\\:first-child\\]\\:col-span-5.md\\:\\[\\&\\>\\*\\:last-child\\]\\:col-span-7.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pl-12.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pr-6.md\\:\\[\\&\\>\\.text-section\\:first-child\\]\\:pl-6.flex.justify-end"
+    },
+    "sections": [
+      {
+        "id": "rc1",
+        "selector": "#main-content > div.min-h-screen > section.overflow-x-clip.section-hero.py-8.pb-16.md\\:py-16.hero-compact.bg-oranges-90",
+        "layout": "2x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#ffeacc",
+        "backgroundImage": null,
+        "colored": true,
+        "paintSelector": "#main-content > div.min-h-screen > section.overflow-x-clip.section-hero.py-8.pb-16.md\\:py-16.hero-compact.bg-oranges-90"
+      },
+      {
+        "id": "rc2",
+        "selector": "#main-content > div.min-h-screen > section.overflow-x-clip.section-marquee.py-3.md\\:py-3.bg-gradient-primary-90.text-white",
+        "layout": "3x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": "gradient",
+        "colored": true,
+        "paintSelector": "#main-content > div.min-h-screen > section.overflow-x-clip.section-marquee.py-3.md\\:py-3.bg-gradient-primary-90.text-white"
+      },
+      {
+        "id": "rc3",
+        "selector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(3)",
+        "layout": null,
+        "hasBg": false,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": null,
+        "colored": false,
+        "paintSelector": null
+      },
+      {
+        "id": "rc4",
+        "selector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(4)",
+        "layout": "2x2",
+        "hasBg": false,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": null,
+        "colored": false,
+        "paintSelector": null
+      },
+      {
+        "id": "rc5",
+        "selector": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.bg-blues-93.md\\:py-16",
+        "layout": "2x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#dbe7ff",
+        "backgroundImage": null,
+        "colored": true,
+        "paintSelector": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.bg-blues-93.md\\:py-16"
+      },
+      {
+        "id": "rc6",
+        "selector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(6)",
+        "layout": "2x1",
+        "hasBg": false,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": null,
+        "colored": false,
+        "paintSelector": null
+      },
+      {
+        "id": "rc7",
+        "selector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip.section-cta.bg-gradient-primary-145.text-white",
+        "layout": "3x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": "gradient",
+        "colored": true,
+        "paintSelector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip.section-cta.bg-gradient-primary-145.text-white"
+      },
+      {
+        "id": "rc8",
+        "selector": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.md\\:py-16.bg-oranges-90",
+        "layout": "2x1",
+        "hasBg": true,
+        "hint": "block",
+        "background": "#ffeacc",
+        "backgroundImage": null,
+        "colored": true,
+        "paintSelector": "#main-content > div.min-h-screen > section.py-16.overflow-x-clip.md\\:py-16.bg-oranges-90"
+      },
+      {
+        "id": "rc9",
+        "selector": "#main-content > div.min-h-screen > section.py-16.md\\:py-24.overflow-x-clip:nth-of-type(9)",
+        "layout": "2x3",
+        "hasBg": false,
+        "hint": "block",
+        "background": "#ffffff",
+        "backgroundImage": null,
+        "colored": false,
+        "paintSelector": null
+      }
+    ],
+    "invalidIgnore": []
+  },
+  "pageLayout": {
+    "box": {
+      "y": 0,
+      "height": 4370.890625
+    },
+    "splits": [
+      {
+        "selector": "div.section-row.grid > img.w-full.h-full",
+        "sides": [
+          [
+            0.5911067708333333,
+            1
+          ]
+        ],
+        "top": 64,
+        "bottom": 554.671875,
+        "cover": 0.11225901471739527,
+        "above": 0
+      },
+      {
+        "selector": "div.section-row.grid-cols-1 > div.flex.items-center, div.section-row.grid-cols-1 > div.flex.items-center",
+        "sides": [
+          [
+            0.11341463414634147,
+            0.11341463414634147
+          ],
+          [
+            0.4865853658536585,
+            0.4865853658536585
+          ]
+        ],
+        "top": 630.671875,
+        "bottom": 654.671875,
+        "cover": 0.0054908717831391625,
+        "above": 1
+      },
+      {
+        "selector": "div.section-row.grid > div.flex.items-center",
+        "sides": [
+          [
+            0,
+            0.40888020833333333
+          ]
+        ],
+        "top": 2402.078125,
+        "bottom": 2508.078125,
+        "cover": 0.024251350375531302,
+        "above": 5
+      },
+      {
+        "selector": "div.section-row.grid > div.flex.items-center",
+        "sides": [
+          [
+            0,
+            0.40888020833333333
+          ]
+        ],
+        "top": 2668.078125,
+        "bottom": 2849.078125,
+        "cover": 0.041410324697841186,
+        "above": 6
+      },
+      {
+        "selector": "div.section-row.grid > img.w-full.h-full, div.section-row.grid > section.w-full.py-0",
+        "sides": [
+          [
+            0,
+            0.15583333333333332
+          ],
+          [
+            0.76,
+            1
+          ]
+        ],
+        "top": 3041.078125,
+        "bottom": 3253.078125,
+        "cover": 0.048502700751062604,
+        "above": 7
+      },
+      {
+        "selector": "div.section-row.grid > h2.text-\\[40px\\].leading-\\[1\\.2\\]",
+        "sides": [
+          [
+            0,
+            0.40888020833333333
+          ]
+        ],
+        "top": 3413.078125,
+        "bottom": 3489.078125,
+        "cover": 0.01738776064660735,
+        "above": 8
+      }
+    ],
+    "start": {
+      "kind": "side by side"
+    }
+  },
+  "blocks": [
+    {
+      "id": "bda1d930612c",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section.overflow-x-clip.section-hero.py-8.pb-16.md\\:py-16.hero-compact.bg-oranges-90",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 619
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image + heading + link"
+      },
+      "description": "overflow-x-clip",
+      "features": {
+        "skeleton": "[T|T*1.5]",
+        "variant": "[T|Tkw*1.5]",
+        "variantClean": "[T|Tk*1.5]"
+      },
+      "screenshot": "blocks/bda1d930612c.jpg",
+      "html": "blocks/bda1d930612c.html"
+    },
+    {
+      "id": "a375c8354b74",
+      "type": "cards",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section.overflow-x-clip.section-marquee.py-3.md\\:py-3.bg-gradient-primary-90.text-white",
+      "bounds": {
+        "x": 0,
+        "y": 619,
+        "width": 1440,
+        "height": 48
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": ""
+      },
+      "description": "overflow-x-clip",
+      "features": {
+        "skeleton": "[[svg|T]]",
+        "variant": "[[svg|Tw]]",
+        "variantClean": "[[svg|Tk]]",
+        "set": true
+      },
+      "screenshot": "blocks/a375c8354b74.jpg",
+      "html": "blocks/a375c8354b74.html"
+    },
+    {
+      "id": "0b1a70e1e33b",
+      "type": "default-content",
+      "detectionTier": 1,
+      "selector": "#carousel-why-sureSmile",
+      "bounds": {
+        "x": 120,
+        "y": 763,
+        "width": 1200,
+        "height": 48
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": false,
+        "structure": "heading"
+      },
+      "description": "text-40px",
+      "features": {
+        "skeleton": "T",
+        "variant": "Tk",
+        "variantClean": "Tk"
+      },
+      "screenshot": null,
+      "html": "blocks/0b1a70e1e33b.html"
+    },
+    {
+      "id": "8048daf2f6e7",
+      "type": "cards",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(3) > div > div",
+      "bounds": {
+        "x": 120,
+        "y": 859,
+        "width": 1200,
+        "height": 493
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image + heading + link + button"
+      },
+      "description": "carousel-container",
+      "features": {
+        "skeleton": "[~(T)]",
+        "variant": "[~n(Tk)]",
+        "variantClean": "[~n(Tk)]",
+        "set": true
+      },
+      "screenshot": "blocks/8048daf2f6e7.jpg",
+      "html": "blocks/8048daf2f6e7.html"
+    },
+    {
+      "id": "efcaa191c6ae",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(4) > div > div:nth-child(1)",
+      "bounds": {
+        "x": 120,
+        "y": 1544,
+        "width": 1200,
+        "height": 584
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "heading + button + text"
+      },
+      "description": "section-row",
+      "features": {
+        "skeleton": "[T|{~ button T button}*1.5]",
+        "variant": "[Tk|{~w button Tk button}*1.5]",
+        "variantClean": "[Tk|{~w button Tk button}*1.5]"
+      },
+      "screenshot": "blocks/efcaa191c6ae.jpg",
+      "html": "blocks/efcaa191c6ae.html"
+    },
+    {
+      "id": "36953113ab25",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(4) > div > div:nth-child(2)",
+      "bounds": {
+        "x": 120,
+        "y": 2128,
+        "width": 1200,
+        "height": 114
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "link"
+      },
+      "description": "section-row",
+      "features": {
+        "skeleton": "T",
+        "variant": "Tk",
+        "variantClean": "Tk"
+      },
+      "screenshot": "blocks/36953113ab25.jpg",
+      "html": "blocks/36953113ab25.html"
+    },
+    {
+      "id": "d4af8d9977c2",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section.py-16.overflow-x-clip.bg-blues-93.md\\:py-16",
+      "bounds": {
+        "x": 0,
+        "y": 2338,
+        "width": 1440,
+        "height": 234
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image"
+      },
+      "description": "py-16",
+      "features": {
+        "skeleton": "[T]",
+        "variant": "[T|Tk]",
+        "variantClean": "[T|Tk]"
+      },
+      "screenshot": "blocks/d4af8d9977c2.jpg",
+      "html": "blocks/d4af8d9977c2.html"
+    },
+    {
+      "id": "315da40308cb",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(6)",
+      "bounds": {
+        "x": 0,
+        "y": 2572,
+        "width": 1440,
+        "height": 373
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image + heading"
+      },
+      "description": "py-16",
+      "features": {
+        "skeleton": "[T|T*1.5]",
+        "variant": "[T|Tk*1.5]",
+        "variantClean": "[T|Tk*1.5]"
+      },
+      "screenshot": "blocks/315da40308cb.jpg",
+      "html": "blocks/315da40308cb.html"
+    },
+    {
+      "id": "413b4008ce80",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section.py-16.md\\:py-24.overflow-x-clip.section-cta.bg-gradient-primary-145.text-white",
+      "bounds": {
+        "x": 0,
+        "y": 2945,
+        "width": 1440,
+        "height": 404
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "image + heading + field + button"
+      },
+      "description": "py-16",
+      "features": {
+        "skeleton": "[T|T*3|form*1.5]",
+        "variant": "[T|Tw*3|form*1.5]",
+        "variantClean": "[T|Tk*3|form*1.5]"
+      },
+      "screenshot": "blocks/413b4008ce80.jpg",
+      "html": "blocks/413b4008ce80.html"
+    },
+    {
+      "id": "c787b2349653",
+      "type": "columns",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section.py-16.overflow-x-clip.md\\:py-16.bg-oranges-90",
+      "bounds": {
+        "x": 0,
+        "y": 3349,
+        "width": 1440,
+        "height": 204
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "heading + image + button"
+      },
+      "description": "py-16",
+      "features": {
+        "skeleton": "[T|button*1.5]",
+        "variant": "[T|button*1.5]",
+        "variantClean": "[T|button*1.5]"
+      },
+      "screenshot": "blocks/c787b2349653.jpg",
+      "html": "blocks/c787b2349653.html"
+    },
+    {
+      "id": "f18b977a4882",
+      "type": "default-content",
+      "detectionTier": 1,
+      "selector": "#carousel-real-transformations",
+      "bounds": {
+        "x": 120,
+        "y": 3649,
+        "width": 1200,
+        "height": 48
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": false,
+        "structure": "heading"
+      },
+      "description": "text-40px",
+      "features": {
+        "skeleton": "T",
+        "variant": "Tk",
+        "variantClean": "Tk"
+      },
+      "screenshot": null,
+      "html": "blocks/f18b977a4882.html"
+    },
+    {
+      "id": "64d8693ce6fc",
+      "type": "cards",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(9) > div > div.carousel-container.relative",
+      "bounds": {
+        "x": 120,
+        "y": 3745,
+        "width": 1200,
+        "height": 462
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "moderate",
+        "imagePattern": "noimg",
+        "hasGrid": true,
+        "structure": "button + heading + text"
+      },
+      "description": "carousel-container",
+      "features": {
+        "skeleton": "[~(button T)]",
+        "variant": "[~n(button Tk)]",
+        "variantClean": "[~n(button Tk)]",
+        "set": true
+      },
+      "screenshot": "blocks/64d8693ce6fc.jpg",
+      "html": "blocks/64d8693ce6fc.html"
+    },
+    {
+      "id": "f8936ca52d1c",
+      "type": "default-content",
+      "detectionTier": 1,
+      "selector": "#main-content > div > section:nth-child(9) > div > div.section-row.grid-cols-1.md\\:grid-cols-12.gap-12.md\\:gap-4.md\\:\\[\\&\\>\\*\\:first-child\\]\\:col-span-5.md\\:\\[\\&\\>\\*\\:last-child\\]\\:col-span-7.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pl-12.md\\:\\[\\&\\>\\.text-section\\:last-child\\]\\:pr-6.md\\:\\[\\&\\>\\.text-section\\:first-child\\]\\:pl-6.flex.justify-end",
+      "bounds": {
+        "x": 120,
+        "y": 4207,
+        "width": 1200,
+        "height": 68
+      },
+      "visualChars": {
+        "colorScheme": "light",
+        "density": "minimal",
+        "imagePattern": "noimg",
+        "hasGrid": false,
+        "structure": "link"
+      },
+      "description": "section-row",
+      "features": {
+        "skeleton": "T",
+        "variant": "Tb",
+        "variantClean": "Tk"
+      },
+      "screenshot": null,
+      "html": "blocks/f8936ca52d1c.html"
+    }
+  ],
+  "globalElements": {
+    "header": null,
+    "footer": {
+      "selector": "footer.footer-base.w-full"
+    },
+    "isFirstCapture": true
+  }
+}

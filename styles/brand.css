@@ -1,0 +1,96 @@
+/*
+ * SureSmile brand tokens, extracted from https://www.suresmile.com/en-us
+ * (computed styles at 1440px and 780px viewports).
+ */
+
+:root {
+  /* colors */
+  --background-color: #fff;
+  --text-color: #0a0a0a;
+  --link-color: #191e24;
+  --link-hover-color: rgb(25 30 36 / 90%);
+  --light-color: #ffeacc;
+  --dark-color: #191e24;
+
+  /* brand palette */
+  --brand-black: #000;
+  --brand-primary: #191e24;
+  --brand-orange-90: #ffeacc;
+  --brand-blue-93: #dbe7ff;
+  --brand-blue-start: #0f6bff;
+  --brand-violet-end: #8652ff;
+  --brand-gradient-90: linear-gradient(90deg, #0f6bff 18.03%, #8652ff 100%);
+  --brand-gradient-145: linear-gradient(145deg, #0f6bff 18.03%, #8652ff 100%);
+  --brand-neutral-92: hsl(214deg 17% 92%);
+  --brand-neutral-39: hsl(214deg 18% 39%);
+  --brand-border: #333f4d;
+  --brand-ring: hsl(281deg 89% 57%);
+
+  /* fonts */
+  --body-font-family: figtree, figtree-fallback, verdana, sans-serif;
+  --heading-font-family: montserrat, montserrat-fallback, figtree, verdana, sans-serif;
+
+  /* body sizes */
+  --body-font-size-l: 20px;
+  --body-font-size-m: 16px;
+  --body-font-size-s: 14px;
+  --body-font-size-xs: 12px;
+  --body-line-height: 1.5;
+
+  /* heading sizes (mobile) */
+  --heading-font-size-xxl: 40px;
+  --heading-font-size-xl: 32px;
+  --heading-font-size-l: 22px;
+  --heading-font-size-m: 20px;
+  --heading-font-size-s: 18px;
+  --heading-font-size-xs: 16px;
+
+  /* buttons */
+  --button-font-size: 16px;
+  --button-letter-spacing: 0.48px;
+  --button-padding: 16px 32px;
+  --button-radius: 9999px;
+  --button-transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* spacing */
+  --content-max-width: 1440px;
+  --section-inline-padding: 16px;
+  --section-padding: 64px;
+  --section-padding-colored: 64px;
+  --section-heading-gap: 32px;
+
+  /* nav heights */
+  --nav-height: 64px;
+  --breadcrumbs-height: 34px;
+  --header-height: var(--nav-height);
+}
+
+/* header bar grows from 64px to 72px from 600px (header.css breakpoint) */
+@media (width >= 600px) {
+  :root {
+    --nav-height: 72px;
+  }
+}
+
+@media (width >= 768px) {
+  :root {
+    --heading-font-size-xxl: 56px;
+    --heading-font-size-xl: 40px;
+    --section-padding: 96px;
+    --section-heading-gap: 48px;
+  }
+}
+
+@media (width >= 1024px) {
+  :root {
+    --section-inline-padding: 32px;
+  }
+}
+
+@media (width >= 1280px) {
+  :root {
+    --section-inline-padding: 120px;
+  }
+}

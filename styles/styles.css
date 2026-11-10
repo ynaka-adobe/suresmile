@@ -1,3 +1,5 @@
+@import url('brand.css');
+
 /*
  * Copyright 2020 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -10,66 +12,17 @@
  * governing permissions and limitations under the License.
  */
 
-:root {
-  /* colors */
-  --background-color: white;
-  --light-color: #f4f4f5;
-  --dark-color: #121416;
-  --text-color: #1f2327;
-  --link-color: #8b71fe;
-  --link-hover-color: #6e51fd;
-
-  /* fonts */
-  --body-font-family: poppins, roboto-fallback, sans-serif;
-  --heading-font-family: montserrat, roboto-condensed-fallback, sans-serif;
-
-  /* body sizes */
-  --body-font-size-m: 22px;
-  --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
-
-  /* heading sizes */
-  --heading-font-size-xxl: 55px;
-  --heading-font-size-xl: 44px;
-  --heading-font-size-l: 34px;
-  --heading-font-size-m: 27px;
-  --heading-font-size-s: 24px;
-  --heading-font-size-xs: 22px;
-
-  /* nav heights */
-  --nav-height: 64px;
-  --breadcrumbs-height: 34px;
-  --header-height: var(--nav-height);
-}
-
-/* fallback fonts */
+/* fallback fonts, sized to limit layout shift while web fonts load */
 @font-face {
-  font-family: roboto-condensed-fallback;
-  size-adjust: 88.82%;
+  font-family: figtree-fallback;
+  size-adjust: 96%;
   src: local('Arial');
 }
 
 @font-face {
-  font-family: roboto-fallback;
-  size-adjust: 99.529%;
+  font-family: montserrat-fallback;
+  size-adjust: 112%;
   src: local('Arial');
-}
-
-@media (width >= 900px) {
-  :root {
-    /* body sizes */
-    --body-font-size-m: 18px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 14px;
-
-    /* heading sizes */
-    --heading-font-size-xxl: 45px;
-    --heading-font-size-xl: 36px;
-    --heading-font-size-l: 28px;
-    --heading-font-size-m: 22px;
-    --heading-font-size-s: 20px;
-    --heading-font-size-xs: 18px;
-  }
 }
 
 body {
@@ -79,7 +32,8 @@ body {
   color: var(--text-color);
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
-  line-height: 1.6;
+  line-height: var(--body-line-height);
+  -webkit-font-smoothing: antialiased;
 }
 
 body.appear {
@@ -106,31 +60,53 @@ footer .footer[data-block-status="loaded"] {
   }
 }
 
+/* typography (source: Montserrat 400 headings, Figtree body) */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  margin-top: 0.8em;
-  margin-bottom: 0.25em;
+  margin-top: 0;
+  margin-bottom: 0.5em;
   font-family: var(--heading-font-family);
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 400;
+  line-height: 1.2;
+  color: inherit;
   scroll-margin: 40px;
 }
 
 h1 {
   font-size: var(--heading-font-size-xxl);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
-h2 { font-size: var(--heading-font-size-xl); }
-h3 { font-size: var(--heading-font-size-l); }
-h4 { font-size: var(--heading-font-size-m); }
-h5 { font-size: var(--heading-font-size-s); }
-h6 { font-size: var(--heading-font-size-xs); }
+
+h2 {
+  font-size: var(--heading-font-size-xl);
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: var(--heading-font-size-l);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.12px;
+}
+
+h4 {
+  font-size: var(--heading-font-size-m);
+  font-weight: 500;
+}
+
+h5 {
+  font-size: var(--heading-font-size-s);
+  font-weight: 500;
+}
+
+h6 {
+  font-size: var(--heading-font-size-xs);
+  font-weight: 500;
+}
 
 p,
 dl,
@@ -138,8 +114,13 @@ ol,
 ul,
 pre,
 blockquote {
-  margin-top: 0.8em;
-  margin-bottom: 0.25em;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+sup {
+  font-size: 0.6em;
+  line-height: 0;
 }
 
 code,
@@ -150,13 +131,9 @@ pre {
 pre {
   padding: 16px;
   border-radius: 8px;
-  background-color: var(--light-color);
+  background-color: var(--brand-neutral-92);
   overflow-x: auto;
   white-space: pre;
-}
-
-main > div {
-  margin: 40px 16px;
 }
 
 input,
@@ -169,57 +146,176 @@ button {
 /* links */
 a:any-link {
   color: var(--link-color);
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
   word-break: break-word;
 }
 
 a:hover {
   color: var(--link-hover-color);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
-/* buttons */
-a.button:any-link,
-button {
+a:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-ring);
+}
+
+/* EDS button reset: a standalone link renders as a plain link unless styled below */
+main .button-container {
+  display: inline;
+}
+
+main a.button:any-link {
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--link-color);
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+  white-space: normal;
+}
+
+/*
+ * Source "arrow" text link (e.g. "Treatable conditions"): a standalone link in default content.
+ * Montserrat 600, uppercase, 0.48px tracking, arrow that nudges right on hover.
+ */
+main .default-content-wrapper a.button:any-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--heading-font-family);
+  font-size: var(--button-font-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--button-letter-spacing);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--brand-primary);
+}
+
+main .default-content-wrapper a.button:any-link::after {
+  content: '';
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  background-color: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+main .default-content-wrapper a.button:hover {
+  color: var(--link-hover-color);
+}
+
+main .default-content-wrapper a.button:hover::after {
+  transform: translateX(2px);
+}
+
+/* Source pill buttons: primary = black fill (bold link), secondary = white outline (italic link) */
+main .button-container a.button.primary:any-link,
+main .button-container a.button.secondary:any-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
-  display: inline-block;
   max-width: 100%;
-  margin: 12px 0;
-  border: 2px solid transparent;
-  border-radius: 2.4em;
-  padding: 0.5em 1.2em;
-  font-family: var(--body-font-family);
-  font-style: normal;
-  font-weight: 500;
-  line-height: 1.25;
+  padding: var(--button-padding);
+  border: 1px solid transparent;
+  border-radius: var(--button-radius);
+  font-family: var(--heading-font-family);
+  font-size: var(--button-font-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--button-letter-spacing);
   text-align: center;
   text-decoration: none;
-  background-color: var(--link-color);
-  color: var(--background-color);
-  cursor: pointer;
-  text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
+  cursor: pointer;
+  transition: var(--button-transition);
 }
 
-a.button:hover,
-a.button:focus,
-button:hover,
-button:focus {
-  background-color: var(--link-hover-color);
+main .button-container a.button.primary:any-link {
+  background-color: var(--brand-black);
+  color: #fff;
+}
+
+main .button-container a.button.primary:hover {
+  background-color: rgb(0 0 0 / 90%);
+  color: #fff;
+}
+
+main .button-container a.button.secondary:any-link {
+  background-color: #fff;
+  border-color: var(--brand-border);
+  color: #171717;
+}
+
+main .button-container a.button.secondary:hover {
+  background-color: var(--brand-neutral-92);
+  color: #171717;
+}
+
+main .button-container a.button.primary::after,
+main .button-container a.button.secondary::after {
+  display: none;
+}
+
+/* "See the full journey" in the how-it-works section is an outlined pill on the source */
+main .accordion-stepper-container .default-content-wrapper a.button:any-link {
+  justify-content: center;
+  padding: var(--button-padding);
+  border: 1px solid var(--brand-border);
+  border-radius: var(--button-radius);
+  background-color: #fff;
+  color: #171717;
+  transition: var(--button-transition);
+}
+
+main .accordion-stepper-container .default-content-wrapper a.button:hover {
+  background-color: var(--brand-neutral-92);
+  color: #171717;
+}
+
+main .accordion-stepper-container .default-content-wrapper a.button::after {
+  display: none;
+}
+
+/* native buttons (block UIs) */
+button {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: var(--button-radius);
+  padding: var(--button-padding);
+  font-family: var(--heading-font-family);
+  font-size: var(--button-font-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--button-letter-spacing);
+  text-transform: uppercase;
+  background-color: var(--brand-black);
+  color: #fff;
   cursor: pointer;
+  transition: var(--button-transition);
+}
+
+button:hover {
+  background-color: rgb(0 0 0 / 90%);
 }
 
 button:disabled,
 button:disabled:hover {
-  background-color: var(--light-color);
+  background-color: var(--brand-neutral-92);
+  border-color: var(--brand-neutral-39);
+  color: var(--brand-neutral-39);
   cursor: unset;
-}
-
-a.button.secondary,
-button.secondary {
-  background-color: unset;
-  border: 2px solid currentcolor;
-  color: var(--text-color);
 }
 
 main img {
@@ -241,51 +337,214 @@ main img {
 
 /* sections */
 main > .section {
-  margin: 40px 0;
+  margin: 0;
+  padding: var(--section-padding) 0;
 }
 
 main > .section > div {
-  max-width: 1200px;
-  margin: auto;
-  padding: 0 24px;
+  box-sizing: border-box;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--section-inline-padding);
 }
 
-main > .section:first-of-type {
-  margin-top: 0;
+main > .section > div + div {
+  margin-top: var(--section-heading-gap);
 }
 
-@media (width >= 900px) {
-  main > .section > div {
-    padding: 0 32px;
+/* section headings sit above carousels / card rows with a 48px gap */
+main > .section > .default-content-wrapper > h2:last-child {
+  margin-bottom: 0;
+}
+
+@media (width >= 768px) {
+  main > .section > .default-content-wrapper > h2 {
+    padding: 0 24px;
   }
 }
 
-/* section metadata */
-main .section.light,
-main .section.highlight {
+/* carousel section headings stay 40px on every viewport (source text-[40px]) */
+main > .section.cards-promo-container > .default-content-wrapper > h2,
+main > .section.cards-beforeafter-container > .default-content-wrapper > h2 {
+  font-size: 40px;
+  line-height: 1.2;
+}
+
+/* how it works (mobile): source leaves a wide gap under the heading; journey pill is full width */
+main > .section.accordion-stepper-container > .accordion-stepper-wrapper {
+  margin-top: 90px;
+}
+
+main > .section.accordion-stepper-container > .default-content-wrapper:last-child {
+  margin-top: 72px;
+}
+
+main > .section.accordion-stepper-container > .default-content-wrapper:last-child a.button:any-link {
+  display: flex;
+  width: 100%;
+}
+
+/* section metadata: backgrounds */
+main > .section.light-orange {
+  background-color: var(--brand-orange-90);
+  padding: var(--section-padding-colored) 0;
+}
+
+main > .section.light-blue {
+  background-color: var(--brand-blue-93);
+  padding: var(--section-padding-colored) 0;
+}
+
+main > .section.blue-gradient {
+  background-image: var(--brand-gradient-145);
+  color: #fff;
+}
+
+main > .section.blue-gradient a:any-link {
+  color: #fff;
+}
+
+/* treatment strip: thin 90deg gradient band */
+main > .section.blue-gradient.cards-callouts-container {
+  background-image: var(--brand-gradient-90);
+  padding: 12px 0;
+}
+
+/* hero sits tighter on mobile (source py-8 / md:py-16) */
+main > .section.hero-split-container {
+  padding: 32px 0 64px;
+}
+
+@media (width >= 768px) {
+  main > .section.hero-split-container {
+    padding: 64px 0;
+  }
+}
+
+/* legacy section styles kept for other boilerplate content */
+main > .section.light,
+main > .section.highlight {
   background-color: var(--light-color);
-  margin: 0;
-  padding: 40px 0;
 }
 
-main .section.glow {
-  background:
-    radial-gradient(
-      ellipse 50% 60% at 25% 40%,
-      var(--light-color) 0%,
-      var(--background-color) 70%
-    );
-  margin: 0;
-  padding: 64px 0;
-}
-
-main .section.dark {
+main > .section.dark {
   background-color: var(--dark-color);
   color: var(--background-color);
-  margin: 0;
-  padding: 40px 0;
 }
 
-main .section.dark a:any-link {
+main > .section.dark a:any-link {
   color: var(--background-color);
+}
+
+/*
+ * split: default content beside the block (source 12-column grid, 5 / 7).
+ * Leading default content sits left, the block right, trailing default content under the block.
+ */
+@media (width >= 768px) {
+  main > .section.split {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    column-gap: 16px;
+    align-items: start;
+    padding-inline: max(var(--section-inline-padding), calc((100% - var(--content-max-width)) / 2 + var(--section-inline-padding)));
+  }
+
+  main > .section.split > div {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  main > .section.split > .default-content-wrapper:first-child {
+    grid-column: 1;
+    padding-left: 24px;
+  }
+
+  main > .section.split > .default-content-wrapper:first-child > h2 {
+    padding: 0;
+  }
+
+  main > .section.split > div:not(.default-content-wrapper) {
+    grid-column: 2;
+  }
+
+  main > .section.split > .default-content-wrapper:not(:first-child) {
+    grid-column: 2;
+    margin-top: var(--section-heading-gap);
+    padding-left: 48px;
+  }
+
+  main > .section.split.accordion-stepper-container > .accordion-stepper-wrapper {
+    margin-top: 0;
+  }
+
+  main > .section.split.accordion-stepper-container > .default-content-wrapper:last-child {
+    margin-top: 64px;
+  }
+
+  main > .section.split.accordion-stepper-container > .default-content-wrapper:last-child a.button:any-link {
+    display: inline-flex;
+    width: auto;
+  }
+
+  /* find-a-doctor: portrait | heading | 288px locator */
+  main > .section.split.search-locator-container {
+    grid-template-columns: 1fr 288px;
+    align-items: center;
+  }
+
+  main > .section.split.search-locator-container > .default-content-wrapper:first-child {
+    display: grid;
+    grid-template-columns: 187px 1fr;
+    column-gap: 16px;
+    align-items: center;
+    padding-left: 0;
+  }
+
+  main > .section.split.search-locator-container > div:not(.default-content-wrapper) {
+    justify-self: end;
+    width: 100%;
+    max-width: 288px;
+  }
+}
+
+/* find-a-doctor default content: portrait + 32px heading (mobile: 128px portrait beside heading) */
+main > .section.search-locator-container > .default-content-wrapper:first-child {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  column-gap: 16px;
+  align-items: center;
+}
+
+main > .section.search-locator-container > .default-content-wrapper p:has(> picture) {
+  margin: 0;
+}
+
+main > .section.search-locator-container > .default-content-wrapper h2 {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1;
+}
+
+@media (width >= 1024px) {
+  main > .section.search-locator-container > .default-content-wrapper h2 {
+    padding: 0 48px 0 24px;
+  }
+}
+
+/* trailing arrow link under a carousel is right-aligned on the source */
+main > .section.cards-beforeafter-container > .default-content-wrapper:last-child {
+  text-align: right;
+}
+
+/* honour the reduced-motion preference: drop transitions, animations and smooth scrolling */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
