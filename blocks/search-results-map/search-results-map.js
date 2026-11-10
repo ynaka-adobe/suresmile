@@ -6,7 +6,7 @@
  * when a Google Maps key is configured, a map with one marker per doctor.
  *
  * Authoring (key | value rows; a single-cell first row is read as `source`):
- *   source            | https://www.suresmile.com/api/location/doctors
+ *   source            | /api/location/doctors (same-origin)
  *   no-results        | **We're sorry** / We couldn't find any SureSmile doctors ...
  *   results-label     | {count} results for
  *   per-page          | 20
@@ -19,12 +19,13 @@
  *   services-tooltip  | text shown by the (?) button next to the service tags
  *   aligners | braces | retainers  service tag labels
  *   previous-label | next-label | pagination-label | loading-label | location-label
+ *   error-label | geocoding-error-label | geocoding-unavailable-label | results-heading
  *
  * Before any search (no query parameters) the block renders nothing.
  */
 
 const DEFAULTS = {
-  source: 'https://www.suresmile.com/api/location/doctors',
+  source: '/api/location/doctors',
   noResultsTitle: 'We\'re sorry',
   noResultsText: 'We couldn\'t find any SureSmile doctors in this area. Try expanding your search.',
   resultsLabel: '{count} results for',
@@ -41,6 +42,10 @@ const DEFAULTS = {
   paginationLabel: 'Results pages',
   loadingLabel: 'Loading results',
   locationLabel: 'your location',
+  resultsHeading: 'Doctor search results',
+  errorLabel: 'We could not load doctor results. Please try again.',
+  geocodingErrorLabel: 'We could not find that location. Check the address or postal code and try again.',
+  geocodingUnavailableLabel: 'Address and postal-code search is unavailable. Please use your current location or try again later.',
 };
 
 const MAX_RESULTS = 100;
@@ -65,6 +70,10 @@ const KEY_ALIASES = {
   'pagination-label': 'paginationLabel',
   'loading-label': 'loadingLabel',
   'location-label': 'locationLabel',
+  'results-heading': 'resultsHeading',
+  'error-label': 'errorLabel',
+  'geocoding-error-label': 'geocodingErrorLabel',
+  'geocoding-unavailable-label': 'geocodingUnavailableLabel',
 };
 
 let idCounter = 0;
@@ -107,10 +116,16 @@ function readConfig(block) {
   };
   ['resultsLabel', 'directionsLabel', 'mapLabel', 'servicesTooltip', 'aligners', 'braces',
     'retainers', 'previousLabel', 'nextLabel', 'paginationLabel', 'loadingLabel',
-    'locationLabel'].forEach((key) => {
+    'locationLabel', 'resultsHeading', 'errorLabel', 'geocodingErrorLabel',
+    'geocodingUnavailableLabel'].forEach((key) => {
     config[key] = text(key) || DEFAULTS[key];
   });
   return config;
+}
+
+function validCoordinates(lat, lng) {
+  return Number.isFinite(lat) && Number.isFinite(lng)
+    && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
 }
 
 function readQuery() {
@@ -119,7 +134,7 @@ function readQuery() {
   const num = (name) => {
     const raw = params.get(name);
     if (raw === null || raw.trim() === '') return null;
-    const n = parseFloat(raw);
+    const n = Number(raw);
     return Number.isFinite(n) ? n : null;
   };
   const address = (params.get('address') || '').trim();
@@ -131,8 +146,8 @@ function readQuery() {
     lat,
     lng,
     radius: radius && radius > 0 ? radius : DEFAULTS.radius,
-    hasCoords: lat !== null && lng !== null,
-    hasSearch: Boolean(address) || (lat !== null && lng !== null),
+    hasCoords: validCoordinates(lat, lng),
+    hasSearch: params.has('address') || params.has('lat') || params.has('lng'),
   };
 }
 
@@ -207,20 +222,18 @@ function normaliseDoctor(item) {
 /* ---------- data ---------- */
 
 async function fetchDoctors(config, coords, page) {
-  const url = new URL(config.source, window.location.href);
-  const { searchParams: qs } = url;
-  if (coords.lat !== null && coords.lng !== null) {
+  try {
+    if (!validCoordinates(coords.lat, coords.lng)) throw new Error('Valid coordinates are required');
+    const url = new URL(config.source, window.location.href);
+    if (url.origin !== window.location.origin) throw new Error('Doctor API must be same-origin');
+    const { searchParams: qs } = url;
+    qs.delete('address');
     qs.set('lat', coords.lat);
     qs.set('lng', coords.lng);
-  } else if (coords.address) {
-    qs.set('address', coords.address);
-  }
-  qs.set('radius', coords.radius);
-  qs.set('page', page);
-  qs.set('per_page', config.perPage);
-  qs.set('unit', 'mi');
-
-  try {
+    qs.set('radius', coords.radius);
+    qs.set('page', page);
+    qs.set('per_page', config.perPage);
+    qs.set('unit', 'mi');
     const resp = await fetch(url.href, { headers: { Accept: 'application/json' } });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const json = await resp.json();
@@ -231,7 +244,7 @@ async function fetchDoctors(config, coords, page) {
     if (!fetchErrorLogged) {
       fetchErrorLogged = true;
       // eslint-disable-next-line no-console
-      console.warn('search-results-map: doctor search failed', url.href, e);
+      console.warn('search-results-map: doctor search failed', e);
     }
     return { items: [], total: 0, error: true };
   }
@@ -242,17 +255,28 @@ function loadGoogleMaps(key) {
   if (!mapsPromise) {
     mapsPromise = new Promise((resolve, reject) => {
       const callback = `searchResultsMapInit${Date.now()}`;
+      const script = document.createElement('script');
+      const timer = window.setTimeout(() => {
+        delete window[callback];
+        script.remove();
+        reject(new Error('Google Maps loading timed out'));
+      }, 15000);
       window[callback] = () => {
+        window.clearTimeout(timer);
         delete window[callback];
         resolve(window.google.maps);
       };
-      const script = document.createElement('script');
       const params = new URLSearchParams({
         key, v: 'weekly', loading: 'async', callback,
       });
       script.src = `https://maps.googleapis.com/maps/api/js?${params}`;
       script.async = true;
-      script.onerror = () => reject(new Error('Google Maps failed to load'));
+      script.onerror = () => {
+        window.clearTimeout(timer);
+        delete window[callback];
+        script.remove();
+        reject(new Error('Google Maps failed to load'));
+      };
       document.head.append(script);
     }).catch((e) => {
       mapsPromise = null;
@@ -263,20 +287,46 @@ function loadGoogleMaps(key) {
 }
 
 async function geocodeAddress(config, address) {
+  const maps = await loadGoogleMaps(config.mapsApiKey);
+  const { Geocoder } = await maps.importLibrary('geocoding');
+  let timer;
   try {
-    const maps = await loadGoogleMaps(config.mapsApiKey);
-    const { Geocoder } = await maps.importLibrary('geocoding');
-    const { results } = await new Geocoder().geocode({ address });
-    const loc = results?.[0]?.geometry?.location;
-    return loc ? { lat: loc.lat(), lng: loc.lng() } : null;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn('search-results-map: geocoding failed', e);
-    return null;
+    const { results } = await Promise.race([
+      new Geocoder().geocode({ address }),
+      new Promise((resolve, reject) => {
+        timer = window.setTimeout(() => reject(new Error('Geocoding timed out')), 15000);
+      }),
+    ]);
+    const location = results?.[0]?.geometry?.location;
+    const lat = location?.lat();
+    const lng = location?.lng();
+    return validCoordinates(lat, lng) ? { lat, lng } : null;
+  } finally {
+    window.clearTimeout(timer);
   }
 }
 
 /* ---------- rendering ---------- */
+
+function focusResults(heading) {
+  const section = heading.closest('.section');
+  const focus = () => window.requestAnimationFrame(() => {
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView({ behavior: 'auto', block: 'start' });
+  });
+  if (!section || section.dataset.sectionStatus === 'loaded') {
+    focus();
+  } else {
+    // EDS awaits block decoration before revealing its section.
+    const observer = new MutationObserver(() => {
+      if (section.dataset.sectionStatus === 'loaded') {
+        observer.disconnect();
+        focus();
+      }
+    });
+    observer.observe(section, { attributes: true, attributeFilter: ['data-section-status'] });
+  }
+}
 
 function el(tag, className, text) {
   const node = document.createElement(tag);
@@ -548,7 +598,9 @@ export default async function decorate(block) {
   const results = el('div', 'search-results-map-results');
   const status = el('p', 'search-results-map-status');
   status.setAttribute('aria-live', 'polite');
-  const summary = el('p', 'search-results-map-summary');
+  const summary = el('h2', 'search-results-map-summary', config.resultsHeading);
+  summary.id = document.getElementById('doctor-results') ? `${uid}-summary` : 'doctor-results';
+  summary.tabIndex = -1;
   const list = el('ol', 'search-results-map-list');
   list.id = `${uid}-list`;
   const pager = el('div', 'search-results-map-pager');
@@ -590,24 +642,40 @@ export default async function decorate(block) {
   const where = query.address || config.locationLabel;
 
   const showEmpty = () => {
-    summary.textContent = '';
+    summary.textContent = config.resultsHeading;
     list.replaceChildren();
     pager.replaceChildren(buildNoResults(config));
     block.classList.add('search-results-map-empty-state');
     mapController?.show([]);
   };
 
-  const load = async (page, { scroll = false } = {}) => {
+  const showError = (message) => {
+    summary.textContent = config.resultsHeading;
+    status.textContent = message;
+    list.replaceChildren();
+    pager.replaceChildren();
+    block.removeAttribute('aria-busy');
+    block.classList.add('search-results-map-empty-state');
+    mapController?.show([]);
+    focusResults(summary);
+  };
+
+  const load = async (page) => {
     state.page = page;
     block.setAttribute('aria-busy', 'true');
     status.textContent = config.loadingLabel;
-    const { items, total } = await fetchDoctors(config, state.coords, page);
+    const { items, total, error } = await fetchDoctors(config, state.coords, page);
     block.removeAttribute('aria-busy');
     status.textContent = '';
 
+    if (error) {
+      showError(config.errorLabel);
+      return;
+    }
     if (!items.length) {
       state.total = 0;
       showEmpty();
+      focusResults(summary);
       return;
     }
     block.classList.remove('search-results-map-empty-state');
@@ -620,29 +688,49 @@ export default async function decorate(block) {
     );
     list.start = (page - 1) * config.perPage + 1;
     list.replaceChildren(...items.map((d, i) => buildCard(d, config, uid, i)));
-    const nav = buildPagination(state, config, (p) => load(p, { scroll: true }));
+    const nav = buildPagination(state, config, load);
     pager.replaceChildren(...(nav ? [nav] : []));
 
     if (mapController) {
       await mapController.show(items);
       initOnDesktop();
     }
-    if (scroll) {
-      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      list.querySelector('.search-results-map-card-name')?.setAttribute('tabindex', '-1');
-      list.querySelector('.search-results-map-card-name')?.focus({ preventScroll: true });
-    }
+    focusResults(summary);
   };
 
   try {
-    if (!query.hasCoords && query.address && hasMap && config.geocode) {
-      const loc = await geocodeAddress(config, query.address);
-      if (loc) Object.assign(state.coords, loc);
+    if (!query.hasCoords) {
+      if (!query.address) {
+        showError(config.geocodingErrorLabel);
+        return;
+      }
+      if (!config.geocode || (!config.mapsApiKey && !window.google?.maps?.importLibrary)) {
+        // eslint-disable-next-line no-console
+        console.warn('search-results-map: address search requires Google Maps geocoding configuration');
+        showError(config.geocodingUnavailableLabel);
+        return;
+      }
+      block.setAttribute('aria-busy', 'true');
+      status.textContent = config.loadingLabel;
+      try {
+        const coordinates = await geocodeAddress(config, query.address);
+        if (!coordinates) {
+          showError(config.geocodingErrorLabel);
+          return;
+        }
+        Object.assign(state.coords, coordinates);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('search-results-map: geocoding failed', e);
+        showError(e?.code === 'ZERO_RESULTS' || e?.status === 'ZERO_RESULTS'
+          ? config.geocodingErrorLabel : config.geocodingUnavailableLabel);
+        return;
+      }
     }
     await load(1);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn('search-results-map: unexpected error', e);
-    showEmpty();
+    showError(config.errorLabel);
   }
 }

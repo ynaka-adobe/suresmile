@@ -27,6 +27,15 @@
 
 .search-results-map .search-results-map-summary {
   margin: 0 0 16px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-l, 20px);
+  line-height: 1.5;
+  scroll-margin-top: calc(var(--header-height, 72px) + 24px);
+}
+
+.search-results-map .search-results-map-summary:focus-visible {
+  outline: 2px solid var(--link-color, #035fe6);
+  outline-offset: 4px;
 }
 
 .search-results-map .search-results-map-status {

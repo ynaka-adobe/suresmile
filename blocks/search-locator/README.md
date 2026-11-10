@@ -1,5 +1,13 @@
 # search-locator
 
+Search navigation targets `#doctor-results`. The results block waits until its
+EDS section is visible before scrolling below the sticky header and focusing
+the results heading. Manual input is retained in the URL/form for correction
+and is geocoded by `search-results-map` before any doctor lookup. Empty input
+has an inline live error and accessible input focus; denied geolocation keeps
+the manual input available. See the results block README for provider setup and
+end-to-end validation.
+
 Custom **search** block. Purpose: doctor location finder (address input, radius select, submit, use current location) that hands off to the find-a-doctor page; not a site content search.
 
 ## Authoring (Document Authoring)

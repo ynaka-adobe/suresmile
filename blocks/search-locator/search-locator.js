@@ -11,6 +11,7 @@
  *   geolocation | Use my current location  (omit the row to hide the button)
  *
  * Query parameters sent: address, radius (miles), lat, lng.
+ * The results block geocodes manual locations before requesting doctors.
  */
 
 const KEYS = ['label', 'placeholder', 'radius', 'action', 'geolocation'];
@@ -60,9 +61,11 @@ function parseRadii(cell) {
 
 function buildUrl(action, params) {
   const url = new URL(action, window.location.href);
+  ['address', 'lat', 'lng', 'page'].forEach((key) => url.searchParams.delete(key));
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   });
+  url.hash = 'doctor-results';
   return url.href;
 }
 
@@ -100,6 +103,9 @@ export default function decorate(block) {
   input.name = 'address';
   input.placeholder = placeholder;
   input.autocomplete = 'postal-code';
+  input.required = true;
+  const query = new URLSearchParams(window.location.search);
+  input.value = query.get('address') || '';
   inputWrap.append(input);
 
   const selectWrap = document.createElement('div');
@@ -111,7 +117,8 @@ export default function decorate(block) {
     const opt = document.createElement('option');
     opt.value = String(r);
     opt.textContent = `within ${r} miles`;
-    if (r === selected) opt.selected = true;
+    const queryRadius = Number(query.get('radius'));
+    if (r === (radii.includes(queryRadius) ? queryRadius : selected)) opt.selected = true;
     select.append(opt);
   });
   selectWrap.append(select);
@@ -124,10 +131,22 @@ export default function decorate(block) {
   fields.append(inputWrap, selectWrap, submit);
   form.append(label, fields);
 
+  const status = document.createElement('p');
+  status.id = `${uid}-status`;
+  status.className = 'search-locator-status';
+  status.setAttribute('aria-live', 'polite');
+  input.setAttribute('aria-describedby', status.id);
+  input.addEventListener('input', () => {
+    input.removeAttribute('aria-invalid');
+    status.textContent = '';
+  });
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const address = input.value.trim();
     if (!address) {
+      input.setAttribute('aria-invalid', 'true');
+      status.textContent = 'Please enter an address or postal code.';
       input.focus();
       return;
     }
@@ -139,9 +158,6 @@ export default function decorate(block) {
     geo.type = 'button';
     geo.className = 'search-locator-geolocate';
     geo.textContent = geoText;
-    const status = document.createElement('p');
-    status.className = 'search-locator-status';
-    status.setAttribute('aria-live', 'polite');
     geo.addEventListener('click', () => {
       geo.disabled = true;
       status.textContent = '';
@@ -161,8 +177,9 @@ export default function decorate(block) {
         { timeout: 10000 },
       );
     });
-    form.append(geo, status);
+    form.append(geo);
   }
 
+  form.append(status);
   block.replaceChildren(form);
 }
