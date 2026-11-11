@@ -107,6 +107,30 @@ function restoreAudienceBlocks(main) {
   });
 }
 
+/**
+ * Any audience named with a two-letter country code (Audience: US, Audience: AT, Audience: JP)
+ * matches visitors in that country, so authors can add a market without a code change.
+ * Named audiences above (japan, implant, endodontic) keep their own rules.
+ */
+const COUNTRY_AUDIENCE = /^[a-z]{2}$/;
+
+function declaredAudienceNames(main) {
+  return [...main.querySelectorAll('.section-metadata > div > div:first-child')]
+    .map((cell) => /^audience[\s:-]*([a-z0-9][a-z0-9-]*)$/i.exec(cell.textContent.trim()))
+    .filter(Boolean)
+    .map((match) => match[1].toLowerCase());
+}
+
+export function audiencesFor(names) {
+  const audiences = { ...AUDIENCES };
+  names
+    .filter((name) => COUNTRY_AUDIENCE.test(name) && !audiences[name])
+    .forEach((name) => {
+      audiences[name] = async () => (await visitorCountry()) === name.toUpperCase();
+    });
+  return audiences;
+}
+
 function hasAudienceRows(main) {
   return [...main.querySelectorAll('.section-metadata > div > div:first-child, .metadata > div > div:first-child')]
     .some((cell) => /^audience/i.test(cell.textContent.trim()));
@@ -144,7 +168,7 @@ export async function applyAudiences(main) {
     await localizeAudienceLinks(main);
     // eslint-disable-next-line import/no-relative-packages
     const { loadEager } = await import('../plugins/experimentation/src/index.js');
-    await loadEager(document, { audiences: AUDIENCES });
+    await loadEager(document, { audiences: audiencesFor(declaredAudienceNames(main)) });
     // Sections that declare audiences but matched none keep their default content; mark them
     // so authors and the live insights panel can see "default" as an explicit outcome.
     main.querySelectorAll('.section-metadata').forEach((meta) => {
