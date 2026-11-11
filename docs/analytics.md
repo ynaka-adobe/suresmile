@@ -175,11 +175,11 @@ Withdrawing consent clears the local hit feed and pauses measurement.
 
 ### Optional requesting-visitor profile
 
-After Analytics consent, a **separate explicit** **Show my IP and approximate
-location** action enables this purpose for this browser tab session.
-An existing Analytics-only grant never implicitly allows profile display. The
-consent control explains this separate purpose. Successful validated minimal
-profile fields and snapshot time are saved only in
+Once Analytics consent is granted and the panel is open, the requesting
+visitor's own profile loads automatically from the CDN; no extra click is
+needed. Consent is still the gate: without Analytics consent nothing is
+requested, and withdrawing consent clears the profile. Successful validated
+minimal profile fields and snapshot time are saved only in
 `sessionStorage['suresmile.visitor-profile.session.v1']`; the separate purpose
 marker is `suresmile.visitor-profile.consent.v1`. Activated navigation/reload and
 close/reopen restore that snapshot without another lookup or grant. Closing
@@ -187,13 +187,13 @@ cancels an unfinished request but preserves successful cached data. A failed
 response is never cached. Snapshot time/source are labelled; **Refresh visitor
 profile** requests a new snapshot explicitly, never live GPS.
 
-**Remove visitor profile**, Analytics withdrawal (including CMP denial), and
+**Hide location** (which also stops automatic reloads until the visitor asks again), Analytics withdrawal (including CMP denial), and
 `?insights=0` immediately clear cached data and profile-purpose permission.
 Invalid/unknown Analytics consent cannot restore it. Malformed/future-dated
 cache data is rejected and visibly reported; storage failures are reported,
 with page-only behavior. Tab-session expiration follows browser `sessionStorage`
-semantics, not indefinite `localStorage`. A new profile choice is required after
-removal/withdrawal. Browser/device fields are never cached.
+semantics, not indefinite `localStorage`. After hiding or withdrawal the profile is not requested again until the
+visitor re-shows it or re-grants consent. Browser/device fields are never cached.
 
 The client requests only same-origin `GET /api/visitor-profile`, with no query,
 `credentials: same-origin`, `cache: no-store` and redirects disallowed. Both

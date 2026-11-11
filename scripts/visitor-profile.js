@@ -24,8 +24,24 @@ function validIP(value) {
   return ip;
 }
 
+/** CDN point-of-presence code (for example PAO), taken from the response headers. */
+function popCode(value) {
+  if (typeof value !== 'string' || !/^[A-Za-z]{3,4}$/.test(value)) throw new Error('Invalid profile POP');
+  return value.toUpperCase();
+}
+
+function popFromHeaders(headers) {
+  const served = (headers.get('x-served-by') || '').split(',').pop().trim();
+  const code = served.match(/-([A-Za-z]{3,4})$/)?.[1];
+  return code ? code.toUpperCase() : null;
+}
+
+function titleCase(value) {
+  return value ? value.replace(/\b([a-z])/g, (m) => m.toUpperCase()) : value;
+}
+
 export function validateProfile(data) {
-  if (!data || data.source !== 'cdn') throw new Error('Invalid profile source');
+  if (!data || !['cdn', 'edge'].includes(data.source)) throw new Error('Invalid profile source');
   const latitude = data.latitude === null ? null : data.latitude;
   const longitude = data.longitude === null ? null : data.longitude;
   const coordinates = Number.isFinite(latitude) && Number.isFinite(longitude)
@@ -43,7 +59,8 @@ export function validateProfile(data) {
     region: data.region === undefined ? null : text(data.region, 100),
     latitude,
     longitude,
-    source: 'cdn',
+    pop: data.pop === undefined || data.pop === null ? null : popCode(data.pop),
+    source: data.source,
     accuracy: data.accuracy,
   };
 }
@@ -51,26 +68,26 @@ export function validateProfile(data) {
 /** Only this display and its explicitly consented tab cache receive the profile. */
 export default function createVisitorProfile(section, onSummary = () => {}) {
   const note = document.createElement('p');
-  note.textContent = 'Optional IP-based location, not GPS. Saved only in this tab; never sent to Analytics.';
+  note.textContent = 'IP-based location from the CDN, not GPS. Loaded automatically once analytics is on; kept only in this tab and never sent to Analytics.';
   const status = document.createElement('p');
   status.setAttribute('role', 'status');
   const fields = document.createElement('dl');
   const allow = document.createElement('button');
   allow.type = 'button';
   allow.textContent = 'Show my IP and approximate location';
+  allow.className = 'suresmile-profile-allow';
   const revoke = document.createElement('button');
   revoke.type = 'button';
-  revoke.textContent = 'Remove visitor profile';
+  revoke.textContent = 'Hide location';
   const refresh = document.createElement('button');
   refresh.type = 'button';
-  refresh.textContent = 'Refresh visitor profile';
+  refresh.textContent = 'Refresh';
   const actions = document.createElement('div');
   actions.className = 'suresmile-profile-actions';
   actions.append(allow, refresh, revoke);
   section.append(note, status, fields, actions);
   let opened = false;
   let granted = false;
-  let permission = false;
   let pending = false;
   let profile = null;
   let error = false;
@@ -79,6 +96,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
   let savedAt = null;
   let restored = false;
   let storageError = false;
+  let suppressed = false; // visitor hid the profile; stop auto-loading until they ask again
 
   function storageFailed() {
     storageError = true;
@@ -106,7 +124,6 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
         forget();
         return;
       }
-      permission = true;
       cached = sessionStorage.getItem(PROFILE_SESSION_KEY);
     } catch { storageFailed(); return; }
     if (!cached) return;
@@ -119,7 +136,6 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       save();
     } catch {
       profile = null;
-      permission = false;
       error = true;
       forget();
       // eslint-disable-next-line no-console
@@ -130,12 +146,15 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
   function render() {
     const coordinates = profile && profile.latitude !== null && profile.longitude !== null
       ? `${profile.latitude.toFixed(2)}, ${profile.longitude.toFixed(2)}` : 'Unavailable';
-    const city = profile ? [profile.city, profile.region].filter(Boolean).join(', ') : '';
+    const source = { cdn: 'CDN (Fastly)', edge: 'Edge function' };
     const values = [
       ['IP address', profile?.ip || 'Unavailable', 'ip'],
-      ['City', city || 'Unavailable', 'city'],
+      ['City', titleCase(profile?.city) || 'Unavailable', 'city'],
+      ['State / region', profile?.region || 'Not returned by the endpoint', 'region'],
       ['Country', profile?.country || 'Unavailable', 'country'],
       ['Coordinates', coordinates, 'coordinates'],
+      ['CDN edge (POP)', profile?.pop || 'Not reported', 'pop'],
+      ['Data source', profile ? `${source[profile.source]} · approximate` : 'Unavailable', 'source'],
     ];
     fields.replaceChildren(...values.map(([label, value, field]) => {
       const row = document.createElement('div');
@@ -149,40 +168,35 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
         hint.textContent = 'Approximate, IP-based';
         content.append(hint);
       }
-      if (field === 'city' && profile?.region) {
-        const hint = document.createElement('small');
-        hint.textContent = 'Includes state/region code';
-        content.append(hint);
-      }
       row.append(key, content);
       return row;
     }));
     fields.hidden = !profile;
-    let message = 'Profile off. Allow analytics, then choose profile display.';
-    if (granted) message = 'Profile off until you choose to show it.';
+    let message = 'Waiting for analytics to be allowed.';
+    if (granted) message = suppressed ? 'Location hidden. Use the button to show it again.' : 'Looking up location.';
     if (pending) message = 'Loading visitor profile.';
-    if (profile) message = `Approximate CDN snapshot from ${new Date(savedAt).toLocaleTimeString()}. Refresh if your network changes.`;
+    if (profile) message = `Live from the CDN at ${new Date(savedAt).toLocaleTimeString()}. Refresh if your network changes.`;
     if (error) message = 'Visitor profile unavailable. Please try again later.';
     if (storageError) message += ' Session storage unavailable; display is limited to this page.';
     status.textContent = message;
     allow.disabled = !opened || !granted || pending || Boolean(profile);
-    allow.hidden = Boolean(profile);
+    allow.hidden = Boolean(profile) || pending || (!suppressed && !error);
     refresh.hidden = !profile;
     refresh.disabled = !opened || !granted || pending;
     allow.textContent = error ? 'Retry visitor profile' : 'Show my IP and approximate location';
-    revoke.hidden = !permission;
-    let location = error ? 'Unavailable' : 'Local only';
+    revoke.hidden = !profile;
+    let location = error ? 'Unavailable' : 'Locating';
     if (profile) {
-      location = [profile.city, profile.region, profile.country].filter(Boolean).join(', ')
+      location = [titleCase(profile.city), profile.region, profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
     }
     onSummary(location, Boolean(profile));
   }
-  function clear() {
+  function clear(hidden = false) {
+    suppressed = hidden;
     epoch += 1;
     abort?.abort();
     abort = undefined;
-    permission = false;
     pending = false;
     profile = null;
     error = false;
@@ -191,13 +205,12 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     render();
   }
   async function load(refreshing = false) {
-    if (!opened || !granted || pending || (profile && !refreshing)) return;
+    if (!opened || !granted || pending || suppressed || (profile && !refreshing)) return;
     if (refreshing) {
       profile = null;
       savedAt = null;
       forget();
     }
-    permission = true;
     pending = true;
     error = false;
     abort = new AbortController();
@@ -218,7 +231,8 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       if (!response.ok || !/\bprivate\b/i.test(cache) || !/\bno-store\b/i.test(cache)) {
         throw new Error('Profile privacy boundary unavailable');
       }
-      const data = validateProfile(await response.json());
+      const pop = popFromHeaders(response.headers);
+      const data = validateProfile({ ...(await response.json()), pop });
       if (current !== epoch || !opened || !granted) return;
       profile = data;
       savedAt = Date.now();
@@ -233,9 +247,9 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       render();
     }
   }
-  allow.addEventListener('click', () => load());
+  allow.addEventListener('click', () => { suppressed = false; load(); });
   refresh.addEventListener('click', () => load(true));
-  revoke.addEventListener('click', clear);
+  revoke.addEventListener('click', () => clear(true));
   render();
   return {
     setOpen(value) {
@@ -247,6 +261,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       }
       if (value) restore();
       render();
+      if (value) load();
     },
     setConsent(value) {
       const next = value === 'granted';
@@ -255,8 +270,8 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
         return;
       }
       granted = next;
-      if (!next) clear();
-      else { restore(); render(); }
+      if (!next) clear(false);
+      else { restore(); render(); load(); }
     },
   };
 }

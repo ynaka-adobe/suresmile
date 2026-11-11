@@ -339,7 +339,12 @@ export default async function checkAnalytics() {
       accuracy: 'approximate IP geolocation',
     };
     const profileResponse = () => new win.Response(JSON.stringify(profileData), {
-      status: 200, headers: { 'cache-control': 'private, no-store', 'content-type': 'application/json' },
+      status: 200,
+      headers: {
+        'cache-control': 'private, no-store',
+        'content-type': 'application/json',
+        'x-served-by': 'cache-pao-kpao1770055-PAO, cache-sjc-ksjc2-SJC',
+      },
     });
     win.fetch = async (url, options) => {
       assert(url === '/api/visitor-profile', 'Only same-origin own-profile endpoint');
@@ -349,19 +354,19 @@ export default async function checkAnalytics() {
     };
     test.insights(controller);
     const profileButton = () => doc.querySelector('.suresmile-visitor-profile button');
+    const profileText = () => doc.querySelector('.suresmile-visitor-profile').textContent;
     const profileCard = doc.querySelector('.suresmile-visitor-card');
     profileCard.querySelector('summary').click();
     profileCard.querySelector('summary').click();
     assert(profileCard.open && profileRequests === 0, 'Expanding visitor never looks up a profile');
-    assert(profileButton().disabled && profileRequests === 0, 'No profile request before consent');
+    assert(profileRequests === 0, 'No profile request before consent');
     test.allow();
     await controller.ready();
-    assert(profileRequests === 0, 'Analytics-only consent never assumes profile purpose');
-    profileButton().click();
-    profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile display');
+    await waitFor(() => profileText().includes(profileData.ip), 'Profile loads automatically after analytics consent');
     assert(profileRequests === 1 && requestOptions.cache === 'no-store'
-      && requestOptions.credentials === 'same-origin' && requestOptions.redirect === 'error', 'One uncached own-profile request');
+      && requestOptions.credentials === 'same-origin' && requestOptions.redirect === 'error', 'One uncached own-profile request, no click needed');
+    assert(profileText().includes('State / region') && profileText().includes(profileData.region), 'State/region row shows the CDN region');
+    assert(profileText().includes('SJC'), 'CDN edge location comes from response headers');
     assert(doc.querySelector('.suresmile-location-badge').textContent.includes(profileData.region), 'Actual region code appears in compact location');
     profileCard.querySelector('summary').click();
     profileCard.querySelector('summary').click();
@@ -384,9 +389,11 @@ export default async function checkAnalytics() {
     doc.querySelector('main a').click();
     noProfileInTracking();
     assert(JSON.parse(win.sessionStorage.getItem(PROFILE_SESSION_KEY)).profile.ip === profileData.ip
-      && win.sessionStorage.getItem(PROFILE_PERMISSION_KEY) === 'granted', 'Only explicitly authorized tab profile is cached');
+      && win.sessionStorage.getItem(PROFILE_PERMISSION_KEY) === 'granted', 'Only the consented tab profile is cached');
     doc.querySelector('.suresmile-visitor-profile button:last-child').click();
-    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Remove clears profile display');
+    assert(!profileText().includes(profileData.ip), 'Hide location clears profile display');
+    await new Promise((done) => { window.setTimeout(done, 30); });
+    assert(profileRequests === 1, 'Hidden profile is not silently re-requested');
     let resolveProfile;
     win.fetch = (url, options) => {
       profileRequests += 1;
@@ -401,38 +408,38 @@ export default async function checkAnalytics() {
       && !win.sessionStorage.getItem(PROFILE_PERMISSION_KEY), 'Withdrawal removes profile and scoped session permission');
     resolveProfile(profileResponse());
     await new Promise((done) => { window.setTimeout(done, 20); });
-    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Late response cannot restore withdrawn profile');
+    assert(!profileText().includes(profileData.ip), 'Late response cannot restore withdrawn profile');
+    win.fetch = async () => new win.Response(JSON.stringify(profileData), { status: 200 });
     test.openPreferences();
     test.allow();
     await controller.ready();
-    assert(profileRequests === 2, 'Regrant does not replay profile consent');
-    win.fetch = async () => new win.Response(JSON.stringify(profileData), { status: 200 });
-    profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('Visitor profile unavailable'), 'Missing private/no-store error');
+    await waitFor(() => profileText().includes('Visitor profile unavailable'), 'Missing private/no-store error');
     win.fetch = async () => profileResponse();
     profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile retry');
+    await waitFor(() => profileText().includes(profileData.ip), 'Explicit profile retry');
     doc.querySelector('#suresmile-insights button').click();
     doc.querySelector('.suresmile-insights-toggle').click();
-    assert(doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Close/reopen retains explicitly authorized session profile');
+    assert(profileText().includes(profileData.ip), 'Close/reopen retains the session profile');
     win.fetch = (url, options) => {
       requestOptions = options;
       return new Promise((done) => { resolveProfile = done; });
     };
     doc.querySelector('.suresmile-visitor-profile button:nth-child(2)').click();
+    const lateResolve = resolveProfile;
     doc.querySelector('#suresmile-insights button').click();
     assert(requestOptions.signal.aborted, 'Close cancels an in-flight profile request');
     doc.querySelector('.suresmile-insights-toggle').click();
-    resolveProfile(profileResponse());
+    lateResolve(profileResponse());
     await new Promise((done) => { window.setTimeout(done, 20); });
-    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Late closed-panel response cannot restore a profile');
+    assert(!profileText().includes(profileData.ip), 'Late closed-panel response cannot restore a profile');
+    doc.querySelector('#suresmile-insights button').click();
     win.fetch = async () => new win.Response('Not JSON', {
       status: 200, headers: { 'cache-control': 'private, no-store' },
     });
-    profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('Visitor profile unavailable'), 'Malformed JSON shows a visible unavailable status');
+    doc.querySelector('.suresmile-insights-toggle').click();
+    await waitFor(() => profileText().includes('Visitor profile unavailable'), 'Malformed JSON shows a visible unavailable status');
     noProfileInTracking();
-    results.push('explicit new-scope profile consent, no-store, withdrawal/races/retry and privacy separation');
+    results.push('auto-loaded consented profile, no-store, hide/withdrawal/races/retry and privacy separation');
 
     ({ doc, win, test } = await setup('/en-us?insights=1'));
     win.localStorage.setItem('suresmile.analytics.consent.v1', 'granted');

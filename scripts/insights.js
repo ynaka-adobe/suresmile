@@ -114,7 +114,7 @@ export default function initInsights(analytics, session = insightsSession()) {
   const header = element('div', undefined, 'suresmile-insights-header');
   const title = element('h2', 'This session');
   title.id = 'suresmile-insights-title';
-  const close = element('button', 'Close');
+  const close = element('button', '\u00d7');
   close.type = 'button';
   close.setAttribute('aria-label', 'Close SureSmile live insights');
   const headingGroup = element('div');
@@ -123,7 +123,7 @@ export default function initInsights(analytics, session = insightsSession()) {
   hitCount.title = 'Observed Adobe Analytics hits, not reporting receipt';
   header.append(headingGroup, hitCount, close);
   const content = element('div', undefined, 'suresmile-insights-content');
-  const disclaimer = element('p', 'Observed here, not Adobe reporting.', 'suresmile-insights-note');
+  const disclaimer = element('p', 'Computed in this browser from the analytics stream. Observed here, not Adobe reporting.', 'suresmile-insights-note');
   const status = element('p');
   status.setAttribute('role', 'status');
   const preferences = element('button', 'Analytics preferences');
@@ -152,7 +152,8 @@ export default function initInsights(analytics, session = insightsSession()) {
   const network = element('div', undefined, 'suresmile-network-info');
   const browser = element('div', undefined, 'suresmile-browser-info');
   visitorCard.body.append(browser, network);
-  const networkTitle = element('h3', 'NETWORK - FROM THE CDN');
+  const networkTitle = element('h3', 'NETWORK');
+  networkTitle.append(element('span', 'From the CDN', 'suresmile-chip suresmile-chip-cdn'));
   network.append(networkTitle);
   const profileSection = element('div', undefined, 'suresmile-visitor-profile');
   network.append(profileSection);
@@ -162,7 +163,9 @@ export default function initInsights(analytics, session = insightsSession()) {
   });
   const visitor = element('dl');
   visitor.className = 'suresmile-device-fields';
-  browser.append(element('h3', 'BROWSER - REPORTED BY THIS DEVICE'), visitor);
+  const browserTitle = element('h3', 'BROWSER');
+  browserTitle.append(element('span', 'Reported by this device', 'suresmile-chip suresmile-chip-browser'));
+  browser.append(browserTitle, visitor);
   const components = element('ul', undefined, 'suresmile-summary-list');
   const componentCard = section('Components seen');
   componentCard.wrapper.open = true;
@@ -193,9 +196,11 @@ export default function initInsights(analytics, session = insightsSession()) {
       + 'None confirms Adobe receipt or report processing.'),
     feed,
   );
-  content.append(disclaimer);
-  panel.append(header, content);
-  const toggle = element('button', 'SureSmile insights', 'suresmile-insights-toggle');
+  const footer = element('footer', undefined, 'suresmile-insights-footer');
+  footer.append(disclaimer);
+  panel.append(header, content, footer);
+  const toggle = element('button', undefined, 'suresmile-insights-toggle');
+  toggle.append(element('span', undefined, 'suresmile-toggle-dot'), element('span', 'SureSmile insights'));
   toggle.type = 'button';
   toggle.setAttribute('aria-controls', panel.id);
   document.body.append(panel, toggle);
