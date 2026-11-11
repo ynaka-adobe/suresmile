@@ -110,6 +110,9 @@ function checkContexts() {
   };
   assert(validateProfile(nullable).latitude === null, 'Unavailable CDN coordinates remain null');
   assert(validateProfile({ ...nullable, ip: '2001:db8::1' }).ip === '2001:db8::1', 'IPv6 profile shape');
+  assert(validateProfile({
+    ...nullable, latitude: 0, longitude: 0, accuracy: 'approximate IP geolocation',
+  }).latitude === 0, 'Valid zero coordinates must not become unavailable');
   [{ ip: '999.1.1.1' }, { ip: '::::' }, { latitude: 91, longitude: 0 },
     { latitude: 0, longitude: null }, { country: 'Bad\nField' }].forEach((invalid) => {
     let rejected = false;
@@ -390,6 +393,22 @@ export default async function checkAnalytics() {
     doc.querySelector('#suresmile-insights button').click();
     doc.querySelector('.suresmile-insights-toggle').click();
     assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Close/reopen clears transient profile and does not reuse it');
+    win.fetch = (url, options) => {
+      requestOptions = options;
+      return new Promise((done) => { resolveProfile = done; });
+    };
+    profileButton().click();
+    doc.querySelector('#suresmile-insights button').click();
+    assert(requestOptions.signal.aborted, 'Close cancels an in-flight profile request');
+    doc.querySelector('.suresmile-insights-toggle').click();
+    resolveProfile(profileResponse());
+    await new Promise((done) => { window.setTimeout(done, 20); });
+    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Late closed-panel response cannot restore a profile');
+    win.fetch = async () => new win.Response('Not JSON', {
+      status: 200, headers: { 'cache-control': 'private, no-store' },
+    });
+    profileButton().click();
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('could not be verified'), 'Malformed JSON shows a visible unavailable status');
     noProfileInTracking();
     results.push('explicit new-scope profile consent, no-store, withdrawal/races/retry and privacy separation');
 
@@ -448,6 +467,18 @@ export default async function checkAnalytics() {
     assert(!paused.active && !paused.components.length && !paused.links.length
       && !paused.records.length && paused.totalEvents === 0, 'Withdrawal disconnects and clears behavioral diagnostics');
     results.push('real viewport visibility, repeats/dynamic blocks, local-only links, scroll edge cases and withdrawal');
+
+    ({ doc, win, test } = await setup('/en-us?insights=1'));
+    Object.defineProperty(win, 'IntersectionObserver', { configurable: true, value: undefined });
+    controller = test.init();
+    test.insights(controller);
+    test.allow();
+    await controller.ready();
+    assert(!controller.snapshot().observations.visibilityAvailable, 'Unsupported viewport visibility is unavailable');
+    assert(doc.querySelector('#suresmile-insights').textContent.includes('Unique components seen'), 'Fallback still exposes the local summary');
+    doc.querySelector('main a').click();
+    assert(controller.snapshot().observations.clicks === 1, 'Visibility fallback preserves consented click diagnostics');
+    results.push('unavailable IntersectionObserver does not fabricate component visibility');
 
     ({ doc, win, test } = await setup());
     let resolve;
