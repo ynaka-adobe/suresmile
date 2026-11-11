@@ -41,3 +41,18 @@ export function localizePath(path) {
   if (!match || match[1].toLowerCase() === locale) return path;
   return `/${locale}${match[2] || '/'}`;
 }
+
+/**
+ * Remembers the locale the visitor is browsing in the same session cookie the existing
+ * suresmile.com uses (NEXT_LOCALE). The CDN's first-visit language redirect only runs while
+ * this cookie is absent, and sends a returning visitor back to this locale.
+ * A session cookie holding only a locale folder name; it identifies no one.
+ */
+export function rememberLocale() {
+  const locale = pageLocale();
+  if (!locale) return;
+  try {
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `NEXT_LOCALE=${locale}; Path=/; SameSite=Lax${secure}`;
+  } catch { /* cookies unavailable: the visitor is simply re-detected next time */ }
+}

@@ -16,6 +16,7 @@ import {
   toClassName,
   toCamelCase,
 } from './aem.js';
+import { rememberLocale } from './locale.js';
 import {
   isUePreviewHost,
   loadTarget,
@@ -248,6 +249,7 @@ async function loadSidekick() {
 }
 
 async function loadPage() {
+  rememberLocale();
   await loadEager(document);
   await loadLazy(document);
   await loadTarget();
