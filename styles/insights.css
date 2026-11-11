@@ -78,7 +78,7 @@
 .suresmile-insights {
   position: fixed;
   z-index: 9999;
-  inset: 0 0 0 auto;
+  inset: 0 0 64px auto;
   display: flex;
   flex-direction: column;
   width: min(420px, 100vw);
@@ -212,14 +212,18 @@
 
 .suresmile-overview dt {
   margin-top: 2px;
+  overflow-wrap: normal;
+  hyphens: none;
+  text-align: center;
   color: var(--ins-muted);
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  font-size: 9px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.suresmile-overview dd {
+.suresmile-insights .suresmile-overview dd {
   margin: 0;
+  text-align: center;
   font-size: 20px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -306,7 +310,8 @@
   transform: rotate(225deg);
 }
 
-.suresmile-detail-count {
+.suresmile-detail-count,
+.suresmile-location-badge {
   padding: 2px 8px;
   color: #fff;
   font-size: 10px;
@@ -317,7 +322,8 @@
   border-radius: 999px;
 }
 
-.suresmile-detail-count:empty {
+.suresmile-detail-count:empty,
+.suresmile-location-badge:empty {
   display: none;
 }
 
@@ -345,6 +351,7 @@
 .suresmile-visitor-card > summary .suresmile-location-badge {
   max-width: 55%;
   overflow: hidden;
+  text-transform: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   background: var(--brand-gradient-90, var(--ins-accent));
@@ -517,8 +524,12 @@
 .suresmile-insights-content button {
   padding: 6px 14px;
   color: var(--ins-accent-deep);
-  font: 600 12px/1.4 inherit;
   font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
   background: #fff;
   border: 1px solid var(--ins-accent);
   border-radius: 999px;
@@ -546,7 +557,7 @@
 
 @media (width >= 900px) {
   .suresmile-insights {
-    inset: 16px 16px 16px auto;
+    inset: 16px 16px 64px auto;
     border: 1px solid var(--ins-rule);
     border-radius: 14px;
   }
