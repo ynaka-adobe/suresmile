@@ -1,0 +1,109 @@
+.suresmile-insights,
+.suresmile-insights-toggle {
+  box-sizing: border-box;
+  color: var(--text-color, #17314b);
+  font: 14px/1.5 var(--body-font-family, Arial, sans-serif);
+}
+
+.suresmile-insights {
+  position: fixed;
+  z-index: 9999;
+  inset: 8px 8px 68px auto;
+  display: flex;
+  flex-direction: column;
+  width: min(460px, calc(100vw - 16px));
+  background: #fff;
+  border: 1px solid #d5e0e6;
+  border-radius: 12px;
+  box-shadow: -12px 0 40px #17314b33;
+}
+
+.suresmile-insights[hidden] {
+  display: none;
+}
+
+.suresmile-insights-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px;
+  border-radius: 12px 12px 0 0;
+  background: var(--link-color, #006ba6);
+  color: #fff;
+}
+
+.suresmile-insights h2 {
+  margin: 0;
+  font: 500 21px/1.25 var(--heading-font-family, Arial, sans-serif);
+}
+
+.suresmile-insights h3 {
+  margin: 20px 0 12px;
+  font-size: 17px;
+}
+
+.suresmile-insights-content {
+  padding: 0 18px 18px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+}
+
+.suresmile-insights dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6edf1;
+}
+
+.suresmile-insights dt {
+  color: #455e70;
+}
+
+.suresmile-insights dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.suresmile-insights ol {
+  padding-left: 20px;
+}
+
+.suresmile-insights li {
+  padding: 8px 0;
+}
+
+.suresmile-insights pre {
+  max-width: 100%;
+  padding: 8px;
+  overflow: auto;
+  background: #f0f5f8;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.suresmile-insights button,
+.suresmile-insights-toggle {
+  padding: 8px 12px;
+  border: 1px solid currentcolor;
+  border-radius: 5px;
+  background: #fff;
+  color: #005b91;
+  font: inherit;
+  cursor: pointer;
+}
+
+.suresmile-insights-toggle {
+  position: fixed;
+  z-index: 10000;
+  bottom: 16px;
+  left: 16px;
+}
+
+.suresmile-insights button:focus-visible,
+.suresmile-insights-toggle:focus-visible {
+  outline: 3px solid #35a9ef;
+  outline-offset: 3px;
+}
