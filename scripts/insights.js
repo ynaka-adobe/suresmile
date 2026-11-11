@@ -1,6 +1,6 @@
 import createVisitorProfile from './visitor-profile.js?v=insights-session-2';
 import insightsSession from './insights-session.js?v=insights-session-2';
-import { currentInterest, visitorCountry } from './audiences.js';
+import { currentInterest, countryOverride } from './audiences.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -158,7 +158,9 @@ export default function initInsights(analytics, session = insightsSession()) {
   network.append(networkTitle);
   const profileSection = element('div', undefined, 'suresmile-visitor-profile');
   network.append(profileSection);
-  const profile = createVisitorProfile(profileSection, (location, available) => {
+  let profileCountry = null;
+  const profile = createVisitorProfile(profileSection, (location, available, loaded) => {
+    profileCountry = loaded?.country || null;
     visitorCard.count.textContent = location;
     visitorCard.body.prepend(available ? network : browser);
   });
@@ -232,10 +234,8 @@ export default function initInsights(analytics, session = insightsSession()) {
   document.addEventListener('keydown', (event) => {
     if (!panel.hidden && event.key === 'Escape') { event.preventDefault(); setOpen(false); }
   });
-  let visitorCountryLabel = 'Looking up';
-  visitorCountry().then((country) => {
-    visitorCountryLabel = country || 'Unavailable';
-  });
+  // The visitor's country comes from the profile card above (one request, after consent),
+  // or from a ?country= simulation; this card never makes its own request.
   const rendered = new Map();
   const empty = element('li', 'No consented hits observed in this document.');
   function render(snapshot) {
@@ -259,7 +259,7 @@ export default function initInsights(analytics, session = insightsSession()) {
     const sectionLabel = (el) => el.querySelector('h1, h2, h3')?.textContent.trim().slice(0, 48)
       || el.querySelector('[class*="hero"]')?.className.split(' ')[0] || 'Section';
     rows(variantList, [
-      ['Visitor country', visitorCountryLabel],
+      ['Visitor country', countryOverride() ? `${countryOverride()} (simulated)` : profileCountry || 'Waiting for the visitor profile'],
       ['Interest (this session)', currentInterest() || 'None yet'],
       ...(variants.length
         ? variants.map((el) => [sectionLabel(el), el.dataset.audience === 'default'

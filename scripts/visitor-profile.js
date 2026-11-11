@@ -192,7 +192,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       location = [titleCase(profile.city), profile.region, profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
     }
-    onSummary(location, Boolean(profile));
+    onSummary(location, Boolean(profile), profile);
   }
   function clear(hidden = false) {
     suppressed = hidden;

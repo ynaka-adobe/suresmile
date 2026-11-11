@@ -46,6 +46,11 @@ export function rememberInterest() {
   else if (/\/demo\/endodontic/.test(pathname)) write(INTEREST_KEY, 'endodontic');
 }
 
+/** Country set with ?country= for this tab (a simulation), or null. No network request. */
+export function countryOverride() {
+  return read(COUNTRY_KEY) || null;
+}
+
 export function currentInterest() {
   const value = read(INTEREST_KEY);
   return value === 'none' ? null : value;
