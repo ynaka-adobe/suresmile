@@ -10,9 +10,15 @@
  *   action      | [Find a doctor](/en-us/find-a-doctor)  (link text = button label)
  *   geolocation | Use my current location  (omit the row to hide the button)
  *
+ * With no search in the URL, the address field defaults to the visitor's approximate
+ * CDN-derived location (City, State). Submitting it unchanged also sends lat/lng so the
+ * results need no geocoding; editing the field searches the typed address instead.
+ *
  * Query parameters sent: address, radius (miles), lat, lng.
  * The results block geocodes manual locations before requesting doctors.
  */
+
+import getVisitorLocation from '../../scripts/visitor-location.js';
 
 const KEYS = ['label', 'placeholder', 'radius', 'action', 'geolocation'];
 const DEFAULT_RADII = [5, 10, 25, 50];
@@ -107,6 +113,7 @@ export default function decorate(block) {
   const query = new URLSearchParams(window.location.search);
   input.value = query.get('address') || '';
   inputWrap.append(input);
+  let prefill = null; // visitor location currently shown as the default, if untouched
 
   const selectWrap = document.createElement('div');
   selectWrap.className = 'search-locator-radius';
@@ -139,7 +146,19 @@ export default function decorate(block) {
   input.addEventListener('input', () => {
     input.removeAttribute('aria-invalid');
     status.textContent = '';
+    if (prefill && input.value.trim() !== prefill.label) prefill = null;
   });
+
+  // Default the location to the visitor's own approximate position (never over a search
+  // they already ran, or something they have started typing).
+  if (!input.value && !query.has('address') && !query.has('lat')) {
+    getVisitorLocation().then((location) => {
+      if (!location || input.value) return;
+      prefill = location;
+      input.value = location.label;
+      status.textContent = 'Starting with your approximate location. Change it to search elsewhere.';
+    });
+  }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -150,7 +169,12 @@ export default function decorate(block) {
       input.focus();
       return;
     }
-    window.location.href = buildUrl(action, { address, radius: select.value });
+    const params = { address, radius: select.value };
+    if (prefill && address === prefill.label && prefill.latitude !== null) {
+      params.lat = prefill.latitude.toFixed(6);
+      params.lng = prefill.longitude.toFixed(6);
+    }
+    window.location.href = buildUrl(action, params);
   });
 
   if (geoText && 'geolocation' in navigator) {

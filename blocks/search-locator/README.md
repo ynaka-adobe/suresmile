@@ -8,6 +8,13 @@ has an inline live error and accessible input focus; denied geolocation keeps
 the manual input available. See the results block README for provider setup and
 end-to-end validation.
 
+Default location: with no search in the URL, the address field is prefilled with the
+visitor's approximate CDN-derived "City, State" from same-origin `/api/visitor-profile`
+(see `scripts/visitor-location.js`). Submitting it unchanged also sends `lat`/`lng`, so
+results need no geocoding. Editing the field searches the typed address. If the endpoint
+returns no region the label falls back to the country code (for example "San Francisco, US").
+The lookup is first-party, makes no geolocation prompt, and stores nothing.
+
 Custom **search** block. Purpose: doctor location finder (address input, radius select, submit, use current location) that hands off to the find-a-doctor page; not a site content search.
 
 ## Authoring (Document Authoring)
