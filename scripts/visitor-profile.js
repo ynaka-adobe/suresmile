@@ -94,6 +94,11 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
         hint.textContent = 'Approximate, IP-based';
         content.append(hint);
       }
+      if (field === 'city' && profile?.region) {
+        const hint = document.createElement('small');
+        hint.textContent = 'Includes state/region code';
+        content.append(hint);
+      }
       row.append(key, content);
       return row;
     }));
