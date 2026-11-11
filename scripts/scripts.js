@@ -226,8 +226,14 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  // The DA editor re-runs loadPage on the same document, and loadHeader/loadFooter append a new
+  // block each time, so start from an empty header and footer to avoid a duplicate nav.
+  const header = doc.querySelector('header');
+  const footer = doc.querySelector('footer');
+  header?.replaceChildren();
+  footer?.replaceChildren();
+  loadHeader(header);
+  loadFooter(footer);
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
