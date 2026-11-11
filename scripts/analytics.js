@@ -1,4 +1,5 @@
 import createConsent from './analytics-consent.js';
+import createObservations from './analytics-observations.js';
 import {
   buildContext, clickContext, hitVariables, normalizePersona, validVisit, VISIT_KEY, CHANNELS,
 } from './analytics-context.js';
@@ -149,6 +150,9 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
   let activeLoad;
   let sdkStatus = 'waiting-for-consent';
   let diagnostics = [];
+  let diagnosticTotals = { observed: 0, requested: 0, dispatched: 0 };
+  let localDiagnosticsEnabled = false;
+  let observations;
   const subscribers = new Set();
   const ownedEntries = new Set();
 
@@ -187,10 +191,13 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
       context: context(granted),
       session,
       records: [...diagnostics],
+      totals: { ...diagnosticTotals },
+      observations: observations.snapshot(),
     };
   }
   function notify(stage, detail) {
     if (stage && consent.granted()) {
+      if (Object.hasOwn(diagnosticTotals, stage)) diagnosticTotals[stage] += 1;
       diagnostics.push({ stage, detail, time: Date.now() });
       diagnostics = diagnostics.slice(-30);
     }
@@ -198,6 +205,7 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
       try { listener(snapshot()); } catch { warn('diagnostic consumer failed; transport unaffected'); }
     });
   }
+  observations = createObservations(() => notify());
   function clearHit() {
     tracker.clearVars();
     const empty = hitVariables(buildContext(new URL(window.location.origin), null));
@@ -301,8 +309,10 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
     }
   }
   const consentChanged = (granted) => {
-    if (granted) enable();
-    else {
+    if (granted) {
+      if (localDiagnosticsEnabled) observations.start();
+      enable();
+    } else {
       consentEpoch += 1;
       activeLoad?.abort();
       activeLoad = null;
@@ -310,6 +320,8 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
       if (tracker) { tracker.abort = true; clearHit(); }
       removeVisit();
       diagnostics = [];
+      diagnosticTotals = { observed: 0, requested: 0, dispatched: 0 };
+      observations.stop();
       if (Array.isArray(window.adobeDataLayer)) {
         for (let i = window.adobeDataLayer.length - 1; i >= 0; i -= 1) {
           if (ownedEntries.has(window.adobeDataLayer[i])) window.adobeDataLayer.splice(i, 1);
@@ -356,6 +368,20 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
     const link = event.target.closest?.('a[href]');
     if (!link || !consent.granted()) return;
     tagLink(link, page);
+    const target = new URL(link.href);
+    if (['http:', 'https:'].includes(target.protocol)) {
+      const destination = buildContext(target, null);
+      const known = target.origin === window.location.origin && destination.page.type !== 'other';
+      const official = /(^|\.)dentsplysirona\.com$/i.test(target.hostname);
+      let label = 'Other link';
+      let href = 'Redacted';
+      if (known) { label = destination.page.name; href = destination.pageURL; }
+      if (official) href = `${target.origin}/`;
+      if (LABELS.includes(link.dataset.analyticsCta)) label = link.dataset.analyticsCta;
+      observations.link({
+        label, href,
+      });
+    }
     if (link.dataset.analyticsReset === 'true') { removeVisit(); return; }
     const data = link.dataset;
     if (!data.analyticsEvent) return;
@@ -366,7 +392,6 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
       return;
     }
     const hit = clickContext(context(), data.analyticsPersona, data.analyticsChannel);
-    const target = new URL(link.href);
     if (!['http:', 'https:'].includes(target.protocol)) return;
     let type = target.origin === window.location.origin ? 'o' : 'e';
     if (data.analyticsEvent === 'event7') type = 'd';
@@ -383,6 +408,10 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
   const controller = {
     consent,
     ready: enable,
+    enableLocalDiagnostics() {
+      localDiagnosticsEnabled = true;
+      if (consent.granted()) observations.start();
+    },
     snapshot,
     subscribe(listener) {
       subscribers.add(listener);

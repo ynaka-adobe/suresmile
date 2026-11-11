@@ -1,5 +1,6 @@
 import initAnalytics from '../../scripts/analytics.js';
 import initInsights, { browserInformation } from '../../scripts/insights.js';
+import { validateProfile } from '../../scripts/visitor-profile.js';
 import {
   buildContext, hitVariables, validVisit, VISIT_KEY, VISIT_TIMEOUT,
 } from '../../scripts/analytics-context.js';
@@ -104,6 +105,17 @@ function checkContexts() {
   const privateURL = new URL(`${base}/en-us/find-a-doctor?address=94121&lat=37.78&lng=-122.49&code=secret-code&utm_campaign=private@example.invalid&utm_source=secret-code&utm_medium=94121#secret`);
   const serialized = JSON.stringify(hitVariables(buildContext(privateURL, null)));
   ['94121', '37.78', '-122.49', 'secret', 'private@'].forEach((value) => assert(!serialized.includes(value), 'Query privacy'));
+  const nullable = {
+    ip: null, city: null, country: null, latitude: null, longitude: null, source: 'cdn', accuracy: 'unavailable',
+  };
+  assert(validateProfile(nullable).latitude === null, 'Unavailable CDN coordinates remain null');
+  assert(validateProfile({ ...nullable, ip: '2001:db8::1' }).ip === '2001:db8::1', 'IPv6 profile shape');
+  [{ ip: '999.1.1.1' }, { ip: '::::' }, { latitude: 91, longitude: 0 },
+    { latitude: 0, longitude: null }, { country: 'Bad\nField' }].forEach((invalid) => {
+    let rejected = false;
+    try { validateProfile({ ...nullable, ...invalid }); } catch { rejected = true; }
+    assert(rejected, 'Invalid profile response must fail clearly');
+  });
 }
 
 /** Run in a local, isolated browser; no licensed SDK or production hits required. */
@@ -295,6 +307,142 @@ export default async function checkAnalytics() {
     assert(environment.some(([key, value]) => key === 'Global Privacy Control' && value === 'true'), 'GPC is reported, not equated with consent');
     assert(controller.snapshot().consent === 'unknown' && !test.accounts.length && !win.sessionStorage.getItem(VISIT_KEY), 'Diagnostics do not grant consent');
     results.push('environment API fallbacks, GPC and preconsent diagnostics privacy');
+
+    ({ doc, win, test } = await setup('/en-us?insights=1'));
+    controller = test.init();
+    let profileRequests = 0;
+    let requestOptions;
+    const profileData = {
+      ip: '198.51.100.27',
+      city: 'Fixture City',
+      country: 'ZZ',
+      latitude: 12.345,
+      longitude: 67.89,
+      source: 'cdn',
+      accuracy: 'approximate IP geolocation',
+    };
+    const profileResponse = () => new win.Response(JSON.stringify(profileData), {
+      status: 200, headers: { 'cache-control': 'private, no-store', 'content-type': 'application/json' },
+    });
+    win.fetch = async (url, options) => {
+      assert(url === '/api/visitor-profile', 'Only same-origin own-profile endpoint');
+      profileRequests += 1;
+      requestOptions = options;
+      return profileResponse();
+    };
+    test.insights(controller);
+    const profileButton = () => doc.querySelector('.suresmile-visitor-profile button');
+    assert(profileButton().disabled && profileRequests === 0, 'No profile request before consent');
+    test.allow();
+    await controller.ready();
+    assert(profileRequests === 0, 'Analytics-only consent never assumes profile purpose');
+    profileButton().click();
+    profileButton().click();
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile display');
+    assert(profileRequests === 1 && requestOptions.cache === 'no-store'
+      && requestOptions.credentials === 'same-origin' && requestOptions.redirect === 'error', 'One uncached own-profile request');
+    const noProfileInTracking = () => {
+      const serialized = JSON.stringify({
+        calls: test.calls,
+        layer: win.adobeDataLayer,
+        snapshot: controller.snapshot(),
+        local: { ...win.localStorage },
+        session: { ...win.sessionStorage },
+      });
+      [profileData.ip, profileData.city,
+        String(profileData.latitude), String(profileData.longitude)]
+        .forEach((value) => {
+          assert(!serialized.includes(value), 'Profile values stay outside tracking/storage');
+        });
+    };
+    doc.querySelector('main a').click();
+    noProfileInTracking();
+    doc.querySelector('.suresmile-visitor-profile button:last-child').click();
+    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Remove clears profile display');
+    let resolveProfile;
+    win.fetch = (url, options) => {
+      profileRequests += 1;
+      requestOptions = options;
+      return new Promise((done) => { resolveProfile = done; });
+    };
+    profileButton().click();
+    test.openPreferences();
+    test.deny();
+    assert(requestOptions.signal.aborted, 'Withdraw cancels profile request');
+    resolveProfile(profileResponse());
+    await new Promise((done) => { window.setTimeout(done, 20); });
+    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Late response cannot restore withdrawn profile');
+    test.openPreferences();
+    test.allow();
+    await controller.ready();
+    assert(profileRequests === 2, 'Regrant does not replay profile consent');
+    win.fetch = async () => new win.Response(JSON.stringify(profileData), { status: 200 });
+    profileButton().click();
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('could not be verified'), 'Missing private/no-store error');
+    win.fetch = async () => profileResponse();
+    profileButton().click();
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile retry');
+    doc.querySelector('#suresmile-insights button').click();
+    doc.querySelector('.suresmile-insights-toggle').click();
+    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Close/reopen clears transient profile and does not reuse it');
+    noProfileInTracking();
+    results.push('explicit new-scope profile consent, no-store, withdrawal/races/retry and privacy separation');
+
+    ({ doc, win, test } = await setup('/en-us?insights=1'));
+    const seenBlock = doc.createElement('div');
+    seenBlock.className = 'block';
+    seenBlock.dataset.blockName = 'hero-split';
+    seenBlock.dataset.blockStatus = 'loaded';
+    seenBlock.style.cssText = 'height:120px; background:white';
+    const unseenBlock = seenBlock.cloneNode();
+    unseenBlock.dataset.blockName = 'columns';
+    unseenBlock.style.cssText = 'position:absolute;top:2000px;height:120px;width:100px';
+    doc.querySelector('main').append(seenBlock, unseenBlock);
+    controller = test.init();
+    test.insights(controller);
+    assert(!controller.snapshot().observations.active
+      && !controller.snapshot().observations.components.length, 'No preconsent behavioral observations');
+    test.allow();
+    await controller.ready();
+    await waitFor(() => controller.snapshot().observations.components.length === 1, 'Actual viewport component');
+    assert(controller.snapshot().observations.components[0].name === 'hero-split', 'Offscreen block is not counted');
+    const dynamicBlock = seenBlock.cloneNode();
+    dynamicBlock.dataset.blockName = 'cards';
+    doc.querySelector('main').append(dynamicBlock);
+    await waitFor(() => controller.snapshot().observations.components.length === 2, 'Dynamic loaded block visibility');
+    seenBlock.style.display = 'none';
+    await new Promise((done) => { window.setTimeout(done, 100); });
+    seenBlock.style.display = 'block';
+    await waitFor(() => controller.snapshot().observations.sightings >= 3, 'Repeat component sighting');
+    assert(controller.snapshot().observations.components.length === 2, 'Unique instances differ from repeat sightings');
+    doc.querySelector('main a').click();
+    const beforeOtherLink = test.calls.length;
+    const unsafeLink = doc.createElement('a');
+    unsafeLink.href = 'https://private-id.invalid/patient?code=secret&address=94121';
+    unsafeLink.textContent = 'PatientName-94121';
+    doc.querySelector('main').append(unsafeLink);
+    unsafeLink.click();
+    assert(test.calls.length === beforeOtherLink, 'Unmapped local click creates no Adobe event');
+    assert(controller.snapshot().observations.clicks === 2, 'One shared delegated observer per click');
+    const localSerialized = JSON.stringify(controller.snapshot().observations);
+    ['secret', '94121', 'PatientName', 'private-id'].forEach((value) => assert(!localSerialized.includes(value), 'Local link redaction'));
+    assert(win.adobeDataLayer.every((entry) => ['pageView', 'linkClick'].includes(entry.event)), 'No impressions or scroll in Adobe data layer');
+    win.scrollTo(0, doc.documentElement.scrollHeight);
+    await waitFor(() => controller.snapshot().observations.scroll.current === 100, 'Scroll to end');
+    win.scrollTo(0, 0);
+    await waitFor(() => controller.snapshot().observations.scroll.current === 0, 'Scroll position changes');
+    assert(controller.snapshot().observations.scroll.maximum === 100, 'Maximum scroll retained');
+    unseenBlock.remove();
+    unsafeLink.remove();
+    win.dispatchEvent(new Event('resize'));
+    await waitFor(() => controller.snapshot().observations.scroll.wholePageVisible, 'Whole short page visible');
+    assert(controller.snapshot().observations.scroll.current === 100, 'Short page labels complete visibility');
+    test.openPreferences();
+    test.deny();
+    const paused = controller.snapshot().observations;
+    assert(!paused.active && !paused.components.length && !paused.links.length
+      && !paused.records.length && paused.totalEvents === 0, 'Withdrawal disconnects and clears behavioral diagnostics');
+    results.push('real viewport visibility, repeats/dynamic blocks, local-only links, scroll edge cases and withdrawal');
 
     ({ doc, win, test } = await setup());
     let resolve;

@@ -25,7 +25,8 @@ as consent or identity assertions.
 
 Withdrawal cancels pending SDK loading, stops future hits, clears this adapter's
 visit attribution, feed and owned data-layer entries, and does not replay missed
-events on regrant. It cannot retract a request already dispatched or unload
+events on regrant. It also cancels/clears visitor-profile display and disconnects
+local behavioral observers. It cannot retract a request already dispatched or unload
 executed JavaScript. AppMeasurement is configured for session cookies, no
 third-party cookies and no offline queue. A future CMP must include Adobe's
 identity-cookie cleanup in its site-wide cookie policy.
@@ -124,7 +125,7 @@ adding other approved campaign codes; do not replace it with a free-form capture
 No raw URL query/hash, referrer, search, address/ZIP/coordinates, doctor/patient
 details, form values, CUG codes, names or emails are forwarded. Known page paths
 are allowlisted, referrer is the `none` redaction sentinel, and link URLs contain
-only the origin; stable names carry intent. No IP lookup, geolocation request,
+only the origin; stable names carry intent. The Analytics adapter adds no IP lookup, geolocation request,
 identity enrichment, hashing/fingerprinting or new external enrichment service
 is added. Native AppMeasurement browser/session handling occurs only after
 consent. This is separate from pre-existing EDS RUM/Target/demo-profile behavior.
@@ -150,8 +151,72 @@ transient local displays, not extra custom Analytics variables. Unsupported APIs
 show unavailable. Persona/channel/actual variant and the exact eVar/prop mapping
 are visible. Session status comes only from consented first-party visit state;
 new/returning identity is explicitly not derived. The panel never reads forms,
-IP/location, raw visitor IDs, auth state, CUG codes or other users' information.
+raw visitor IDs, auth state, CUG codes or other users' information.
 Withdrawing consent clears the local hit feed and pauses measurement.
+
+### Optional requesting-visitor profile
+
+After Analytics consent, a **separate explicit** **Show my IP and approximate
+location** action enables this purpose for the current open panel only.
+An existing Analytics-only grant never implicitly allows profile display. The
+consent control explains this separate purpose. Closing, removing the profile,
+or withdrawing consent clears values/cancels loading; reopening/regrant requires
+a new explicit profile choice. No profile-purpose choice or values are persisted.
+
+The client requests only same-origin `GET /api/visitor-profile`, with no query,
+`credentials: same-origin`, `cache: no-store` and redirects disallowed. Both
+`private` and `no-store` response headers are required. The agreed JSON contract:
+
+```json
+{
+  "ip": null,
+  "city": null,
+  "country": null,
+  "latitude": null,
+  "longitude": null,
+  "source": "cdn",
+  "accuracy": "unavailable"
+}
+```
+
+Present coordinates must be numeric, complete and in range, with accuracy
+`approximate IP geolocation`. Country is the observed CDN code or country name.
+Missing fields remain unavailable; malformed responses, missing privacy headers,
+HTTP errors and an undeployed endpoint show a visible unavailable status. No
+third-party lookup or geolocation permission is requested; this is not GPS,
+precise physical location, or a profile of another visitor.
+
+The response exists only in the private display controller. IP/city/country/
+coordinates are never copied to the Analytics snapshot, local event feed,
+`adobeDataLayer`, eVars/props/events, storage, or logs. An abort signal and request
+epoch prevent a late response from restoring revoked data. The backend runtime
+and Fastly route must be deployed separately; UI installation cannot make an
+unavailable endpoint return real fields.
+
+### Local top-level observations
+
+Only the explicitly opened insights feature activates these observers, and only
+after Analytics consent. One shared delegated link handler feeds both the
+existing guide-mapped Analytics tracker and separately typed **local** diagnostics.
+The local summary includes AA transport totals, local event totals, unique
+components, repeat component sightings, clicked links, current scroll position
+and maximum scroll observed since consent. These are not extra Adobe events.
+
+`IntersectionObserver` measures loaded `main .block` instances using EDS
+`data-block-name`, at least 10% in viewport. Offscreen blocks are not counted.
+Each instance has a transient sequence number; reentry increments sightings,
+not unique count. Dynamic loaded blocks are registered; unsupported visibility
+APIs show unavailable. Viewport visibility is not proof of reading or human
+attention, and does not measure occlusion by overlays.
+
+Scroll is clamped to 0-100%; a short page is explicitly **100% (whole page
+visible)**, not a claimed scroll action. Current/max initialize at grant, not
+from preconsent history. Links use stable allowlisted CTA/page names; unknown
+destinations are redacted and raw link text/query strings are never recorded.
+The two detail buffers hold at most 30 entries; summary counters retain totals.
+Withdrawal disconnects observers/cancels animation frames and clears local
+state. A new document starts new counters. Impressions/scroll never call the
+SDK or enter the Adobe data layer; `event1`-`event9` stay exactly as specified.
 
 ## Validation and release boundary
 
@@ -176,7 +241,7 @@ must intercept and fulfill **all** `acsmarketing.sc.omtrdc.net` requests locally
 do not deliver test hits to the suite.
 
 ```sh
-npx eslint scripts/analytics*.js scripts/insights.js scripts/delayed.js tools/analytics/check-analytics.js
+npx eslint scripts/analytics*.js scripts/insights.js scripts/visitor-profile.js scripts/delayed.js tools/analytics/check-analytics.js
 npx stylelint styles/analytics-consent.css styles/insights.css
 git diff --check
 ```

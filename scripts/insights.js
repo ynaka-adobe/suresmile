@@ -1,3 +1,5 @@
+import createVisitorProfile from './visitor-profile.js';
+
 function element(tag, text, className) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -86,7 +88,7 @@ export default function initInsights(analytics) {
   close.setAttribute('aria-label', 'Close SureSmile live insights');
   header.append(title, close);
   const content = element('div', undefined, 'suresmile-insights-content');
-  const disclaimer = element('p', 'Local diagnostics for this browser only. Not Adobe reporting or collection confirmation. No IP, precise location, identity enrichment or bot scoring.');
+  const disclaimer = element('p', 'Diagnostics for this visitor only. Not Adobe reporting or collection confirmation. No GPS, identity enrichment or bot scoring.');
   const status = element('p');
   status.setAttribute('role', 'status');
   const preferences = element('button', 'Analytics preferences');
@@ -104,6 +106,23 @@ export default function initInsights(analytics) {
   content.append(disclaimer, status, preferences);
   const visitor = element('dl');
   section('Browser & visitor - local only').append(visitor);
+  const profileSection = section('Visitor profile - optional CDN display');
+  profileSection.className = 'suresmile-visitor-profile';
+  const profile = createVisitorProfile(profileSection);
+  const summary = element('dl');
+  section('Top-level observations - local only').append(summary);
+  const components = element('ol');
+  section('Components seen in viewport').append(
+    element('p', 'Unique loaded EDS block instances, at least 10% in viewport. Sightings include repeat entries; not proof of reading.'),
+    components,
+  );
+  const links = element('ol');
+  section('Links clicked - local only').append(
+    element('p', 'Recent clicks; stable labels and redacted destinations, never query strings or form values.'),
+    links,
+  );
+  const localFeed = element('ol');
+  section('Local event details').append(localFeed);
   const journey = element('dl');
   section('Journey - exact guide mapping').append(journey);
   const counters = element('p');
@@ -124,6 +143,7 @@ export default function initInsights(analytics) {
   let priorFocus = document.activeElement;
   function setOpen(open) {
     panel.hidden = !open;
+    profile.setOpen(open);
     toggle.setAttribute('aria-expanded', String(open));
     if (open) {
       priorFocus = document.activeElement;
@@ -141,6 +161,31 @@ export default function initInsights(analytics) {
   const empty = element('li', 'No consented hits observed in this document.');
   function render(snapshot) {
     const { context, records } = snapshot;
+    profile.setConsent(snapshot.consent);
+    const local = snapshot.observations;
+    rows(summary, [
+      ['Measurement', local.active ? 'Local observations active' : 'Paused; no preconsent replay'],
+      ['AA hits observed', String(snapshot.totals.observed)],
+      ['Local events observed', String(local.totalEvents)],
+      ['Unique components seen', local.visibilityAvailable ? String(local.components.length) : 'Unavailable'],
+      ['Component sightings (with repeats)', local.visibilityAvailable ? String(local.sightings) : 'Unavailable'],
+      ['Link clicks', String(local.clicks)],
+      ['Scroll position', local.active ? `${local.scroll.current}%${local.scroll.wholePageVisible ? ' (whole page visible)' : ''}` : 'Paused'],
+      ['Maximum scroll since consent', local.active ? `${local.scroll.maximum}%` : 'Paused'],
+    ]);
+    components.replaceChildren(...local.components.map((component) => (
+      element('li', `${component.name} #${component.id}`)
+    )));
+    links.replaceChildren(...local.links.map((link) => element('li', `${link.label} | ${link.href}`)));
+    localFeed.replaceChildren(...local.records.slice().reverse().map((record) => {
+      let detail = record.type;
+      if (record.type === 'scroll') detail = `Scroll ${record.current}% | max ${record.maximum}%`;
+      if (record.type === 'componentSeen') {
+        detail = `Component ${record.component.name} #${record.component.id} | ${record.repeat ? 'repeat' : 'first sighting'}`;
+      }
+      if (record.type === 'linkClick') detail = `Link ${record.link.label} | ${record.link.href}`;
+      return element('li', `${detail} | ${new Date(record.time).toLocaleTimeString()}`);
+    }));
     status.textContent = snapshot.consent === 'granted'
       ? `Consent granted | SDK ${snapshot.sdkStatus} | Adobe collection unconfirmed`
       : `Paused | consent ${snapshot.consent} | no Analytics collection`;
@@ -162,8 +207,8 @@ export default function initInsights(analytics) {
       ['eVar6 / campaign', context.visit.campaign || 'None'],
       ['prop4 - CTA', 'Stable label on each link hit'],
     ]);
-    counters.textContent = `Recent buffer (30 records) | ${['observed', 'requested', 'dispatched']
-      .map((stage) => `${stage}: ${records.filter((record) => record.stage === stage).length}`)
+    counters.textContent = `AA transport totals | ${['observed', 'requested', 'dispatched']
+      .map((stage) => `${stage}: ${snapshot.totals[stage]}`)
       .join(' | ')}`;
     rendered.forEach((item, record) => {
       if (!records.includes(record)) { item.remove(); rendered.delete(record); }
@@ -188,6 +233,7 @@ export default function initInsights(analytics) {
     if (!records.length) feed.append(empty);
     else empty.remove();
   }
+  analytics.enableLocalDiagnostics();
   analytics.subscribe(render);
   ['resize', 'online', 'offline'].forEach((name) => {
     window.addEventListener(name, () => render(analytics.snapshot()));

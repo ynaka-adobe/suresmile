@@ -75,6 +75,12 @@
   padding: 8px 0;
 }
 
+.suresmile-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .suresmile-insights pre {
   max-width: 100%;
   padding: 8px;
@@ -100,6 +106,11 @@
   z-index: 10000;
   bottom: 16px;
   left: 16px;
+}
+
+.suresmile-insights button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .suresmile-insights button:focus-visible,
