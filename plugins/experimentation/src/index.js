@@ -253,7 +253,9 @@ function getAllSectionMeta(block, scope) {
  */
 async function replaceInner(path, el, selector) {
   try {
-    const resp = await fetch(path);
+    // Edge Delivery pages are cached by browsers for two hours; revalidate so a republished
+    // variant shows up immediately instead of an old copy being swapped in.
+    const resp = await fetch(path, { cache: 'no-cache' });
     if (!resp.ok) {
       // eslint-disable-next-line no-console
       console.log('error loading content:', resp);
