@@ -38,7 +38,7 @@ export default function createConsent(onChange) {
   heading.id = 'analytics-consent-heading';
   heading.textContent = 'Optional audience-journey analytics';
   const description = document.createElement('p');
-  description.textContent = 'Allow Adobe Analytics to measure demo journeys and resource clicks? Analytics stays off unless you opt in. Live insights can separately display your IP and approximate CDN-derived location only if you explicitly choose it; those values are never sent to Analytics. You can withdraw at any time.';
+  description.textContent = 'Allow Adobe Analytics to measure demo journeys and resource clicks? Analytics stays off unless you opt in. When the live insights panel is open, it also shows your IP and approximate CDN-derived location to you; those values stay in this tab and are never sent to Analytics. You can withdraw at any time.';
   const status = document.createElement('p');
   status.className = 'analytics-consent-status';
   status.setAttribute('role', 'status');

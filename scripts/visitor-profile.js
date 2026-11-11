@@ -185,7 +185,9 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     refresh.disabled = !opened || !granted || pending;
     allow.textContent = error ? 'Retry visitor profile' : 'Show my IP and approximate location';
     revoke.hidden = !profile;
-    let location = error ? 'Unavailable' : 'Locating';
+    let location = 'Analytics off';
+    if (error) location = 'Unavailable';
+    else if (granted) location = 'Locating';
     if (profile) {
       location = [titleCase(profile.city), profile.region, profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
