@@ -136,9 +136,13 @@ Add **`?insights=1`** (or `&insights=1`) to open a SureSmile-branded nonmodal
 slide-over. Close/Escape restores focus; its reopen control remains available in
 that document. No open-state storage or employee authorization is implied.
 The panel only shows this visitor's safe local diagnostics.
-Overview is first; compact Overview/Browser/Profile/Journey/Events buttons jump
-inside the booklet and move accessible heading focus without scrolling the
-underlying page. Opening/closing focus also preserves the page's scroll position.
+Compact hit/component/link/scroll counters precede one rounded **VISITOR**
+card. Its native summary expands with mouse, Enter or Space; it does not fetch
+profile data. A blue location badge reflects actual city/state-region/country
+only after explicit profile display; otherwise it says Local only. CDN network
+fields and reported browser/device fields live inside that same card. Other
+activity/journey details are collapsed, without a section-navigation toolbar.
+Opening/closing focus preserves the underlying page's scroll position.
 
 It consumes the adapter's same data-layer/transport stream, without another
 click listener or beacon. Its rolling 30-record buffer distinguishes:
@@ -148,8 +152,9 @@ click listener or beacon. Its rolling 30-record buffer distinguishes:
 - **Dispatched**: AppMeasurement's post-track callback fired; not Adobe receipt
   or report-processing confirmation. Without that hook, dispatch is unconfirmed.
 
-Browser/OS family and major version are *reported*, not verified. Viewport,
-screen, language, timezone, online/coarse connection, DNT/GPC and consent are
+Browser versions use the ordinary reported UA (which browsers may reduce);
+OS/device family is reported, not verified. No high-entropy UA probes are used.
+Viewport, screen/DPR, language, timezone/local time, coarse connection, DNT/GPC and consent are
 transient local displays, not extra custom Analytics variables. Unsupported APIs
 show unavailable. Persona/channel/actual variant and the exact eVar/prop mapping
 are visible. Session status comes only from consented first-party visit state;
@@ -175,6 +180,7 @@ The client requests only same-origin `GET /api/visitor-profile`, with no query,
   "ip": null,
   "city": null,
   "country": null,
+  "region": null,
   "latitude": null,
   "longitude": null,
   "source": "cdn",
@@ -184,12 +190,17 @@ The client requests only same-origin `GET /api/visitor-profile`, with no query,
 
 Present coordinates must be numeric, complete and in range, with accuracy
 `approximate IP geolocation`. Country is the observed CDN code or country name.
+Optional `region` is the actual Fastly subdivision code, not an inferred state
+name. Older responses without it remain compatible. City and region appear
+together; coordinates display two decimal places with an approximate IP-based
+note. Unsupported postal, ASN and provider-network values are not collected or
+invented. Browser effective connection is not labelled as a CDN network type.
 Missing fields remain unavailable; malformed responses, missing privacy headers,
 HTTP errors and an undeployed endpoint show a visible unavailable status. No
 third-party lookup or geolocation permission is requested; this is not GPS,
 precise physical location, or a profile of another visitor.
 
-The response exists only in the private display controller. IP/city/country/
+The response exists only in the private display controller. IP/city/region/country/
 coordinates are never copied to the Analytics snapshot, local event feed,
 `adobeDataLayer`, eVars/props/events, storage, or logs. An abort signal and request
 epoch prevent a late response from restoring revoked data. The backend runtime

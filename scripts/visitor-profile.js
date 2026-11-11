@@ -38,6 +38,7 @@ export function validateProfile(data) {
     ip: validIP(data.ip),
     city: text(data.city, 100),
     country: text(data.country, 100),
+    region: data.region === undefined ? null : text(data.region, 100),
     latitude,
     longitude,
     source: 'cdn',
@@ -46,9 +47,9 @@ export function validateProfile(data) {
 }
 
 /** The private response stays in this display only, never the Analytics stream. */
-export default function createVisitorProfile(section) {
+export default function createVisitorProfile(section, onSummary = () => {}) {
   const note = document.createElement('p');
-  note.textContent = 'Optional display of your IP and approximate CDN/IP-derived location, not GPS. Not sent to Adobe Analytics or saved.';
+  note.textContent = 'Optional IP-based location. Not GPS; never sent to Analytics or saved.';
   const status = document.createElement('p');
   status.setAttribute('role', 'status');
   const fields = document.createElement('dl');
@@ -73,32 +74,44 @@ export default function createVisitorProfile(section) {
 
   function render() {
     const coordinates = profile && profile.latitude !== null && profile.longitude !== null
-      ? `${profile.latitude}, ${profile.longitude}` : 'Unavailable';
+      ? `${profile.latitude.toFixed(2)}, ${profile.longitude.toFixed(2)}` : 'Unavailable';
+    const city = profile ? [profile.city, profile.region].filter(Boolean).join(', ') : '';
     const values = [
-      ['IP', profile?.ip || 'Unavailable'],
-      ['City (approximate)', profile?.city || 'Unavailable'],
-      ['Country (reported)', profile?.country || 'Unavailable'],
-      ['Coordinates (approximate)', coordinates],
-      ['Source / accuracy', profile ? `CDN / ${profile.accuracy}` : 'Unavailable'],
+      ['IP address', profile?.ip || 'Unavailable', 'ip'],
+      ['City', city || 'Unavailable', 'city'],
+      ['Country', profile?.country || 'Unavailable', 'country'],
+      ['Coordinates', coordinates, 'coordinates'],
     ];
-    fields.replaceChildren(...values.map(([label, value]) => {
+    fields.replaceChildren(...values.map(([label, value, field]) => {
       const row = document.createElement('div');
       const key = document.createElement('dt');
       const content = document.createElement('dd');
       key.textContent = label;
       content.textContent = value;
+      content.dataset.profileField = field;
+      if (field === 'coordinates') {
+        const hint = document.createElement('small');
+        hint.textContent = 'Approximate, IP-based';
+        content.append(hint);
+      }
       row.append(key, content);
       return row;
     }));
-    let message = 'Off. Grant analytics consent, then separately choose profile display.';
-    if (granted) message = 'Off until you explicitly choose profile display.';
-    if (pending) message = 'Loading your CDN visitor profile.';
-    if (profile) message = 'Approximate CDN profile for this request; not an exact location.';
-    if (error) message = 'Visitor profile unavailable. The endpoint, response or privacy headers could not be verified.';
+    let message = 'Profile off. Allow analytics, then choose profile display.';
+    if (granted) message = 'Profile off until you choose to show it.';
+    if (pending) message = 'Loading visitor profile.';
+    if (profile) message = 'Approximate CDN location for this visitor.';
+    if (error) message = 'Visitor profile unavailable. Please try again later.';
     status.textContent = message;
     allow.disabled = !opened || !granted || pending || Boolean(profile);
     allow.textContent = error ? 'Retry visitor profile' : 'Show my IP and approximate location';
     revoke.hidden = !permission;
+    let location = error ? 'Unavailable' : 'Local only';
+    if (profile) {
+      location = [profile.city, profile.region, profile.country].filter(Boolean).join(', ')
+        || 'Unavailable';
+    }
+    onSummary(location);
   }
   function clear() {
     epoch += 1;

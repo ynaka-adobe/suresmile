@@ -10,8 +10,8 @@ function element(tag, text, className) {
 export function browserInformation() {
   const ua = navigator.userAgent || '';
   const browser = [
-    ['Edge', /Edg\/(\d+)/], ['Opera', /OPR\/(\d+)/], ['Firefox', /Firefox\/(\d+)/],
-    ['Chrome', /Chrome\/(\d+)/], ['Safari', /Version\/(\d+).*Safari/],
+    ['Edge', /Edg\/([\d.]+)/], ['Opera', /OPR\/([\d.]+)/], ['Firefox', /Firefox\/([\d.]+)/],
+    ['Chrome', /Chrome\/([\d.]+)/], ['Safari', /Version\/([\d.]+).*Safari/],
   ].find(([, expression]) => expression.test(ua));
   let os = 'Unavailable';
   if (/Android/.test(ua)) os = 'Android';
@@ -21,23 +21,36 @@ export function browserInformation() {
   else if (/CrOS/.test(ua)) os = 'Chrome OS';
   else if (/Linux/.test(ua)) os = 'Linux';
   let timezone = 'Unavailable';
+  let localTime = '';
   try {
     timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || timezone;
+    localTime = Intl.DateTimeFormat(undefined, {
+      hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+    }).format(new Date());
   } catch { /* Optional browser API. */ }
-  const language = /^[a-z]{2,3}(?:-[a-zA-Z0-9]{2,8}){0,3}$/.test(navigator.language || '')
-    ? navigator.language : 'Unavailable';
+  const languages = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language];
+  const language = languages
+    .filter((value) => /^[a-z]{2,3}(?:-[a-zA-Z0-9]{2,8}){0,3}$/.test(value || ''))
+    .slice(0, 5).join(', ') || 'Unavailable';
   const dnt = navigator.doNotTrack ?? window.doNotTrack;
   let dntLabel = 'Not reported';
   if (dnt === '1') dntLabel = 'Requested';
   if (dnt === '0') dntLabel = 'Not requested (reported)';
+  let device = 'Unavailable';
+  if (/iPad|Tablet/.test(ua)) device = 'Tablet (reported)';
+  else if (navigator.userAgentData?.mobile || /Mobile|iPhone|Android/.test(ua)) device = 'Mobile (reported)';
+  else if (os !== 'Unavailable') device = 'Desktop (reported)';
+  const dpr = Number.isFinite(window.devicePixelRatio) && window.devicePixelRatio > 0
+    ? ` @${window.devicePixelRatio}x` : '';
   return [
     ['Browser (reported)', browser ? `${browser[0]} ${ua.match(browser[1])[1]}` : 'Unavailable'],
     ['OS (reported)', os],
+    ['Device type (reported)', device],
     ['Viewport', `${window.innerWidth} x ${window.innerHeight} CSS px`],
     ['Screen (reported)', window.screen?.width && window.screen?.height
-      ? `${window.screen.width} x ${window.screen.height} CSS px` : 'Unavailable'],
+      ? `${window.screen.width} x ${window.screen.height}${dpr} CSS px` : 'Unavailable'],
     ['Language', language],
-    ['Timezone (reported)', timezone],
+    ['Timezone (reported)', `${timezone}${localTime ? ` | ${localTime}` : ''}`],
     ['Network', navigator.onLine === undefined ? 'Unavailable' : String(navigator.onLine ? 'Online' : 'Offline')],
     ['Connection (coarse)', ['slow-2g', '2g', '3g', '4g'].includes(navigator.connection?.effectiveType)
       ? navigator.connection.effectiveType : 'Unavailable'],
@@ -88,9 +101,7 @@ export default function initInsights(analytics) {
   close.setAttribute('aria-label', 'Close SureSmile live insights');
   header.append(title, close);
   const content = element('div', undefined, 'suresmile-insights-content');
-  const navigation = element('nav', undefined, 'suresmile-insights-nav');
-  navigation.setAttribute('aria-label', 'Insights sections');
-  const disclaimer = element('p', 'Diagnostics for this visitor only. Not Adobe reporting or collection confirmation. No GPS, identity enrichment or bot scoring.');
+  const disclaimer = element('p', 'Observed here, not Adobe reporting.', 'suresmile-insights-note');
   const status = element('p');
   status.setAttribute('role', 'status');
   const preferences = element('button', 'Analytics preferences');
@@ -98,65 +109,61 @@ export default function initInsights(analytics) {
   preferences.addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('consent:open-preferences'));
   });
-  function section(label) {
-    const wrapper = element('section');
-    const heading = element('h3', label);
-    wrapper.append(heading);
+  function section(label, className = '') {
+    const wrapper = element('details', undefined, `suresmile-insights-detail ${className}`);
+    const heading = element('summary');
+    const count = element('span', '', 'suresmile-detail-count');
+    heading.append(element('span', label), count);
+    const body = element('div', undefined, 'suresmile-detail-body');
+    wrapper.append(heading, body);
     content.append(wrapper);
-    return wrapper;
+    return { wrapper, body, count };
   }
-  content.append(disclaimer, status, preferences);
+  content.append(status, preferences);
+  const summary = element('dl', undefined, 'suresmile-overview');
+  content.append(summary);
+  const visitorCard = section('VISITOR', 'suresmile-visitor-card');
+  visitorCard.count.className = 'suresmile-location-badge';
+  const networkTitle = element('h3', 'NETWORK - FROM THE CDN');
+  visitorCard.body.append(networkTitle);
+  const profileSection = element('div', undefined, 'suresmile-visitor-profile');
+  visitorCard.body.append(profileSection);
+  const profile = createVisitorProfile(profileSection, (location) => {
+    visitorCard.count.textContent = location;
+  });
   const visitor = element('dl');
-  const browserSection = section('Browser & visitor - local only');
-  browserSection.append(visitor);
-  const profileSection = section('Visitor profile - optional CDN display');
-  profileSection.className = 'suresmile-visitor-profile';
-  const profile = createVisitorProfile(profileSection);
-  const summary = element('dl');
-  const overviewSection = section('Top-level observations - local only');
-  overviewSection.append(summary);
-  content.insertBefore(overviewSection, browserSection);
+  visitor.className = 'suresmile-device-fields';
+  visitorCard.body.append(element('h3', 'BROWSER - REPORTED BY THIS DEVICE'), visitor);
   const components = element('ol');
-  section('Components seen in viewport').append(
-    element('p', 'Unique loaded EDS block instances, at least 10% in viewport. Sightings include repeat entries; not proof of reading.'),
+  const componentCard = section('Components seen');
+  componentCard.body.append(
+    element('p', 'Loaded blocks at least 10% in viewport. Unique instances; repeat sightings counted separately.'),
     components,
   );
   const links = element('ol');
-  section('Links clicked - local only').append(
-    element('p', 'Recent clicks; stable labels and redacted destinations, never query strings or form values.'),
+  const linkCard = section('Links clicked');
+  linkCard.body.append(
+    element('p', 'Recent clicks with safe labels and destinations.'),
     links,
   );
   const localFeed = element('ol');
-  section('Local event details').append(localFeed);
+  const localCard = section('Local activity');
+  localCard.body.append(localFeed);
   const journey = element('dl');
-  const journeySection = section('Journey - exact guide mapping');
-  journeySection.append(journey);
+  const journeySection = section('Journey');
+  journeySection.body.append(journey);
   const counters = element('p');
   const feed = element('ol');
   const events = section('Live hit stream');
-  events.append(
+  events.body.append(
     counters,
     element('p', 'Observed = data-layer entry. Requested = SDK method called. '
       + 'Dispatched = AppMeasurement post-track callback. '
       + 'None confirms Adobe receipt or report processing.'),
     feed,
   );
-  [['Overview', overviewSection], ['Browser', browserSection], ['Profile', profileSection],
-    ['Journey', journeySection], ['Events', events]].forEach(([label, target]) => {
-    const button = element('button', label);
-    button.type = 'button';
-    const heading = target.querySelector('h3');
-    heading.tabIndex = -1;
-    button.addEventListener('click', () => {
-      content.scrollTo({
-        top: content.scrollTop + target.getBoundingClientRect().top
-          - content.getBoundingClientRect().top,
-      });
-      heading.focus({ preventScroll: true });
-    });
-    navigation.append(button);
-  });
-  panel.append(header, navigation, content);
+  content.append(disclaimer);
+  panel.append(header, content);
   const toggle = element('button', 'SureSmile insights', 'suresmile-insights-toggle');
   toggle.type = 'button';
   toggle.setAttribute('aria-controls', panel.id);
@@ -186,15 +193,15 @@ export default function initInsights(analytics) {
     profile.setConsent(snapshot.consent);
     const local = snapshot.observations;
     rows(summary, [
-      ['Measurement', local.active ? 'Local observations active' : 'Paused; no preconsent replay'],
-      ['AA hits observed', String(snapshot.totals.observed)],
-      ['Local events observed', String(local.totalEvents)],
-      ['Unique components seen', local.visibilityAvailable ? String(local.components.length) : 'Unavailable'],
-      ['Component sightings (with repeats)', local.visibilityAvailable ? String(local.sightings) : 'Unavailable'],
-      ['Link clicks', String(local.clicks)],
-      ['Scroll position', local.active ? `${local.scroll.current}%${local.scroll.wholePageVisible ? ' (whole page visible)' : ''}` : 'Paused'],
-      ['Maximum scroll since consent', local.active ? `${local.scroll.maximum}%` : 'Paused'],
+      ['AA hits', String(snapshot.totals.observed)],
+      ['Components', local.visibilityAvailable ? String(local.components.length) : 'Unavailable'],
+      ['Links clicked', String(local.clicks)],
+      ['Scroll / max', local.active ? `${local.scroll.current}% / ${local.scroll.maximum}%` : 'Paused'],
     ]);
+    componentCard.count.textContent = String(local.components.length);
+    linkCard.count.textContent = String(local.clicks);
+    localCard.count.textContent = String(local.totalEvents);
+    events.count.textContent = String(snapshot.totals.observed);
     components.replaceChildren(...local.components.map((component) => (
       element('li', `${component.name} #${component.id}`)
     )));
@@ -209,16 +216,23 @@ export default function initInsights(analytics) {
       return element('li', `${detail} | ${new Date(record.time).toLocaleTimeString()}`);
     }));
     status.textContent = snapshot.consent === 'granted'
-      ? `Consent granted | SDK ${snapshot.sdkStatus} | Adobe collection unconfirmed`
-      : `Paused | consent ${snapshot.consent} | no Analytics collection`;
-    rows(visitor, [
-      ...browserInformation(),
-      ['Consent', `${snapshot.consent} | ${snapshot.consentSource}`],
-      ['Visitor', 'Anonymous; no CRM identity'],
-      ['Session', snapshot.session],
-      ['New / returning', 'Unavailable; not derived by this panel'],
-      ['Safe page path', new URL(context.pageURL).pathname],
-    ]);
+      ? `Analytics on | ${snapshot.sdkStatus}`
+      : 'Paused | Analytics off';
+    const deviceFields = browserInformation();
+    const names = {
+      'Browser (reported)': 'Browser',
+      'OS (reported)': 'Platform',
+      'Device type (reported)': 'Device type',
+      Language: 'Language',
+      'Timezone (reported)': 'Time zone',
+      'Screen (reported)': 'Screen',
+      Viewport: 'Viewport',
+      'Connection (coarse)': 'Effective connection',
+      'Do Not Track': 'Do Not Track',
+      'Global Privacy Control': 'Global Privacy Control',
+    };
+    rows(visitor, deviceFields.filter(([label]) => names[label])
+      .map(([label, value]) => [names[label], value]));
     rows(journey, [
       ['Page name', context.page.name],
       ['eVar1 / prop2 - persona', context.persona.id],

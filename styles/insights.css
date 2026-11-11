@@ -11,7 +11,7 @@
   inset: 8px 8px 68px auto;
   display: flex;
   flex-direction: column;
-  width: min(460px, calc(100vw - 16px));
+  width: min(520px, calc(100vw - 16px));
   background: #fff;
   border: 1px solid #d5e0e6;
   border-radius: 12px;
@@ -29,8 +29,9 @@
   justify-content: space-between;
   padding: 18px;
   border-radius: 12px 12px 0 0;
-  background: var(--link-color, #006ba6);
-  color: #fff;
+  background: #fff;
+  border-bottom: 1px solid #e0e4e8;
+  color: #17314b;
 }
 
 .suresmile-insights h2 {
@@ -51,15 +52,6 @@
   overflow-wrap: anywhere;
 }
 
-.suresmile-insights-nav {
-  display: flex;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-  gap: 6px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #d5e0e6;
-}
-
 .suresmile-insights dl > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
@@ -75,6 +67,134 @@
 .suresmile-insights dd {
   margin: 0;
   font-weight: 600;
+}
+
+.suresmile-insights-detail {
+  margin: 12px 0;
+  border-bottom: 1px solid #e0e4e8;
+}
+
+.suresmile-insights-detail > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 500;
+}
+
+.suresmile-insights-detail > summary::-webkit-details-marker {
+  display: none;
+}
+
+.suresmile-insights-detail > summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  flex-shrink: 0;
+  border-right: 2px solid #72787d;
+  border-bottom: 2px solid #72787d;
+  transform: rotate(45deg);
+}
+
+.suresmile-insights-detail[open] > summary::after {
+  transform: rotate(225deg);
+}
+
+.suresmile-detail-count {
+  color: #69747d;
+  font-size: 12px;
+}
+
+.suresmile-detail-body {
+  padding-bottom: 12px;
+}
+
+.suresmile-visitor-card {
+  padding: 4px 14px;
+  border: 1px solid #d8dcdf;
+  border-radius: 16px;
+  background: #f7f7f8;
+}
+
+.suresmile-visitor-card > summary {
+  font-size: 17px;
+  letter-spacing: 0.02em;
+}
+
+.suresmile-location-badge {
+  min-width: 0;
+  max-width: calc(100% - 115px);
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #0075b9;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suresmile-visitor-card h3 {
+  color: #60676d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.suresmile-visitor-card dl > div {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  gap: 8px;
+  padding: 11px 0;
+  border-color: #dadddf;
+}
+
+.suresmile-visitor-card dt {
+  color: #757a7e;
+}
+
+.suresmile-visitor-card dd {
+  color: #181e23;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.suresmile-visitor-card small {
+  display: block;
+  margin-top: 4px;
+  color: #747b80;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.suresmile-visitor-profile > p,
+.suresmile-insights-note {
+  color: #69747d;
+  font-size: 12px;
+}
+
+.suresmile-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin: 16px 0;
+}
+
+.suresmile-insights .suresmile-overview > div {
+  display: block;
+}
+
+.suresmile-overview dt {
+  font-size: 11px;
+}
+
+.suresmile-overview dd {
+  font-size: 19px;
 }
 
 .suresmile-insights ol {
@@ -123,6 +243,7 @@
   cursor: not-allowed;
 }
 
+.suresmile-insights summary:focus-visible,
 .suresmile-insights button:focus-visible,
 .suresmile-insights-toggle:focus-visible {
   outline: 3px solid #35a9ef;

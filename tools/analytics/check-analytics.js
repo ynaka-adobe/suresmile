@@ -165,10 +165,12 @@ export default async function checkAnalytics() {
     await waitFor(() => win.getComputedStyle(doc.querySelector('#suresmile-insights')).position === 'fixed', 'Insights stylesheet');
     assert(doc.activeElement.getAttribute('aria-label') === 'Close SureSmile live insights', 'Panel opening focus');
     assert(win.scrollY === 0, 'Opening booklet never scrolls the underlying page');
-    [...doc.querySelectorAll('.suresmile-insights-nav button')]
-      .find((button) => button.textContent === 'Profile').click();
-    assert(doc.activeElement.textContent === 'Visitor profile - optional CDN display', 'Profile navigation focus');
-    assert(win.scrollY === 0, 'Section navigation scrolls booklet only');
+    const visitorCard = doc.querySelector('.suresmile-visitor-card');
+    assert(!visitorCard.open, 'Visitor starts compact and collapsed');
+    visitorCard.querySelector('summary').click();
+    visitorCard.querySelector('summary').focus();
+    assert(visitorCard.open && doc.activeElement === visitorCard.querySelector('summary'), 'Visitor expands with summary focus');
+    assert(win.scrollY === 0 && !doc.querySelector('.suresmile-insights-nav'), 'No page scroll or navigation clutter');
     assert(doc.querySelector('#suresmile-insights').textContent.includes('Paused'), 'Preconsent panel paused');
     assert(!doc.querySelector('#suresmile-insights').textContent.includes('secret'), 'Panel redaction');
     assert(doc.querySelector('#suresmile-insights').getBoundingClientRect().width <= 390, 'Mobile panel width');
@@ -224,7 +226,8 @@ export default async function checkAnalytics() {
     assert(body.includes('eVar1 / prop2') && body.includes('Journey selected') && body.includes('dispatched:'), 'Same-stream insights updates');
     assert(!body.includes('secret') && !body.includes('private@'), 'Event-feed privacy');
     doc.querySelector('.suresmile-insights-toggle').click();
-    const summary = doc.querySelector('#suresmile-insights details summary');
+    const summary = doc.querySelector('.suresmile-insights-content details details summary');
+    summary.closest('.suresmile-insights-detail').open = true;
     summary.click();
     summary.focus();
     win.dispatchEvent(new Event('resize'));
@@ -324,6 +327,7 @@ export default async function checkAnalytics() {
       ip: '198.51.100.27',
       city: 'Fixture City',
       country: 'ZZ',
+      region: 'FX-AB',
       latitude: 12.345,
       longitude: 67.89,
       source: 'cdn',
@@ -340,6 +344,11 @@ export default async function checkAnalytics() {
     };
     test.insights(controller);
     const profileButton = () => doc.querySelector('.suresmile-visitor-profile button');
+    const profileCard = doc.querySelector('.suresmile-visitor-card');
+    profileCard.querySelector('summary').click();
+    profileCard.querySelector('summary').click();
+    profileCard.querySelector('summary').click();
+    assert(profileCard.open && profileRequests === 0, 'Expanding visitor never looks up a profile');
     assert(profileButton().disabled && profileRequests === 0, 'No profile request before consent');
     test.allow();
     await controller.ready();
@@ -349,6 +358,10 @@ export default async function checkAnalytics() {
     await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile display');
     assert(profileRequests === 1 && requestOptions.cache === 'no-store'
       && requestOptions.credentials === 'same-origin' && requestOptions.redirect === 'error', 'One uncached own-profile request');
+    assert(doc.querySelector('.suresmile-location-badge').textContent.includes(profileData.region), 'Actual region code appears in compact location');
+    profileCard.querySelector('summary').click();
+    profileCard.querySelector('summary').click();
+    assert(profileRequests === 1, 'Collapsing/expanding a consented card does not refetch');
     const noProfileInTracking = () => {
       const serialized = JSON.stringify({
         calls: test.calls,
@@ -357,7 +370,7 @@ export default async function checkAnalytics() {
         local: { ...win.localStorage },
         session: { ...win.sessionStorage },
       });
-      [profileData.ip, profileData.city,
+      [profileData.ip, profileData.city, profileData.region,
         String(profileData.latitude), String(profileData.longitude)]
         .forEach((value) => {
           assert(!serialized.includes(value), 'Profile values stay outside tracking/storage');
@@ -386,7 +399,7 @@ export default async function checkAnalytics() {
     assert(profileRequests === 2, 'Regrant does not replay profile consent');
     win.fetch = async () => new win.Response(JSON.stringify(profileData), { status: 200 });
     profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('could not be verified'), 'Missing private/no-store error');
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('Visitor profile unavailable'), 'Missing private/no-store error');
     win.fetch = async () => profileResponse();
     profileButton().click();
     await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile retry');
@@ -408,7 +421,7 @@ export default async function checkAnalytics() {
       status: 200, headers: { 'cache-control': 'private, no-store' },
     });
     profileButton().click();
-    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('could not be verified'), 'Malformed JSON shows a visible unavailable status');
+    await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('Visitor profile unavailable'), 'Malformed JSON shows a visible unavailable status');
     noProfileInTracking();
     results.push('explicit new-scope profile consent, no-store, withdrawal/races/retry and privacy separation');
 
@@ -475,7 +488,7 @@ export default async function checkAnalytics() {
     test.allow();
     await controller.ready();
     assert(!controller.snapshot().observations.visibilityAvailable, 'Unsupported viewport visibility is unavailable');
-    assert(doc.querySelector('#suresmile-insights').textContent.includes('Unique components seen'), 'Fallback still exposes the local summary');
+    assert(doc.querySelector('.suresmile-overview').textContent.includes('Components'), 'Fallback still exposes the local summary');
     doc.querySelector('main a').click();
     assert(controller.snapshot().observations.clicks === 1, 'Visibility fallback preserves consented click diagnostics');
     results.push('unavailable IntersectionObserver does not fabricate component visibility');
