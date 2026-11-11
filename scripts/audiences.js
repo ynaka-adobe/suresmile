@@ -71,6 +71,42 @@ export const AUDIENCES = {
   endodontic: () => currentInterest() === 'endodontic',
 };
 
+/**
+ * Edge Delivery does not publish the section-metadata block: it turns each row into an attribute
+ * on the section, so "Audience: Japan" arrives as data-audience:-japan="<url>" (and
+ * "Audience Japan" as data-audience-japan). The plugin reads section-metadata blocks, so rebuild a
+ * temporary block from those attributes. Both authoring styles work.
+ */
+export function audienceNameFromAttribute(attribute) {
+  const match = /^data-audience[:-]+([a-z0-9][a-z0-9-]*)$/i.exec(attribute);
+  return match ? match[1].toLowerCase() : null;
+}
+
+function restoreAudienceBlocks(main) {
+  main.querySelectorAll(':scope > div').forEach((section) => {
+    const declared = section.getAttributeNames()
+      .map((attribute) => [attribute, audienceNameFromAttribute(attribute)])
+      .filter(([, name]) => name);
+    if (!declared.length) return;
+    const meta = document.createElement('div');
+    meta.className = 'section-metadata';
+    meta.dataset.synthetic = 'true';
+    declared.forEach(([attribute, name]) => {
+      const row = document.createElement('div');
+      const key = document.createElement('div');
+      key.textContent = `Audience ${name}`;
+      const value = document.createElement('div');
+      const link = document.createElement('a');
+      link.href = section.getAttribute(attribute);
+      link.textContent = link.href;
+      value.append(link);
+      row.append(key, value);
+      meta.append(row);
+    });
+    section.append(meta);
+  });
+}
+
 function hasAudienceRows(main) {
   return [...main.querySelectorAll('.section-metadata > div > div:first-child, .metadata > div > div:first-child')]
     .some((cell) => /^audience/i.test(cell.textContent.trim()));
@@ -102,6 +138,7 @@ async function localizeAudienceLinks(main) {
  */
 export async function applyAudiences(main) {
   rememberInterest();
+  restoreAudienceBlocks(main);
   if (!hasAudienceRows(main)) return;
   try {
     await localizeAudienceLinks(main);
@@ -119,5 +156,8 @@ export async function applyAudiences(main) {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn('audiences: showing default content', e);
+  } finally {
+    // the rebuilt blocks were only for the plugin; leave nothing for block decoration to trip on
+    main.querySelectorAll('.section-metadata[data-synthetic]').forEach((meta) => meta.remove());
   }
 }

@@ -48,7 +48,15 @@ async function readAudienceSections() {
   const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
   const sections = [...doc.querySelectorAll('body > div, main > div')];
   return sections.map((section, index) => {
-    const audiences = [...section.querySelectorAll('.section-metadata > div')]
+    // Edge Delivery publishes section metadata as attributes: data-audience:-japan="<url>"
+    const fromAttributes = section.getAttributeNames()
+      .map((attribute) => [attribute, /^data-audience[:-]+([a-z0-9][a-z0-9-]*)$/i.exec(attribute)])
+      .filter(([, match]) => match)
+      .map(([attribute, match]) => ({
+        name: match[1].toLowerCase(),
+        variant: new URL(section.getAttribute(attribute), host).pathname,
+      }));
+    const fromBlocks = [...section.querySelectorAll('.section-metadata > div')]
       .map((row) => {
         const [key, value] = [...row.children];
         const match = /^audience\s*[:-]?\s*(.+)$/i.exec((key?.textContent || '').trim());
@@ -59,6 +67,7 @@ async function readAudienceSections() {
         return { name: match[1].trim().toLowerCase().replace(/\s+/g, '-'), variant };
       })
       .filter(Boolean);
+    const audiences = [...fromAttributes, ...fromBlocks];
     return { label: sectionLabel(section, index), audiences };
   }).filter((entry) => entry.audiences.length);
 }
