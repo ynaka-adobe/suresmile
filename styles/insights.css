@@ -44,10 +44,20 @@
 }
 
 .suresmile-insights-content {
+  min-height: 0;
   padding: 0 18px 18px;
   overflow: auto;
   overscroll-behavior: contain;
   overflow-wrap: anywhere;
+}
+
+.suresmile-insights-nav {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #d5e0e6;
 }
 
 .suresmile-insights dl > div {

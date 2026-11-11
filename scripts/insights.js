@@ -88,6 +88,8 @@ export default function initInsights(analytics) {
   close.setAttribute('aria-label', 'Close SureSmile live insights');
   header.append(title, close);
   const content = element('div', undefined, 'suresmile-insights-content');
+  const navigation = element('nav', undefined, 'suresmile-insights-nav');
+  navigation.setAttribute('aria-label', 'Insights sections');
   const disclaimer = element('p', 'Diagnostics for this visitor only. Not Adobe reporting or collection confirmation. No GPS, identity enrichment or bot scoring.');
   const status = element('p');
   status.setAttribute('role', 'status');
@@ -105,12 +107,15 @@ export default function initInsights(analytics) {
   }
   content.append(disclaimer, status, preferences);
   const visitor = element('dl');
-  section('Browser & visitor - local only').append(visitor);
+  const browserSection = section('Browser & visitor - local only');
+  browserSection.append(visitor);
   const profileSection = section('Visitor profile - optional CDN display');
   profileSection.className = 'suresmile-visitor-profile';
   const profile = createVisitorProfile(profileSection);
   const summary = element('dl');
-  section('Top-level observations - local only').append(summary);
+  const overviewSection = section('Top-level observations - local only');
+  overviewSection.append(summary);
+  content.insertBefore(overviewSection, browserSection);
   const components = element('ol');
   section('Components seen in viewport').append(
     element('p', 'Unique loaded EDS block instances, at least 10% in viewport. Sightings include repeat entries; not proof of reading.'),
@@ -124,7 +129,8 @@ export default function initInsights(analytics) {
   const localFeed = element('ol');
   section('Local event details').append(localFeed);
   const journey = element('dl');
-  section('Journey - exact guide mapping').append(journey);
+  const journeySection = section('Journey - exact guide mapping');
+  journeySection.append(journey);
   const counters = element('p');
   const feed = element('ol');
   const events = section('Live hit stream');
@@ -135,7 +141,22 @@ export default function initInsights(analytics) {
       + 'None confirms Adobe receipt or report processing.'),
     feed,
   );
-  panel.append(header, content);
+  [['Overview', overviewSection], ['Browser', browserSection], ['Profile', profileSection],
+    ['Journey', journeySection], ['Events', events]].forEach(([label, target]) => {
+    const button = element('button', label);
+    button.type = 'button';
+    const heading = target.querySelector('h3');
+    heading.tabIndex = -1;
+    button.addEventListener('click', () => {
+      content.scrollTo({
+        top: content.scrollTop + target.getBoundingClientRect().top
+          - content.getBoundingClientRect().top,
+      });
+      heading.focus({ preventScroll: true });
+    });
+    navigation.append(button);
+  });
+  panel.append(header, navigation, content);
   const toggle = element('button', 'SureSmile insights', 'suresmile-insights-toggle');
   toggle.type = 'button';
   toggle.setAttribute('aria-controls', panel.id);
@@ -147,9 +168,10 @@ export default function initInsights(analytics) {
     toggle.setAttribute('aria-expanded', String(open));
     if (open) {
       priorFocus = document.activeElement;
-      close.focus();
+      close.focus({ preventScroll: true });
     } else {
-      (priorFocus?.isConnected && priorFocus !== document.body ? priorFocus : toggle).focus();
+      (priorFocus?.isConnected && priorFocus !== document.body ? priorFocus : toggle)
+        .focus({ preventScroll: true });
     }
   }
   close.addEventListener('click', () => setOpen(false));

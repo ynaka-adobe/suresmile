@@ -71,7 +71,7 @@ export default function createConsent(onChange) {
         warnStorage();
       }
       sync();
-      (previousFocus?.isConnected ? previousFocus : settings).focus();
+      (previousFocus?.isConnected ? previousFocus : settings).focus({ preventScroll: true });
     });
     actions.append(button);
   });
@@ -87,7 +87,7 @@ export default function createConsent(onChange) {
     previousFocus = document.activeElement;
     panel.hidden = false;
     settings.setAttribute('aria-expanded', 'true');
-    actions.querySelector('button').focus();
+    actions.querySelector('button').focus({ preventScroll: true });
   };
   settings.addEventListener('click', open);
   window.addEventListener('consent:open-preferences', open);

@@ -136,6 +136,9 @@ Add **`?insights=1`** (or `&insights=1`) to open a SureSmile-branded nonmodal
 slide-over. Close/Escape restores focus; its reopen control remains available in
 that document. No open-state storage or employee authorization is implied.
 The panel only shows this visitor's safe local diagnostics.
+Overview is first; compact Overview/Browser/Profile/Journey/Events buttons jump
+inside the booklet and move accessible heading focus without scrolling the
+underlying page. Opening/closing focus also preserves the page's scroll position.
 
 It consumes the adapter's same data-layer/transport stream, without another
 click listener or beacon. Its rolling 30-record buffer distinguishes:

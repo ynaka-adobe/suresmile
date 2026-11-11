@@ -161,6 +161,11 @@ export default async function checkAnalytics() {
     assert(!doc.querySelector('#suresmile-insights').hidden, 'Explicit query opens panel');
     await waitFor(() => win.getComputedStyle(doc.querySelector('#suresmile-insights')).position === 'fixed', 'Insights stylesheet');
     assert(doc.activeElement.getAttribute('aria-label') === 'Close SureSmile live insights', 'Panel opening focus');
+    assert(win.scrollY === 0, 'Opening booklet never scrolls the underlying page');
+    [...doc.querySelectorAll('.suresmile-insights-nav button')]
+      .find((button) => button.textContent === 'Profile').click();
+    assert(doc.activeElement.textContent === 'Visitor profile - optional CDN display', 'Profile navigation focus');
+    assert(win.scrollY === 0, 'Section navigation scrolls booklet only');
     assert(doc.querySelector('#suresmile-insights').textContent.includes('Paused'), 'Preconsent panel paused');
     assert(!doc.querySelector('#suresmile-insights').textContent.includes('secret'), 'Panel redaction');
     assert(doc.querySelector('#suresmile-insights').getBoundingClientRect().width <= 390, 'Mobile panel width');
