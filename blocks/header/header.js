@@ -11,7 +11,7 @@
  *                <p> submit label
  */
 
-import { fetchLocaleFragment } from '../../scripts/locale.js';
+import { fetchLocaleFragment, chooseLocale, pageLocale } from '../../scripts/locale.js';
 
 const BREAKPOINT = window.matchMedia('(width >= 600px)');
 
@@ -110,8 +110,11 @@ function buildRegionDialog(section) {
   submit.textContent = submitLabel;
   submit.insertAdjacentHTML('beforeend', ICONS.chevronRight);
   submit.addEventListener('click', () => {
-    if (select.value && select.value !== current.href) window.location.href = select.value;
-    else dialog.close();
+    if (select.value && select.value !== current.href) {
+      const target = new URL(select.value, window.location.href);
+      if (target.origin === window.location.origin) chooseLocale(pageLocale(target.pathname));
+      window.location.href = select.value;
+    } else dialog.close();
   });
 
   dialog.append(close, title, field, submit);

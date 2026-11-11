@@ -42,17 +42,50 @@ export function localizePath(path) {
   return `/${locale}${match[2] || '/'}`;
 }
 
+const DEFAULT_LOCALE = 'en-us';
+const COOKIE = 'NEXT_LOCALE';
+const CHOSEN_KEY = 'suresmile.locale.chosen';
+
+function readCookie() {
+  const match = document.cookie.split('; ').find((c) => c.startsWith(`${COOKIE}=`));
+  return match ? match.slice(COOKIE.length + 1) : null;
+}
+
+function writeCookie(value) {
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${COOKIE}=${value}; Path=/; SameSite=Lax${secure}`;
+}
+
 /**
- * Remembers the locale the visitor is browsing in the same session cookie the existing
- * suresmile.com uses (NEXT_LOCALE). The CDN's first-visit language redirect only runs while
- * this cookie is absent, and sends a returning visitor back to this locale.
+ * The CDN's first-visit language redirect (the NEXT_LOCALE cookie, same name as the existing
+ * suresmile.com) only runs while that cookie is absent, and sends a returning visitor back to
+ * the locale in it. So the cookie must mean "this visitor settled on a market", not "this
+ * visitor once viewed an English page":
+ *  - a non-default locale is remembered automatically (for example after the Japanese redirect);
+ *  - the default locale is only remembered when the visitor chose it in the region chooser,
+ *    and a stale automatic copy is removed so English pages never pin English.
  * A session cookie holding only a locale folder name; it identifies no one.
  */
 export function rememberLocale() {
   const locale = pageLocale();
   if (!locale) return;
   try {
-    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-    document.cookie = `NEXT_LOCALE=${locale}; Path=/; SameSite=Lax${secure}`;
+    if (locale !== DEFAULT_LOCALE) {
+      writeCookie(locale);
+    } else if (readCookie() === DEFAULT_LOCALE && !sessionStorage.getItem(CHOSEN_KEY)) {
+      document.cookie = `${COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+    }
   } catch { /* cookies unavailable: the visitor is simply re-detected next time */ }
+}
+
+/**
+ * Records an explicit market choice from the region chooser, including the default locale.
+ * @param {string|null} locale Locale folder such as "en-us" or "ja-jp"
+ */
+export function chooseLocale(locale) {
+  if (!locale) return;
+  try {
+    sessionStorage.setItem(CHOSEN_KEY, locale);
+    writeCookie(locale);
+  } catch { /* cookies unavailable */ }
 }
