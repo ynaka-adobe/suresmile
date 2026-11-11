@@ -14,11 +14,15 @@
  * CDN-derived location (City, State). Submitting it unchanged also sends lat/lng so the
  * results need no geocoding; editing the field searches the typed address instead.
  *
+ * On a locale page (for example /ja-jp/) the action's locale folder is swapped for the
+ * page's own when that page exists, so authored /en-us/ links stay in the visitor's market.
+ *
  * Query parameters sent: address, radius (miles), lat, lng.
  * The results block geocodes manual locations before requesting doctors.
  */
 
 import getVisitorLocation from '../../scripts/visitor-location.js';
+import { localizePath } from '../../scripts/locale.js';
 
 const KEYS = ['label', 'placeholder', 'radius', 'action', 'geolocation'];
 const DEFAULT_RADII = [5, 10, 25, 50];
@@ -84,7 +88,15 @@ export default function decorate(block) {
   const placeholder = config.placeholder?.textContent.trim() || 'Your location';
   const { radii, selected } = parseRadii(config.radius);
   const actionLink = config.action?.querySelector('a');
-  const action = actionLink?.getAttribute('href') || DEFAULT_ACTION;
+  const authoredAction = actionLink?.getAttribute('href') || DEFAULT_ACTION;
+  // Authored once as /en-us/..., so a /ja-jp/ visitor lands on /ja-jp/... when that page exists.
+  let action = authoredAction;
+  const localAction = localizePath(authoredAction);
+  if (localAction !== authoredAction) {
+    fetch(localAction, { method: 'HEAD' })
+      .then((response) => { if (response.ok) action = localAction; })
+      .catch(() => {});
+  }
   const submitText = (actionLink || config.action)?.textContent.trim() || 'Find a doctor';
   const geoText = config.geolocation?.textContent.trim();
 

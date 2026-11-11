@@ -27,3 +27,17 @@ export async function fetchLocaleFragment(name) {
   }
   return null;
 }
+
+/**
+ * Swaps a leading locale folder in a site path for the page's own locale, so a block authored
+ * once as /en-us/find-a-doctor sends a /ja-jp/ visitor to /ja-jp/find-a-doctor.
+ * Returns the path unchanged outside a locale, for external URLs, or when already local.
+ * @param {string} path Site path or URL, for example "/en-us/find-a-doctor"
+ * @returns {string}
+ */
+export function localizePath(path) {
+  const locale = pageLocale();
+  const match = locale && /^\/([a-z]{2}(?:-[a-z]{2})?)(\/.*)?$/i.exec(path || '');
+  if (!match || match[1].toLowerCase() === locale) return path;
+  return `/${locale}${match[2] || '/'}`;
+}
