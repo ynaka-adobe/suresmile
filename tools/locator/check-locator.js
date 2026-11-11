@@ -34,6 +34,12 @@ async function checkFrame(scenario) {
   const originalFetch = window.fetch.bind(window);
   window.fetch = (input, options) => {
     const url = new URL(input, window.location.href);
+    if (url.pathname === '/.da/google-maps.json') {
+      if (scenario === 'invalid-config') {
+        return Promise.resolve(new Response(JSON.stringify({ data: [] })));
+      }
+      return Promise.resolve(new Response('', { status: 503 }));
+    }
     if (url.pathname === '/api/location/doctors') {
       requests.push(url);
       if (scenario === 'empty') {
@@ -43,7 +49,9 @@ async function checkFrame(scenario) {
     }
     return originalFetch(input, options);
   };
-  if (scenario !== 'missing-provider') {
+  if (['missing-provider', 'invalid-config'].includes(scenario)) {
+    delete window.google;
+  } else {
     // Explicit provider double: validates integration, not real Google authorization.
     // Coordinates are a controlled test response, never a production ZIP fallback.
     window.google = {
@@ -116,7 +124,7 @@ async function checkFrame(scenario) {
     assert(!block.querySelector('.search-results-map-empty'), 'API errors are not empty results');
   } else {
     assert(requests.length === 0, 'No doctor request without valid geocoding');
-    const unavailable = ['missing-provider', 'provider-error'].includes(scenario);
+    const unavailable = ['missing-provider', 'invalid-config', 'provider-error'].includes(scenario);
     assert(status.includes(unavailable ? 'unavailable' : 'could not find'), 'Clear geocoding failure');
   }
   requests.forEach((url) => {
@@ -201,18 +209,21 @@ export default async function checkLocator() {
       manual.requestSubmit();
       await waitFor(
         () => frame.contentWindow.location.search.includes('address=94121')
-          && frame.contentDocument.querySelector('.search-results-map-status')?.textContent.includes('unavailable'),
-        'Manual ZIP navigation and current missing-provider state',
+          && frame.contentDocument.activeElement.id === 'doctor-results',
+        'Manual ZIP navigation (local referrers may lack Google authorization)',
       );
       assert(frame.contentDocument.querySelector('.search-locator input').value === '94121', 'Manual query retained');
+      results.push({ width, scenario: 'manual-navigation', focus: measureFocus(frame.contentDocument) });
       results.push({ width, ...await scenario('zip') });
     }
-    for (const name of ['bad-zip', 'invalid-geocode', 'provider-error', 'missing-provider', 'empty', 'api-error']) {
-      await visit(`?address=${name === 'bad-zip' ? 'not-a-place' : '94121'}&radius=10#doctor-results`);
+    for (const name of ['bad-zip', 'invalid-geocode', 'provider-error', 'missing-provider', 'invalid-config', 'empty', 'api-error']) {
+      await visit();
+      frame.contentWindow.history.replaceState(null, '', `?address=${name === 'bad-zip' ? 'not-a-place' : '94121'}&radius=10#doctor-results`);
       results.push(await scenario(name));
     }
     for (const query of ['?lat=999&lng=0', '?lat=37x&lng=-122', '?address=']) {
       const doc = await visit(query);
+      await waitFor(() => doc.activeElement.id === 'doctor-results', 'Invalid query results focus');
       assert(!doc.querySelector('.search-results-map-card'), 'Invalid query has no doctor results');
       assert(doc.querySelector('.search-results-map-status').textContent.includes('could not find'), 'Invalid query error');
       results.push({ scenario: query, focus: measureFocus(doc) });

@@ -9,9 +9,17 @@ Model: `standalone`
 Single block table. Content: key | value rows: source (same-origin doctors API path, default `/api/location/doctors`); no-results (heading + message, e.g. '**We're sorry**' / 'We couldn't find any SureSmile doctors in this area. Try expanding your search.'); results-label ('{count} results for'); per-page (20). Optional rows: maps-api-key (authorized Google Maps browser key; enables map and address geocoding), map-id, geocode (on/off), directions-label ('Driving instructions'), map-label ('Doctor map'), services-tooltip, aligners, braces, retainers, previous-label, next-label, pagination-label, loading-label, location-label. A single-cell first row is read as the source URL. Reads ?lat=&lng=&radius= or ?address=&radius= from the page URL and calls GET {source}?lat=&lng=&radius=&page=&per_page=&unit=mi.
 
 Address/postal-code input must first resolve through the existing Google Maps
-JavaScript Geocoder. Configure `maps-api-key` with a browser key authorized for
-this site's referrer, with Maps JavaScript and Geocoding enabled, or reuse an
-already loaded Maps library. Do not copy a key from the original external site.
+JavaScript Geocoder. The shared DA sheet at `/.da/google-maps` supplies the
+browser key through its published `/.da/google-maps.json` runtime endpoint.
+Its `data` array must contain a `key: GOOGLE_MAP_KEY` row with a nonempty
+`value`. Preview and publish the sheet as JSON, not as an HTML page.
+Only browser-public configuration belongs in this sheet, never server credentials.
+The key must be restricted to the site's referrers, with Maps JavaScript and
+Geocoding enabled. An authored `maps-api-key` row overrides the shared setting;
+an already loaded Maps library can also be reused. No configuration is fetched
+before a search. Configuration failures are logged without values, preserve
+coordinate-only doctor results, and leave address search explicitly unavailable.
+Do not copy a key from the original external site.
 With no authorized provider, address search displays an explicit unavailable
 message and does not request doctors. Empty/failed/invalid geocoding also stops
 the doctor request; there is no address-only or default-coordinate fallback.
@@ -53,8 +61,9 @@ provider/configuration failures, invalid coordinates, empty results and API
 errors. The mock verifies coordinate hand-off, **not real Google authorization**.
 
 Deploy only the changed locator JS/CSS through an approved repository workflow.
-Real-provider ZIP verification additionally requires the authorized Maps
-configuration above; the hosted block currently has no `maps-api-key` row.
+Real-provider ZIP verification additionally requires the published shared Maps
+configuration above (or an authorized block override). Do not commit browser
+keys or include key values/provider URLs in validation output.
 
 ## Supported variations
 

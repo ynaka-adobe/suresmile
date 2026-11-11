@@ -11,7 +11,7 @@
  *   results-label     | {count} results for
  *   per-page          | 20
  * Optional rows:
- *   maps-api-key      | Google Maps JavaScript API key (no key = no map, list only)
+ *   maps-api-key      | Optional override for the shared Google Maps browser key
  *   map-id            | Google Maps map ID (enables advanced markers)
  *   geocode           | on / off (geocode an address-only search; needs maps-api-key)
  *   directions-label  | Driving instructions
@@ -121,6 +121,27 @@ function readConfig(block) {
     config[key] = text(key) || DEFAULTS[key];
   });
   return config;
+}
+
+async function loadSharedMapsKey() {
+  try {
+    const response = await fetch('/.da/google-maps.json', {
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) throw new Error('Maps configuration request failed');
+    const json = await response.json();
+    const value = Array.isArray(json.data)
+      ? json.data.find((row) => row.key === 'GOOGLE_MAP_KEY')?.value : null;
+    if (typeof value !== 'string' || !value.trim()) {
+      throw new Error('Maps browser key is missing');
+    }
+    return value.trim();
+  } catch {
+    // Do not log configuration values or provider URLs.
+    // eslint-disable-next-line no-console
+    console.warn('search-results-map: shared Google Maps configuration is unavailable');
+    return '';
+  }
 }
 
 function validCoordinates(lat, lng) {
@@ -588,6 +609,10 @@ export default async function decorate(block) {
     block.classList.add('search-results-map-idle');
     block.hidden = true;
     return;
+  }
+
+  if (!config.mapsApiKey && !window.google?.maps?.importLibrary) {
+    config.mapsApiKey = await loadSharedMapsKey();
   }
 
   idCounter += 1;
