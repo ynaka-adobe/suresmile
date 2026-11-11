@@ -1,3 +1,4 @@
+import { matchedVariantId } from './audiences.js';
 import createConsent from './analytics-consent.js?v=insights-session-2';
 import createObservations from './analytics-observations.js?v=insights-session-2';
 import {
@@ -174,7 +175,8 @@ export default function initAnalytics({ loadTracker: acquireTracker = loadTracke
     } catch { warn('visit storage unavailable'); }
   }
   function context(includeVisit = true) {
-    const variant = document.querySelector('main [data-analytics-variant]')?.dataset.analyticsVariant || '';
+    const variant = document.querySelector('main [data-analytics-variant]')?.dataset.analyticsVariant
+      || matchedVariantId();
     return buildContext(new URL(window.location.href), includeVisit ? readVisit() : null, variant);
   }
   function snapshot() {

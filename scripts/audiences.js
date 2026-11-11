@@ -156,6 +156,21 @@ async function localizeAudienceLinks(main) {
 }
 
 /**
+ * The variant(s) this page is showing, as one analytics-safe ID, for example "hero-split:japan"
+ * (several audience sections are joined with "_"; unmatched ones report "default").
+ * Read from the audience markers on the page, so reporting reflects what was actually rendered.
+ * @returns {string} '' when the page has no audience sections
+ */
+export function matchedVariantId() {
+  const parts = [...document.querySelectorAll('main [data-audience]')].map((section) => {
+    const block = section.querySelector('[data-block-name]')?.dataset.blockName
+      || section.firstElementChild?.className.split(' ')[0] || 'section';
+    return `${block}:${section.dataset.audience}`;
+  });
+  return parts.join('_').replace(/[^a-zA-Z0-9:_-]/g, '').slice(0, 64);
+}
+
+/**
  * Runs the experimentation plugin when (and only when) the page declares audiences, before the
  * sections are decorated so a swapped-in variant is decorated like any other content.
  * @param {HTMLElement} main
