@@ -15,7 +15,7 @@ import {
   readBlockConfig,
   toClassName,
   toCamelCase,
-} from './aem.js';
+} from './aem.js?v=insights-session-2';
 import {
   isUePreviewHost,
   loadTarget,
@@ -232,7 +232,7 @@ async function loadLazy(doc) {
  * without impacting the user experience.
  */
 function loadDelayed() {
-  window.setTimeout(() => import('./delayed.js'), 3000);
+  window.setTimeout(() => import('./delayed.js?v=insights-session-2'), 3000);
   // load anything that can be postponed to the latest here
 }
 

@@ -11,14 +11,15 @@
   inset: 8px 8px 68px auto;
   display: flex;
   flex-direction: column;
-  width: min(520px, calc(100vw - 16px));
+  width: min(420px, calc(100vw - 16px));
   background: #fff;
   border: 1px solid #d5e0e6;
   border-radius: 12px;
   box-shadow: -12px 0 40px #17314b33;
 }
 
-.suresmile-insights[hidden] {
+.suresmile-insights[hidden],
+.suresmile-insights [hidden] {
   display: none;
 }
 
@@ -36,7 +37,30 @@
 
 .suresmile-insights h2 {
   margin: 0;
-  font: 500 21px/1.25 var(--heading-font-family, Arial, sans-serif);
+  font: 600 20px/1.25 var(--heading-font-family, Arial, sans-serif);
+}
+
+.suresmile-insights-eyebrow {
+  margin: 0 0 5px;
+  color: #0075b9;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.suresmile-header-count {
+  flex-shrink: 0;
+  padding: 3px 7px;
+  border-radius: 20px;
+  background: #eef5fa;
+  color: #005b91;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.suresmile-page-context {
+  color: #69747d;
+  font-size: 11px;
 }
 
 .suresmile-insights h3 {
@@ -180,21 +204,68 @@
 
 .suresmile-overview {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
   margin: 16px 0;
 }
 
 .suresmile-insights .suresmile-overview > div {
   display: block;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #f5f6f8;
 }
 
 .suresmile-overview dt {
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .suresmile-overview dd {
-  font-size: 19px;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.suresmile-summary-list {
+  padding: 0;
+  list-style: none;
+}
+
+.suresmile-summary-label {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.suresmile-summary-label span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suresmile-summary-label strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.suresmile-summary-track {
+  height: 6px;
+  margin: 6px 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #e6edf1;
+}
+
+.suresmile-summary-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0075b9;
+}
+
+.suresmile-summary-item small {
+  color: #69747d;
+  font-size: 11px;
 }
 
 .suresmile-insights ol {

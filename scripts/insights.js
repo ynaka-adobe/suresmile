@@ -1,4 +1,5 @@
-import createVisitorProfile from './visitor-profile.js';
+import createVisitorProfile from './visitor-profile.js?v=insights-session-2';
+import insightsSession from './insights-session.js?v=insights-session-2';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -70,6 +71,22 @@ function rows(list, values) {
   }));
 }
 
+function bars(list, values) {
+  const maximum = Math.max(1, ...values.map((value) => value.count));
+  list.replaceChildren(...values.map((value) => {
+    const item = element('li', undefined, 'suresmile-summary-item');
+    const label = element('div', undefined, 'suresmile-summary-label');
+    label.append(element('span', value.label), element('strong', String(value.count)));
+    const track = element('div', undefined, 'suresmile-summary-track');
+    const fill = element('span');
+    fill.style.width = `${Math.round((value.count / maximum) * 100)}%`;
+    track.append(fill);
+    item.append(label, track, element('small', value.note));
+    return item;
+  }));
+  if (!values.length) list.append(element('li', 'None observed on this page yet.'));
+}
+
 const EVENTS = {
   event1: 'Demo hub view',
   event2: 'Journey selected',
@@ -83,23 +100,28 @@ const EVENTS = {
 };
 
 /** A local consumer of the adapter stream, never an instrumenter or SDK loader. */
-export default function initInsights(analytics) {
-  const flags = new URLSearchParams(window.location.search).getAll('insights');
-  if (flags.length !== 1 || flags[0] !== '1' || document.getElementById('suresmile-insights')) return;
+export default function initInsights(analytics, session = insightsSession()) {
+  if (!session.active || document.getElementById('suresmile-insights')) return;
   const style = element('link');
   style.rel = 'stylesheet';
   style.href = new URL('../styles/insights.css', import.meta.url).href;
+  style.href += '?v=insights-session-2';
   document.head.append(style);
   const panel = element('aside', undefined, 'suresmile-insights');
   panel.id = 'suresmile-insights';
+  panel.dataset.insightsVersion = 'session-2';
   panel.setAttribute('aria-labelledby', 'suresmile-insights-title');
   const header = element('div', undefined, 'suresmile-insights-header');
-  const title = element('h2', 'SureSmile live insights');
+  const title = element('h2', 'This session');
   title.id = 'suresmile-insights-title';
   const close = element('button', 'Close');
   close.type = 'button';
   close.setAttribute('aria-label', 'Close SureSmile live insights');
-  header.append(title, close);
+  const headingGroup = element('div');
+  headingGroup.append(element('p', 'SURESMILE LIVE ANALYTICS', 'suresmile-insights-eyebrow'), title);
+  const hitCount = element('span', '0 events', 'suresmile-header-count');
+  hitCount.title = 'Observed Adobe Analytics hits, not reporting receipt';
+  header.append(headingGroup, hitCount, close);
   const content = element('div', undefined, 'suresmile-insights-content');
   const disclaimer = element('p', 'Observed here, not Adobe reporting.', 'suresmile-insights-note');
   const status = element('p');
@@ -122,26 +144,35 @@ export default function initInsights(analytics) {
   content.append(status, preferences);
   const summary = element('dl', undefined, 'suresmile-overview');
   content.append(summary);
+  const pageContext = element('p', '', 'suresmile-page-context');
+  content.append(pageContext);
   const visitorCard = section('VISITOR', 'suresmile-visitor-card');
+  visitorCard.wrapper.open = true;
   visitorCard.count.className = 'suresmile-location-badge';
+  const network = element('div', undefined, 'suresmile-network-info');
+  const browser = element('div', undefined, 'suresmile-browser-info');
+  visitorCard.body.append(browser, network);
   const networkTitle = element('h3', 'NETWORK - FROM THE CDN');
-  visitorCard.body.append(networkTitle);
+  network.append(networkTitle);
   const profileSection = element('div', undefined, 'suresmile-visitor-profile');
-  visitorCard.body.append(profileSection);
-  const profile = createVisitorProfile(profileSection, (location) => {
+  network.append(profileSection);
+  const profile = createVisitorProfile(profileSection, (location, available) => {
     visitorCard.count.textContent = location;
+    visitorCard.body.prepend(available ? network : browser);
   });
   const visitor = element('dl');
   visitor.className = 'suresmile-device-fields';
-  visitorCard.body.append(element('h3', 'BROWSER - REPORTED BY THIS DEVICE'), visitor);
-  const components = element('ol');
+  browser.append(element('h3', 'BROWSER - REPORTED BY THIS DEVICE'), visitor);
+  const components = element('ul', undefined, 'suresmile-summary-list');
   const componentCard = section('Components seen');
+  componentCard.wrapper.open = true;
   componentCard.body.append(
     element('p', 'Loaded blocks at least 10% in viewport. Unique instances; repeat sightings counted separately.'),
     components,
   );
-  const links = element('ol');
+  const links = element('ul', undefined, 'suresmile-summary-list');
   const linkCard = section('Links clicked');
+  linkCard.wrapper.open = true;
   linkCard.body.append(
     element('p', 'Recent clicks with safe labels and destinations.'),
     links,
@@ -171,6 +202,7 @@ export default function initInsights(analytics) {
   let priorFocus = document.activeElement;
   function setOpen(open) {
     panel.hidden = !open;
+    session.setOpen(open);
     profile.setOpen(open);
     toggle.setAttribute('aria-expanded', String(open));
     if (open) {
@@ -193,22 +225,33 @@ export default function initInsights(analytics) {
     profile.setConsent(snapshot.consent);
     const local = snapshot.observations;
     rows(summary, [
-      ['AA hits', String(snapshot.totals.observed)],
-      ['Components', local.visibilityAvailable ? String(local.components.length) : 'Unavailable'],
+      ['Events', String(snapshot.totals.observed)],
+      ['Components seen', local.visibilityAvailable ? String(local.components.length) : 'Unavailable'],
       ['Links clicked', String(local.clicks)],
-      ['Scroll / max', local.active ? `${local.scroll.current}% / ${local.scroll.maximum}%` : 'Paused'],
+      ['Scroll', local.active ? `${local.scroll.maximum}%` : 'Paused'],
     ]);
+    summary.lastElementChild.title = `Maximum on this page; current scroll ${local.scroll.current}%`;
+    hitCount.textContent = `${snapshot.totals.observed} events`;
+    pageContext.textContent = `${context.page.name} · ${context.channel.discovery}`;
     componentCard.count.textContent = String(local.components.length);
     linkCard.count.textContent = String(local.clicks);
     localCard.count.textContent = String(local.totalEvents);
     events.count.textContent = String(snapshot.totals.observed);
-    components.replaceChildren(...local.components.map((component) => (
-      element('li', `${component.name} #${component.id}`)
-    )));
-    links.replaceChildren(...local.links.map((link) => element('li', `${link.label} | ${link.href}`)));
+    const componentGroups = new Map();
+    local.components.forEach((component) => {
+      const group = componentGroups.get(component.name)
+        || { label: component.name, count: 0, instances: 0 };
+      group.count += component.sightings;
+      group.instances += 1;
+      componentGroups.set(component.name, group);
+    });
+    bars(components, [...componentGroups.values()].sort((a, b) => b.count - a.count)
+      .map((group) => ({ ...group, note: `${group.instances} instances · ${group.count} viewport sightings` })));
+    bars(links, local.links.slice().sort((a, b) => b.count - a.count)
+      .map((link) => ({ label: link.label, count: link.count, note: link.href })));
     localFeed.replaceChildren(...local.records.slice().reverse().map((record) => {
       let detail = record.type;
-      if (record.type === 'scroll') detail = `Scroll ${record.current}% | max ${record.maximum}%`;
+      if (record.type === 'scroll') detail = `Reached ${record.milestone}% scroll | max ${record.maximum}%`;
       if (record.type === 'componentSeen') {
         detail = `Component ${record.component.name} #${record.component.id} | ${record.repeat ? 'repeat' : 'first sighting'}`;
       }
@@ -218,6 +261,7 @@ export default function initInsights(analytics) {
     status.textContent = snapshot.consent === 'granted'
       ? `Analytics on | ${snapshot.sdkStatus}`
       : 'Paused | Analytics off';
+    if (session.unavailable) status.textContent += ' | Session storage unavailable; this page only.';
     const deviceFields = browserInformation();
     const names = {
       'Browser (reported)': 'Browser',
@@ -231,8 +275,11 @@ export default function initInsights(analytics) {
       'Do Not Track': 'Do Not Track',
       'Global Privacy Control': 'Global Privacy Control',
     };
-    rows(visitor, deviceFields.filter(([label]) => names[label])
+    const order = ['Browser', 'Platform', 'Device type', 'Language', 'Time zone',
+      'Screen', 'Viewport', 'Effective connection', 'Do Not Track', 'Global Privacy Control'];
+    const browserValues = new Map(deviceFields.filter(([label]) => names[label])
       .map(([label, value]) => [names[label], value]));
+    rows(visitor, order.map((label) => [label, browserValues.get(label)]));
     rows(journey, [
       ['Page name', context.page.name],
       ['eVar1 / prop2 - persona', context.persona.id],
@@ -275,5 +322,5 @@ export default function initInsights(analytics) {
     window.addEventListener(name, () => render(analytics.snapshot()));
   });
   navigator.connection?.addEventListener?.('change', () => render(analytics.snapshot()));
-  setOpen(true);
+  setOpen(session.open);
 }

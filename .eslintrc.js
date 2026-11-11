@@ -15,5 +15,7 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
     'import/no-cycle': 0, // Allow modules to use each other
+    // Node resolution does not understand the browser's stable release URL query.
+    'import/no-unresolved': ['error', { ignore: ['\\?v=insights-session-2$'] }],
   },
 };

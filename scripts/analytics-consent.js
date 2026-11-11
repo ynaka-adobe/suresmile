@@ -1,3 +1,5 @@
+import { clearProfileSession } from './insights-session.js?v=insights-session-2';
+
 const PREFERENCE_KEY = 'suresmile.analytics.consent.v1';
 
 function warnStorage() {
@@ -49,6 +51,12 @@ export default function createConsent(onChange) {
   panel.id = 'analytics-consent-panel';
 
   const sync = () => {
+    if (!granted()) {
+      try { clearProfileSession(); } catch {
+        // eslint-disable-next-line no-console
+        console.warn('analytics: visitor profile session storage could not be cleared');
+      }
+    }
     panel.hidden = hasCMP() || preference !== null;
     settings.setAttribute('aria-expanded', String(!panel.hidden));
     onChange(granted());

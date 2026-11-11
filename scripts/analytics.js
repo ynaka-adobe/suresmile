@@ -1,5 +1,5 @@
-import createConsent from './analytics-consent.js';
-import createObservations from './analytics-observations.js';
+import createConsent from './analytics-consent.js?v=insights-session-2';
+import createObservations from './analytics-observations.js?v=insights-session-2';
 import {
   buildContext, clickContext, hitVariables, normalizePersona, validVisit, VISIT_KEY, CHANNELS,
 } from './analytics-context.js';

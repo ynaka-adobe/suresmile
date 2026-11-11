@@ -21,7 +21,7 @@ export default function createObservations(onChange) {
   let visible = new WeakSet();
   let seen = new Map();
   let records = [];
-  let links = [];
+  let links = new Map();
   let total = 0;
   let sightings = 0;
   let clicks = 0;
@@ -42,8 +42,11 @@ export default function createObservations(onChange) {
     const maximum = Math.max(scroll.maximum, position.current);
     if (position.current === scroll.current && maximum === scroll.maximum
       && position.wholePageVisible === scroll.wholePageVisible) return;
+    const before = Math.floor(scroll.maximum / 25);
     scroll = { ...position, maximum };
-    emit('scroll', { ...scroll });
+    if (Math.floor(maximum / 25) > before) {
+      emit('scroll', { ...scroll, milestone: Math.floor(maximum / 25) * 25 });
+    } else onChange();
   }
   function scheduleScroll() {
     if (!frame && running) frame = window.requestAnimationFrame(measureScroll);
@@ -94,9 +97,12 @@ export default function createObservations(onChange) {
             const component = identities.get(entry.target);
             if (!component) return;
             const repeat = seen.has(component.id);
-            seen.set(component.id, component);
+            const observed = {
+              ...component, sightings: (seen.get(component.id)?.sightings || 0) + 1,
+            };
+            seen.set(component.id, observed);
             sightings += 1;
-            emit('componentSeen', { component, repeat });
+            emit('componentSeen', { component: observed, repeat });
           });
         }, { threshold: [0, 0.1] });
       }
@@ -139,7 +145,7 @@ export default function createObservations(onChange) {
       visible = new WeakSet();
       seen = new Map();
       records = [];
-      links = [];
+      links = new Map();
       total = 0;
       sightings = 0;
       clicks = 0;
@@ -148,8 +154,11 @@ export default function createObservations(onChange) {
     link(description) {
       if (!running) return;
       clicks += 1;
-      links.push({ ...description });
-      links = links.slice(-30);
+      const key = JSON.stringify([description.label, description.href]);
+      const count = (links.get(key)?.count || 0) + 1;
+      links.delete(key);
+      links.set(key, { ...description, count });
+      if (links.size > 30) links.delete(links.keys().next().value);
       emit('linkClick', { link: description });
     },
     snapshot() {
@@ -160,7 +169,7 @@ export default function createObservations(onChange) {
         sightings,
         clicks,
         components: [...seen.values()],
-        links: [...links],
+        links: [...links.values()],
         scroll: { ...scroll },
         records: [...records],
       };

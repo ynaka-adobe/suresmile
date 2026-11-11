@@ -1,3 +1,5 @@
+import { PROFILE_SESSION_KEY, PROFILE_PERMISSION_KEY, clearProfileSession } from './insights-session.js?v=insights-session-2';
+
 function text(value, limit) {
   if (value === null) return null;
   if (typeof value !== 'string' || value.length > limit
@@ -46,10 +48,10 @@ export function validateProfile(data) {
   };
 }
 
-/** The private response stays in this display only, never the Analytics stream. */
+/** Only this display and its explicitly consented tab cache receive the profile. */
 export default function createVisitorProfile(section, onSummary = () => {}) {
   const note = document.createElement('p');
-  note.textContent = 'Optional IP-based location. Not GPS; never sent to Analytics or saved.';
+  note.textContent = 'Optional IP-based location, not GPS. Saved only in this tab; never sent to Analytics.';
   const status = document.createElement('p');
   status.setAttribute('role', 'status');
   const fields = document.createElement('dl');
@@ -59,9 +61,12 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
   const revoke = document.createElement('button');
   revoke.type = 'button';
   revoke.textContent = 'Remove visitor profile';
+  const refresh = document.createElement('button');
+  refresh.type = 'button';
+  refresh.textContent = 'Refresh visitor profile';
   const actions = document.createElement('div');
   actions.className = 'suresmile-profile-actions';
-  actions.append(allow, revoke);
+  actions.append(allow, refresh, revoke);
   section.append(note, status, fields, actions);
   let opened = false;
   let granted = false;
@@ -71,6 +76,56 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
   let error = false;
   let epoch = 0;
   let abort;
+  let savedAt = null;
+  let restored = false;
+  let storageError = false;
+
+  function storageFailed() {
+    storageError = true;
+    // eslint-disable-next-line no-console
+    console.warn('insights: visitor profile session storage is unavailable');
+  }
+  function forget() {
+    try { clearProfileSession(); } catch { storageFailed(); }
+  }
+  function save() {
+    try {
+      sessionStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify({ version: 1, savedAt, profile }));
+      sessionStorage.setItem(PROFILE_PERMISSION_KEY, 'granted');
+    } catch {
+      storageFailed();
+      forget();
+    }
+  }
+  function restore() {
+    if (restored || !opened || !granted) return;
+    restored = true;
+    let cached;
+    try {
+      if (sessionStorage.getItem(PROFILE_PERMISSION_KEY) !== 'granted') {
+        forget();
+        return;
+      }
+      permission = true;
+      cached = sessionStorage.getItem(PROFILE_SESSION_KEY);
+    } catch { storageFailed(); return; }
+    if (!cached) return;
+    try {
+      const data = JSON.parse(cached);
+      if (data.version !== 1 || !Number.isFinite(data.savedAt)
+        || data.savedAt <= 0 || data.savedAt > Date.now()) throw new Error('Invalid session snapshot');
+      profile = validateProfile(data.profile);
+      savedAt = data.savedAt;
+      save();
+    } catch {
+      profile = null;
+      permission = false;
+      error = true;
+      forget();
+      // eslint-disable-next-line no-console
+      console.warn('insights: invalid visitor profile session snapshot cleared');
+    }
+  }
 
   function render() {
     const coordinates = profile && profile.latitude !== null && profile.longitude !== null
@@ -102,13 +157,18 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       row.append(key, content);
       return row;
     }));
+    fields.hidden = !profile;
     let message = 'Profile off. Allow analytics, then choose profile display.';
     if (granted) message = 'Profile off until you choose to show it.';
     if (pending) message = 'Loading visitor profile.';
-    if (profile) message = 'Approximate CDN location for this visitor.';
+    if (profile) message = `Approximate CDN snapshot from ${new Date(savedAt).toLocaleTimeString()}. Refresh if your network changes.`;
     if (error) message = 'Visitor profile unavailable. Please try again later.';
+    if (storageError) message += ' Session storage unavailable; display is limited to this page.';
     status.textContent = message;
     allow.disabled = !opened || !granted || pending || Boolean(profile);
+    allow.hidden = Boolean(profile);
+    refresh.hidden = !profile;
+    refresh.disabled = !opened || !granted || pending;
     allow.textContent = error ? 'Retry visitor profile' : 'Show my IP and approximate location';
     revoke.hidden = !permission;
     let location = error ? 'Unavailable' : 'Local only';
@@ -116,7 +176,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       location = [profile.city, profile.region, profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
     }
-    onSummary(location);
+    onSummary(location, Boolean(profile));
   }
   function clear() {
     epoch += 1;
@@ -126,10 +186,17 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     pending = false;
     profile = null;
     error = false;
+    savedAt = null;
+    forget();
     render();
   }
-  async function load() {
-    if (!opened || !granted || pending || profile) return;
+  async function load(refreshing = false) {
+    if (!opened || !granted || pending || (profile && !refreshing)) return;
+    if (refreshing) {
+      profile = null;
+      savedAt = null;
+      forget();
+    }
     permission = true;
     pending = true;
     error = false;
@@ -154,7 +221,9 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       const data = validateProfile(await response.json());
       if (current !== epoch || !opened || !granted) return;
       profile = data;
+      savedAt = Date.now();
       pending = false;
+      save();
       render();
     } catch {
       if (current !== epoch || !opened || !granted) return;
@@ -164,21 +233,30 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       render();
     }
   }
-  allow.addEventListener('click', load);
+  allow.addEventListener('click', () => load());
+  refresh.addEventListener('click', () => load(true));
   revoke.addEventListener('click', clear);
   render();
   return {
     setOpen(value) {
       opened = value;
-      if (!value) clear();
-      else render();
+      if (!value && pending) {
+        epoch += 1;
+        abort?.abort();
+        pending = false;
+      }
+      if (value) restore();
+      render();
     },
     setConsent(value) {
       const next = value === 'granted';
-      if (granted === next) return;
+      if (granted === next) {
+        if (!next) forget();
+        return;
+      }
       granted = next;
       if (!next) clear();
-      else render();
+      else { restore(); render(); }
     },
   };
 }

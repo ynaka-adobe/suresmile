@@ -1,6 +1,7 @@
 import initAnalytics from '../../scripts/analytics.js';
 import initInsights, { browserInformation } from '../../scripts/insights.js';
 import { validateProfile } from '../../scripts/visitor-profile.js';
+import { INSIGHTS_SESSION_KEY, PROFILE_SESSION_KEY, PROFILE_PERMISSION_KEY } from '../../scripts/insights-session.js';
 import {
   buildContext, hitVariables, validVisit, VISIT_KEY, VISIT_TIMEOUT,
 } from '../../scripts/analytics-context.js';
@@ -133,6 +134,9 @@ export default async function checkAnalytics() {
     if (!preserve) {
       localStorage.removeItem('suresmile.analytics.consent.v1');
       sessionStorage.removeItem(VISIT_KEY);
+      sessionStorage.removeItem(INSIGHTS_SESSION_KEY);
+      sessionStorage.removeItem(PROFILE_SESSION_KEY);
+      sessionStorage.removeItem(PROFILE_PERMISSION_KEY);
     }
     frame = document.createElement('iframe');
     frame.title = 'Isolated Analytics regression fixture';
@@ -166,7 +170,8 @@ export default async function checkAnalytics() {
     assert(doc.activeElement.getAttribute('aria-label') === 'Close SureSmile live insights', 'Panel opening focus');
     assert(win.scrollY === 0, 'Opening booklet never scrolls the underlying page');
     const visitorCard = doc.querySelector('.suresmile-visitor-card');
-    assert(!visitorCard.open, 'Visitor starts compact and collapsed');
+    assert(visitorCard.open, 'Activated Visitor immediately shows local browser details');
+    visitorCard.querySelector('summary').click();
     visitorCard.querySelector('summary').click();
     visitorCard.querySelector('summary').focus();
     assert(visitorCard.open && doc.activeElement === visitorCard.querySelector('summary'), 'Visitor expands with summary focus');
@@ -255,7 +260,7 @@ export default async function checkAnalytics() {
     ({ doc, win, test } = await setup('/en-us/doctors', true));
     controller = test.init();
     test.insights(controller);
-    assert(!doc.querySelector('#suresmile-insights'), 'Absent query keeps insights off');
+    assert(doc.querySelector('#suresmile-insights'), 'Session activation survives missing query on navigation');
     await controller.ready();
     assert(test.calls[0].variables.eVar1 === 'implant' && test.calls[0].variables.eVar3 === 'search-organic', 'Visit attribution across documents');
     const providerSection = doc.createElement('div');
@@ -347,7 +352,6 @@ export default async function checkAnalytics() {
     const profileCard = doc.querySelector('.suresmile-visitor-card');
     profileCard.querySelector('summary').click();
     profileCard.querySelector('summary').click();
-    profileCard.querySelector('summary').click();
     assert(profileCard.open && profileRequests === 0, 'Expanding visitor never looks up a profile');
     assert(profileButton().disabled && profileRequests === 0, 'No profile request before consent');
     test.allow();
@@ -368,7 +372,8 @@ export default async function checkAnalytics() {
         layer: win.adobeDataLayer,
         snapshot: controller.snapshot(),
         local: { ...win.localStorage },
-        session: { ...win.sessionStorage },
+        session: Object.fromEntries(Object.entries(win.sessionStorage)
+          .filter(([key]) => key !== PROFILE_SESSION_KEY)),
       });
       [profileData.ip, profileData.city, profileData.region,
         String(profileData.latitude), String(profileData.longitude)]
@@ -378,6 +383,8 @@ export default async function checkAnalytics() {
     };
     doc.querySelector('main a').click();
     noProfileInTracking();
+    assert(JSON.parse(win.sessionStorage.getItem(PROFILE_SESSION_KEY)).profile.ip === profileData.ip
+      && win.sessionStorage.getItem(PROFILE_PERMISSION_KEY) === 'granted', 'Only explicitly authorized tab profile is cached');
     doc.querySelector('.suresmile-visitor-profile button:last-child').click();
     assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Remove clears profile display');
     let resolveProfile;
@@ -390,6 +397,8 @@ export default async function checkAnalytics() {
     test.openPreferences();
     test.deny();
     assert(requestOptions.signal.aborted, 'Withdraw cancels profile request');
+    assert(!win.sessionStorage.getItem(PROFILE_SESSION_KEY)
+      && !win.sessionStorage.getItem(PROFILE_PERMISSION_KEY), 'Withdrawal removes profile and scoped session permission');
     resolveProfile(profileResponse());
     await new Promise((done) => { window.setTimeout(done, 20); });
     assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Late response cannot restore withdrawn profile');
@@ -405,12 +414,12 @@ export default async function checkAnalytics() {
     await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Explicit profile retry');
     doc.querySelector('#suresmile-insights button').click();
     doc.querySelector('.suresmile-insights-toggle').click();
-    assert(!doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Close/reopen clears transient profile and does not reuse it');
+    assert(doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip), 'Close/reopen retains explicitly authorized session profile');
     win.fetch = (url, options) => {
       requestOptions = options;
       return new Promise((done) => { resolveProfile = done; });
     };
-    profileButton().click();
+    doc.querySelector('.suresmile-visitor-profile button:nth-child(2)').click();
     doc.querySelector('#suresmile-insights button').click();
     assert(requestOptions.signal.aborted, 'Close cancels an in-flight profile request');
     doc.querySelector('.suresmile-insights-toggle').click();
@@ -424,6 +433,38 @@ export default async function checkAnalytics() {
     await waitFor(() => doc.querySelector('.suresmile-visitor-profile').textContent.includes('Visitor profile unavailable'), 'Malformed JSON shows a visible unavailable status');
     noProfileInTracking();
     results.push('explicit new-scope profile consent, no-store, withdrawal/races/retry and privacy separation');
+
+    ({ doc, win, test } = await setup('/en-us?insights=1'));
+    win.localStorage.setItem('suresmile.analytics.consent.v1', 'granted');
+    win.sessionStorage.setItem(PROFILE_PERMISSION_KEY, 'granted');
+    win.sessionStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify({
+      version: 1, savedAt: Date.now() - 1000, profile: profileData,
+    }));
+    let cachedRequests = 0;
+    win.fetch = async () => { cachedRequests += 1; return profileResponse(); };
+    controller = test.init();
+    test.insights(controller);
+    assert(doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip)
+      && cachedRequests === 0, 'Activated session restores own snapshot without a lookup');
+    doc.querySelector('#suresmile-insights button').click();
+    ({ doc, win, test } = await setup('/en-us/how-it-works?other=keep', true));
+    controller = test.init();
+    test.insights(controller);
+    assert(doc.querySelector('#suresmile-insights').hidden
+      && doc.querySelector('.suresmile-insights-toggle'), 'Dismissed session provides reopen on unflagged navigation');
+    doc.querySelector('.suresmile-insights-toggle').click();
+    assert(doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip)
+      && win.location.search === '?other=keep', 'Reopen restores session profile without propagating query parameters');
+    test.openPreferences();
+    test.deny();
+    assert(!win.sessionStorage.getItem(PROFILE_SESSION_KEY)
+      && doc.querySelector('.suresmile-device-fields dd').textContent !== 'Unavailable', 'Denial clears cache but leaves local browser data');
+    ({ doc, win, test } = await setup('/en-us?insights=0', true));
+    controller = test.init();
+    test.insights(controller);
+    assert(!doc.querySelector('#suresmile-insights')
+      && !win.sessionStorage.getItem(INSIGHTS_SESSION_KEY), 'Explicit disable stops session activation');
+    results.push('tab-session activation, dismissal/reopen, cached profile restore and disable');
 
     ({ doc, win, test } = await setup('/en-us?insights=1'));
     const seenBlock = doc.createElement('div');

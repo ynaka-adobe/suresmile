@@ -134,14 +134,25 @@ consent. This is separate from pre-existing EDS RUM/Target/demo-profile behavior
 
 Add **`?insights=1`** (or `&insights=1`) to open a SureSmile-branded nonmodal
 slide-over. Close/Escape restores focus; its reopen control remains available in
-that document. No open-state storage or employee authorization is implied.
+the tab session. Activation and dismissal persist in tab-scoped
+`sessionStorage['suresmile.insights.session.v1']`; ordinary same-origin navigation
+and reload need no repeated query. Close dismisses, without withdrawing consent;
+reopen restores the panel. `?insights=0` disables activation and clears the
+profile cache/permission. A later `?insights=1` opts in again. No URL parameters,
+auth/CUG values or employee authorization are copied to the session marker.
+Unavailable session storage is reported and falls back to this document only.
 The panel only shows this visitor's safe local diagnostics.
 Compact hit/component/link/scroll counters precede one rounded **VISITOR**
-card. Its native summary expands with mouse, Enter or Space; it does not fetch
+card, initially expanded like XSC. Its native summary toggles with mouse, Enter
+or Space; it does not fetch
 profile data. A blue location badge reflects actual city/state-region/country
 only after explicit profile display; otherwise it says Local only. CDN network
 fields and reported browser/device fields live inside that same card. Other
 activity/journey details are collapsed, without a section-navigation toolbar.
+The four tiles and counted component/link bars follow the XSC layout with
+SureSmile branding. Browser rows remain available without Analytics or profile
+consent. They come first while no profile is displayed; the CDN group comes
+first only when actual consented profile data is available.
 Opening/closing focus preserves the underlying page's scroll position.
 
 It consumes the adapter's same data-layer/transport stream, without another
@@ -165,11 +176,24 @@ Withdrawing consent clears the local hit feed and pauses measurement.
 ### Optional requesting-visitor profile
 
 After Analytics consent, a **separate explicit** **Show my IP and approximate
-location** action enables this purpose for the current open panel only.
+location** action enables this purpose for this browser tab session.
 An existing Analytics-only grant never implicitly allows profile display. The
-consent control explains this separate purpose. Closing, removing the profile,
-or withdrawing consent clears values/cancels loading; reopening/regrant requires
-a new explicit profile choice. No profile-purpose choice or values are persisted.
+consent control explains this separate purpose. Successful validated minimal
+profile fields and snapshot time are saved only in
+`sessionStorage['suresmile.visitor-profile.session.v1']`; the separate purpose
+marker is `suresmile.visitor-profile.consent.v1`. Activated navigation/reload and
+close/reopen restore that snapshot without another lookup or grant. Closing
+cancels an unfinished request but preserves successful cached data. A failed
+response is never cached. Snapshot time/source are labelled; **Refresh visitor
+profile** requests a new snapshot explicitly, never live GPS.
+
+**Remove visitor profile**, Analytics withdrawal (including CMP denial), and
+`?insights=0` immediately clear cached data and profile-purpose permission.
+Invalid/unknown Analytics consent cannot restore it. Malformed/future-dated
+cache data is rejected and visibly reported; storage failures are reported,
+with page-only behavior. Tab-session expiration follows browser `sessionStorage`
+semantics, not indefinite `localStorage`. A new profile choice is required after
+removal/withdrawal. Browser/device fields are never cached.
 
 The client requests only same-origin `GET /api/visitor-profile`, with no query,
 `credentials: same-origin`, `cache: no-store` and redirects disallowed. Both
@@ -200,9 +224,10 @@ HTTP errors and an undeployed endpoint show a visible unavailable status. No
 third-party lookup or geolocation permission is requested; this is not GPS,
 precise physical location, or a profile of another visitor.
 
-The response exists only in the private display controller. IP/city/region/country/
+The response exists only in the private display controller and the explicitly
+authorized tab cache. IP/city/region/country/
 coordinates are never copied to the Analytics snapshot, local event feed,
-`adobeDataLayer`, eVars/props/events, storage, or logs. An abort signal and request
+`adobeDataLayer`, eVars/props/events, other storage, or logs. An abort signal and request
 epoch prevent a late response from restoring revoked data. The backend runtime
 and Fastly route must be deployed separately; UI installation cannot make an
 unavailable endpoint return real fields.
@@ -227,10 +252,26 @@ Scroll is clamped to 0-100%; a short page is explicitly **100% (whole page
 visible)**, not a claimed scroll action. Current/max initialize at grant, not
 from preconsent history. Links use stable allowlisted CTA/page names; unknown
 destinations are redacted and raw link text/query strings are never recorded.
-The two detail buffers hold at most 30 entries; summary counters retain totals.
+Current/max are updated continuously, but the technical feed records only newly
+reached 25/50/75/100% milestones, not every percentage or backward movement.
+Maximum never regresses within the document. The local record buffer holds 30
+entries; link counts aggregate at most 30 recent destinations and component bars
+aggregate real sightings. Summary counters retain totals.
 Withdrawal disconnects observers/cancels animation frames and clears local
 state. A new document starts new counters. Impressions/scroll never call the
 SDK or enter the Adobe data layer; `event1`-`event9` stay exactly as specified.
+
+### Coherent UI release loading
+
+The EDS static response has a two-hour browser freshness lifetime. Fetching the
+latest source does not replace modules already evaluated in an old open page.
+The stable `v=insights-session-2` release URL spans the HTML entry, delayed/UI
+dependencies and panel CSS, so normal fresh-document navigation loads a coherent
+release instead of mixing cached generations. It is not a timestamp/random
+cache buster. AEM's entry-script base-path detection accepts that query suffix.
+The narrow ESLint URL-query exception accounts for Node resolution not
+understanding browser module URLs; browser regressions exercise the actual
+dependency graph. The shared Analytics singleton remains unchanged.
 
 ## Validation and release boundary
 
