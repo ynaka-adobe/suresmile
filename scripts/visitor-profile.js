@@ -158,7 +158,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     const source = { cdn: 'CDN (Fastly)', edge: 'Edge function' };
     const values = [
       ['IP address', profile?.ip || 'Unavailable', 'ip'],
-      ['City', titleCase(profile?.city) || 'Unavailable', 'city'],
+      ['City', countryOverride() ? '' : titleCase(profile?.city) || 'Unavailable', 'city'],
       ['State / region', profile?.region || 'Not returned by the endpoint', 'region'],
       ['Country', shownCountry(), 'country'],
       ['Coordinates', coordinates, 'coordinates'],
@@ -198,7 +198,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     if (error) location = 'Unavailable';
     else if (granted) location = 'Locating';
     if (profile) {
-      location = [titleCase(profile.city), profile.region, countryOverride() || profile.country].filter(Boolean).join(', ')
+      location = [countryOverride() ? '' : titleCase(profile.city), profile.region, countryOverride() || profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
     }
     onSummary(location, Boolean(profile), profile);
