@@ -15,7 +15,7 @@ import {
   readBlockConfig,
   toClassName,
   toCamelCase,
-} from './aem.js?v=insights-session-2';
+} from './aem.js';
 import {
   isUePreviewHost,
   loadTarget,
@@ -232,7 +232,7 @@ async function loadLazy(doc) {
  * without impacting the user experience.
  */
 function loadDelayed() {
-  window.setTimeout(() => import('./delayed.js?v=insights-session-2'), 3000);
+  window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
 }
 
@@ -262,7 +262,12 @@ if (isUePreviewHost()) {
   await import(`${window.hlx.codeBasePath}/ue/scripts/ue.js`).then(({ default: ue }) => ue());
 }
 
-loadPage();
+// Run once per page even if this module is evaluated again under another URL
+// (e.g. an import with a different query string), which would decorate twice.
+if (!window.hlx.pageLoadStarted) {
+  window.hlx.pageLoadStarted = true;
+  loadPage();
+}
 
 (function da() {
   const { searchParams } = new URL(window.location.href);
