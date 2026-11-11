@@ -586,3 +586,32 @@
     animation: none;
   }
 }
+
+/* ───────────────── audience variant badges (while the panel is open) ───────────── */
+
+.suresmile-show-variants [data-audience] {
+  position: relative;
+  outline: 2px dashed var(--brand-blue-start, #0f6bff);
+  outline-offset: -2px;
+}
+
+.suresmile-show-variants [data-audience]::after {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 50;
+  padding: 3px 10px;
+  color: #fff;
+  font: 700 11px/1.4 var(--body-font-family, sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--brand-primary, #191e24);
+  border-radius: 999px;
+  content: 'Variant: ' attr(data-audience);
+  pointer-events: none;
+}
+
+.suresmile-show-variants [data-audience='default']::after {
+  background: var(--brand-neutral-39, #546a7f);
+  content: 'Default (no audience matched)';
+}

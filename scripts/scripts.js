@@ -17,6 +17,7 @@ import {
   toCamelCase,
 } from './aem.js';
 import { rememberLocale } from './locale.js';
+import { applyAudiences } from './audiences.js';
 import {
   isUePreviewHost,
   loadTarget,
@@ -188,6 +189,7 @@ async function loadEager(doc) {
   }
   const main = doc.querySelector('main');
   if (main) {
+    await applyAudiences(main);
     decorateMain(main);
     doc.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);

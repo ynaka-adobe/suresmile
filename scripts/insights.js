@@ -1,5 +1,6 @@
 import createVisitorProfile from './visitor-profile.js?v=insights-session-2';
 import insightsSession from './insights-session.js?v=insights-session-2';
+import { currentInterest, visitorCountry } from './audiences.js';
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -105,7 +106,7 @@ export default function initInsights(analytics, session = insightsSession()) {
   const style = element('link');
   style.rel = 'stylesheet';
   style.href = new URL('../styles/insights.css', import.meta.url).href;
-  style.href += '?v=insights-session-2';
+  style.href += '?v=insights-session-3';
   document.head.append(style);
   const panel = element('aside', undefined, 'suresmile-insights');
   panel.id = 'suresmile-insights';
@@ -166,6 +167,13 @@ export default function initInsights(analytics, session = insightsSession()) {
   const browserTitle = element('h3', 'BROWSER');
   browserTitle.append(element('span', 'Reported by this device', 'suresmile-chip suresmile-chip-browser'));
   browser.append(browserTitle, visitor);
+  const personalization = section('Personalization');
+  personalization.wrapper.open = true;
+  const variantList = element('dl');
+  personalization.body.append(
+    element('p', 'Sections that swap by audience. Badges also appear on the page while this panel is open.'),
+    variantList,
+  );
   const components = element('ul', undefined, 'suresmile-summary-list');
   const componentCard = section('Components seen');
   componentCard.wrapper.open = true;
@@ -210,6 +218,7 @@ export default function initInsights(analytics, session = insightsSession()) {
     session.setOpen(open);
     profile.setOpen(open);
     toggle.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('suresmile-show-variants', open);
     if (open) {
       priorFocus = document.activeElement;
       close.focus({ preventScroll: true });
@@ -222,6 +231,10 @@ export default function initInsights(analytics, session = insightsSession()) {
   toggle.addEventListener('click', () => setOpen(panel.hidden));
   document.addEventListener('keydown', (event) => {
     if (!panel.hidden && event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+  });
+  let visitorCountryLabel = 'Looking up';
+  visitorCountry().then((country) => {
+    visitorCountryLabel = country || 'Unavailable';
   });
   const rendered = new Map();
   const empty = element('li', 'No consented hits observed in this document.');
@@ -239,6 +252,20 @@ export default function initInsights(analytics, session = insightsSession()) {
     hitCount.textContent = `${snapshot.totals.observed} events`;
     pageContext.textContent = `${context.page.name} · ${context.channel.discovery}`;
     componentCard.count.textContent = String(local.components.length);
+    const variants = [...document.querySelectorAll('main [data-audience]')];
+    personalization.count.textContent = String(
+      variants.filter((el) => el.dataset.audience !== 'default').length,
+    );
+    const sectionLabel = (el) => el.querySelector('h1, h2, h3')?.textContent.trim().slice(0, 48)
+      || el.querySelector('[class*="hero"]')?.className.split(' ')[0] || 'Section';
+    rows(variantList, [
+      ['Visitor country', visitorCountryLabel],
+      ['Interest (this session)', currentInterest() || 'None yet'],
+      ...(variants.length
+        ? variants.map((el) => [sectionLabel(el), el.dataset.audience === 'default'
+          ? 'Default (no audience matched)' : `Variant: ${el.dataset.audience}`])
+        : [['Audience sections', 'None on this page']]),
+    ]);
     linkCard.count.textContent = String(local.clicks);
     localCard.count.textContent = String(local.totalEvents);
     events.count.textContent = String(snapshot.totals.observed);
