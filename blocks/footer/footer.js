@@ -7,15 +7,17 @@
  * the top of the footer here, so each page carries its own footnotes.
  */
 
+import { fetchLocaleFragment } from '../../scripts/locale.js';
+
 /**
  * Fetches the footer fragment (metadata-independent): /content first (local preview),
- * then the site root (DA / Edge Delivery). Relative media URLs resolve against the fragment.
+ * then the page's locale folder, then the site root. Relative media URLs resolve against
+ * the fragment.
  * @returns {Promise<HTMLElement|null>}
  */
 async function fetchFooterFragment() {
-  let resp = await fetch('/content/footer.plain.html');
-  if (!resp.ok) resp = await fetch('/footer.plain.html');
-  if (!resp.ok) return null;
+  const resp = await fetchLocaleFragment('footer');
+  if (!resp) return null;
   const wrapper = document.createElement('div');
   wrapper.innerHTML = await resp.text();
   const base = resp.url || window.location.href;

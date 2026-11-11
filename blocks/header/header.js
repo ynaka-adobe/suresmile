@@ -11,6 +11,8 @@
  *                <p> submit label
  */
 
+import { fetchLocaleFragment } from '../../scripts/locale.js';
+
 const BREAKPOINT = window.matchMedia('(width >= 600px)');
 
 const ICONS = {
@@ -23,14 +25,13 @@ const ICONS = {
 
 /**
  * Fetches the nav fragment (metadata-independent): /content first (local preview),
- * then the site root (DA / Edge Delivery). Relative media URLs are resolved against
+ * then the page's locale folder, then the site root. Relative media URLs are resolved against
  * the fragment's own URL so they work from any page depth.
  * @returns {Promise<HTMLElement|null>}
  */
 async function fetchNavFragment() {
-  let resp = await fetch('/content/nav.plain.html');
-  if (!resp.ok) resp = await fetch('/nav.plain.html');
-  if (!resp.ok) return null;
+  const resp = await fetchLocaleFragment('nav');
+  if (!resp) return null;
   const wrapper = document.createElement('div');
   wrapper.innerHTML = await resp.text();
   const base = resp.url || window.location.href;
