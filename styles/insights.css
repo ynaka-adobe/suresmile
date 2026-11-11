@@ -7,8 +7,7 @@
  * brand tokens (styles/brand.css) instead of Parker's gold.
  */
 
-.suresmile-insights,
-.suresmile-insights-toggle {
+.suresmile-insights {
   --ins-ink: var(--brand-primary, #191e24);
   --ins-muted: var(--brand-neutral-39, #546a7f);
   --ins-rule: var(--brand-neutral-92, #e8ebef);
@@ -21,64 +20,9 @@
   box-sizing: border-box;
   color: var(--ins-ink);
   font: 14px/1.5 var(--body-font-family, Arial, sans-serif);
-}
-
-.suresmile-insights *,
-.suresmile-insights-toggle * {
-  box-sizing: inherit;
-}
-
-/* ─────────────────────────────── toggle ────────────────────────────────── */
-
-.suresmile-insights-toggle {
-  position: fixed;
-  z-index: 10000;
-  bottom: 20px;
-  left: 20px;
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  padding: 10px 18px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  background: var(--ins-ink);
-  border: 0;
-  border-radius: 999px;
-  box-shadow: 0 6px 20px rgb(25 30 36 / 28%);
-  cursor: pointer;
-}
-
-.suresmile-insights-toggle:hover {
-  background: #000;
-}
-
-.suresmile-toggle-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--ins-accent);
-  border-radius: 50%;
-  animation: suresmile-insights-pulse 2s ease-in-out infinite;
-}
-
-@keyframes suresmile-insights-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
-}
-
-/* ─────────────────────────────── panel ─────────────────────────────────── */
-
-.suresmile-insights {
   position: fixed;
   z-index: 9999;
-  inset: 0 0 64px auto;
+  inset: 0 0 0 auto;
   display: flex;
   flex-direction: column;
   width: min(420px, 100vw);
@@ -86,6 +30,10 @@
   border-left: 1px solid var(--ins-rule);
   box-shadow: -18px 0 48px rgb(25 30 36 / 18%);
   animation: suresmile-insights-in 200ms ease-out;
+}
+
+.suresmile-insights * {
+  box-sizing: inherit;
 }
 
 @keyframes suresmile-insights-in {
@@ -554,8 +502,7 @@
 }
 
 .suresmile-insights summary:focus-visible,
-.suresmile-insights button:focus-visible,
-.suresmile-insights-toggle:focus-visible {
+.suresmile-insights button:focus-visible {
   outline: 2px solid var(--ins-accent);
   outline-offset: 3px;
 }
@@ -564,7 +511,8 @@
 
 @media (width >= 900px) {
   .suresmile-insights {
-    inset: 16px 16px 64px auto;
+    inset: 16px;
+    inset-inline-start: auto;
     border: 1px solid var(--ins-rule);
     border-radius: 14px;
   }
@@ -581,7 +529,6 @@
     transition: none;
   }
 
-  .suresmile-toggle-dot,
   .suresmile-insights ol > li {
     animation: none;
   }

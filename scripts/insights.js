@@ -209,28 +209,23 @@ export default function initInsights(analytics, session = insightsSession()) {
   const footer = element('footer', undefined, 'suresmile-insights-footer');
   footer.append(disclaimer);
   panel.append(header, content, footer);
-  const toggle = element('button', undefined, 'suresmile-insights-toggle');
-  toggle.append(element('span', undefined, 'suresmile-toggle-dot'), element('span', 'SureSmile insights'));
-  toggle.type = 'button';
-  toggle.setAttribute('aria-controls', panel.id);
-  document.body.append(panel, toggle);
+  document.body.append(panel);
   let priorFocus = document.activeElement;
   function setOpen(open) {
     panel.hidden = !open;
     session.setOpen(open);
     profile.setOpen(open);
-    toggle.setAttribute('aria-expanded', String(open));
     document.body.classList.toggle('suresmile-show-variants', open);
     if (open) {
       priorFocus = document.activeElement;
       close.focus({ preventScroll: true });
-    } else {
-      (priorFocus?.isConnected && priorFocus !== document.body ? priorFocus : toggle)
-        .focus({ preventScroll: true });
+    } else if (priorFocus?.isConnected && priorFocus !== document.body) {
+      priorFocus.focus({ preventScroll: true });
     }
   }
   close.addEventListener('click', () => setOpen(false));
-  toggle.addEventListener('click', () => setOpen(panel.hidden));
+  // The AEM Sidekick "Insights" plugin (scripts/sidekick.js) drives open/close.
+  window.addEventListener('suresmile:insights-toggle', () => setOpen(panel.hidden));
   document.addEventListener('keydown', (event) => {
     if (!panel.hidden && event.key === 'Escape') { event.preventDefault(); setOpen(false); }
   });

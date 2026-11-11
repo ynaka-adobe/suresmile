@@ -186,7 +186,7 @@ export default async function checkAnalytics() {
     assert(doc.querySelector('#suresmile-insights').getBoundingClientRect().right <= 320, 'Insights narrow-mobile bounds');
     doc.querySelector('#suresmile-insights button').click();
     assert(doc.querySelector('#suresmile-insights').hidden, 'Close');
-    doc.querySelector('.suresmile-insights-toggle').click();
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     doc.querySelector('#suresmile-insights').dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     assert(doc.querySelector('#suresmile-insights').hidden, 'Escape close');
     test.deny();
@@ -230,7 +230,7 @@ export default async function checkAnalytics() {
     const body = doc.querySelector('#suresmile-insights').textContent;
     assert(body.includes('eVar1 / prop2') && body.includes('Journey selected') && body.includes('dispatched:'), 'Same-stream insights updates');
     assert(!body.includes('secret') && !body.includes('private@'), 'Event-feed privacy');
-    doc.querySelector('.suresmile-insights-toggle').click();
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     const summary = doc.querySelector('.suresmile-insights-content details details summary');
     summary.closest('.suresmile-insights-detail').open = true;
     summary.click();
@@ -418,7 +418,7 @@ export default async function checkAnalytics() {
     profileButton().click();
     await waitFor(() => profileText().includes(profileData.ip), 'Explicit profile retry');
     doc.querySelector('#suresmile-insights button').click();
-    doc.querySelector('.suresmile-insights-toggle').click();
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     assert(profileText().includes(profileData.ip), 'Close/reopen retains the session profile');
     win.fetch = (url, options) => {
       requestOptions = options;
@@ -428,7 +428,7 @@ export default async function checkAnalytics() {
     const lateResolve = resolveProfile;
     doc.querySelector('#suresmile-insights button').click();
     assert(requestOptions.signal.aborted, 'Close cancels an in-flight profile request');
-    doc.querySelector('.suresmile-insights-toggle').click();
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     lateResolve(profileResponse());
     await new Promise((done) => { window.setTimeout(done, 20); });
     assert(!profileText().includes(profileData.ip), 'Late closed-panel response cannot restore a profile');
@@ -436,7 +436,7 @@ export default async function checkAnalytics() {
     win.fetch = async () => new win.Response('Not JSON', {
       status: 200, headers: { 'cache-control': 'private, no-store' },
     });
-    doc.querySelector('.suresmile-insights-toggle').click();
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     await waitFor(() => profileText().includes('Visitor profile unavailable'), 'Malformed JSON shows a visible unavailable status');
     noProfileInTracking();
     results.push('auto-loaded consented profile, no-store, hide/withdrawal/races/retry and privacy separation');
@@ -458,8 +458,8 @@ export default async function checkAnalytics() {
     controller = test.init();
     test.insights(controller);
     assert(doc.querySelector('#suresmile-insights').hidden
-      && doc.querySelector('.suresmile-insights-toggle'), 'Dismissed session provides reopen on unflagged navigation');
-    doc.querySelector('.suresmile-insights-toggle').click();
+      && !doc.querySelector('.suresmile-insights-toggle'), 'Dismissed session reopens through the Sidekick event on unflagged navigation');
+    win.dispatchEvent(new win.CustomEvent('suresmile:insights-toggle'));
     assert(doc.querySelector('.suresmile-visitor-profile').textContent.includes(profileData.ip)
       && win.location.search === '?other=keep', 'Reopen restores session profile without propagating query parameters');
     test.openPreferences();

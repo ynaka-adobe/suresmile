@@ -61,6 +61,19 @@
       ]
     },
     {
+      "id": "insights",
+      "title": "Insights",
+      "event": "insights",
+      "environments": [
+        "preview",
+        "live",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
+    },
+    {
       "id": "audiences",
       "title": "Audiences",
       "url": "/tools/audiences/audiences.html",

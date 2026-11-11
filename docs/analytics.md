@@ -132,9 +132,11 @@ consent. This is separate from pre-existing EDS RUM/Target/demo-profile behavior
 
 ## SureSmile live insights
 
-Add **`?insights=1`** (or `&insights=1`) to open a SureSmile-branded nonmodal
-slide-over. Close/Escape restores focus; its reopen control remains available in
-the tab session. Activation and dismissal persist in tab-scoped
+Click **Insights** in the AEM Sidekick (plugin `insights` in
+`tools/sidekick/config.json`), or add **`?insights=1`** (or `&insights=1`), to open
+a SureSmile-branded nonmodal slide-over. Close/Escape closes it; the Sidekick
+**Insights** button reopens it for the rest of the tab session. There is no
+floating on-page button. Activation and dismissal persist in tab-scoped
 `sessionStorage['suresmile.insights.session.v1']`; ordinary same-origin navigation
 and reload need no repeated query. Close dismisses, without withdrawing consent;
 reopen restores the panel. `?insights=0` disables activation and clears the
