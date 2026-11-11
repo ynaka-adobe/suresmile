@@ -24,6 +24,11 @@ import {
   applyTargetHeroMboxIfConfigured,
 } from './target.js';
 
+/** DA's Nexter origin: the Sidekick Experimentation panel (scripts/sidekick.js) loads from here. */
+export const NX_ORIGIN = new URLSearchParams(window.location.search).get('nx') === 'local'
+  ? 'http://localhost:6456/nx'
+  : 'https://da.live/nx';
+
 /**
  * Moves all the attributes from a given element to another given element.
  * @param {Element} from the element to copy attributes from

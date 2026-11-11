@@ -8,8 +8,12 @@
       "titleI18n": {
         "en": "Generate with AI"
       },
-      "environments": ["preview"],
-      "includePaths": ["**.docx**"],
+      "environments": [
+        "preview"
+      ],
+      "includePaths": [
+        "**.docx**"
+      ],
       "event": "aem-genai-variations-sidekick"
     },
     {
@@ -17,8 +21,14 @@
       "title": "Target",
       "url": "https://experience.adobe.com/#/@acsmarketing/target/activities/activityLibrary",
       "passConfig": true,
-      "environments": ["preview", "live", "edit"],
-      "includePaths": ["**"]
+      "environments": [
+        "preview",
+        "live",
+        "edit"
+      ],
+      "includePaths": [
+        "**"
+      ]
     },
     {
       "id": "persona",
@@ -27,8 +37,44 @@
       "isPalette": true,
       "passReferrer": true,
       "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
-      "environments": ["preview", "live", "edit", "prod"],
-      "includePaths": ["**"]
+      "environments": [
+        "preview",
+        "live",
+        "edit",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
+    },
+    {
+      "id": "experimentation",
+      "title": "Experimentation",
+      "event": "experimentation",
+      "environments": [
+        "preview",
+        "live",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
+    },
+    {
+      "id": "audiences",
+      "title": "Audiences",
+      "url": "/tools/audiences/audiences.html",
+      "isPalette": true,
+      "passReferrer": true,
+      "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
+      "environments": [
+        "preview",
+        "live",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
     }
   ]
 }

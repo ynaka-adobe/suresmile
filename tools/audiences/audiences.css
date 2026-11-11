@@ -1,0 +1,142 @@
+:root {
+  --aud-ink: #191e24;
+  --aud-muted: #546a7f;
+  --aud-rule: #e8ebef;
+  --aud-accent: #0f6bff;
+  --aud-accent-deep: #04c;
+  --aud-tile: #f2f5f9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  color: var(--aud-ink);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: #fff;
+}
+
+.aud-app {
+  padding: 20px;
+}
+
+.aud-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.aud-page,
+.aud-status,
+.aud-note {
+  margin: 0 0 12px;
+  color: var(--aud-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.aud-heading {
+  margin: 18px 0 8px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--aud-rule);
+}
+
+.aud-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aud-item {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: var(--aud-tile);
+  border: 1px solid var(--aud-rule);
+  border-radius: 8px;
+}
+
+.aud-item-section {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.aud-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.aud-name {
+  padding: 2px 8px;
+  color: #fff;
+  font-weight: 700;
+  background: var(--aud-accent);
+  border-radius: 999px;
+}
+
+.aud-variant {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--aud-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button {
+  padding: 6px 14px;
+  color: var(--aud-accent-deep);
+  font: 600 12px/1.4 inherit;
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid var(--aud-accent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+button:hover {
+  color: #fff;
+  background: var(--aud-accent);
+}
+
+.aud-secondary {
+  color: var(--aud-muted);
+  border-color: var(--aud-rule);
+}
+
+.aud-sim {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px 10px;
+  align-items: center;
+  font-size: 12px;
+}
+
+select {
+  padding: 6px 8px;
+  font: inherit;
+  border: 1px solid var(--aud-rule);
+  border-radius: 6px;
+}
+
+.aud-actions {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 8px;
+}
+
+code {
+  padding: 1px 4px;
+  background: var(--aud-tile);
+  border-radius: 4px;
+}

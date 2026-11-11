@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Audiences</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/tools/audiences/audiences.css">
+    <script src="/tools/audiences/audiences.js" type="module"></script>
+  </head>
+  <body>
+    <main class="aud-app">
+      <h1 class="aud-title">Audiences</h1>
+      <p class="aud-page" id="aud-page"></p>
+      <p class="aud-status" id="aud-status" role="status">Reading this page…</p>
+
+      <h2 class="aud-heading">Sections with audiences</h2>
+      <ul class="aud-list" id="aud-list"></ul>
+
+      <h2 class="aud-heading">Simulate a visitor</h2>
+      <div class="aud-sim">
+        <label for="aud-country">Country</label>
+        <select id="aud-country">
+          <option value="">Real (from the CDN)</option>
+          <option value="JP">Japan</option>
+          <option value="US">United States</option>
+          <option value="DE">Germany</option>
+          <option value="AT">Austria</option>
+          <option value="GB">United Kingdom</option>
+        </select>
+        <label for="aud-interest">Interest</label>
+        <select id="aud-interest">
+          <option value="">Real (this session)</option>
+          <option value="implant">Implant-focused</option>
+          <option value="endodontic">Endodontic-focused</option>
+          <option value="none">None</option>
+        </select>
+        <div class="aud-actions">
+          <button type="button" id="aud-apply">Apply</button>
+          <button type="button" id="aud-reset" class="aud-secondary">Reset</button>
+        </div>
+      </div>
+      <p class="aud-note">Opens this page with <code>?country=</code> and <code>?interest=</code> and the live insights badges turned on. Rows are in priority order: the first matching audience wins.</p>
+    </main>
+  </body>
+</html>
