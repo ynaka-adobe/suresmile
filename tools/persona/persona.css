@@ -254,3 +254,17 @@ body {
   background: #f5f5f5;
   color: #000;
 }
+
+.persona-profile-text {
+  margin: 4px 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--persona-text);
+}
+
+.persona-profile-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--persona-muted);
+}

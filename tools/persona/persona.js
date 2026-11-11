@@ -61,6 +61,32 @@ const PERSONAS = [
     metrics: 'return visits · content engagement · subscriber growth',
     trajectory: 'trajectory: search entry, blogs, videos, related articles, newsletter/webinar signups',
   },
+  {
+    name: 'Endodontic-focused doctor',
+    interest: 'endodontic',
+    description: 'Endodontists and general dentists with a heavy root-canal and tooth-preservation practice.',
+    profile: [
+      ['Cares about', 'Precision, predictability, tooth preservation, efficiency per chair hour.'],
+      ['SureSmile angle', 'Aligners to improve access or restorability before or after endodontic work.'],
+      ['Hero (draft)', '"Predictable aligner outcomes that fit your clinical workflow."'],
+      ['Proof / CTA', '75% no-refinement rate (cited on /doctors); white paper download.'],
+      ['Signals: known', 'CRM or login attribute, e.g. primary specialty = endodontics (supplied by Dentsply).'],
+      ['Signals: anonymous', 'Endo/restorative page views; UTM from endo campaigns; searches like "aligners for endodontic patients".'],
+    ],
+  },
+  {
+    name: 'Implant-focused doctor',
+    interest: 'implant',
+    description: 'Oral surgeons, periodontists, prosthodontists, and general dentists who place or restore implants.',
+    profile: [
+      ['Cares about', 'Case planning, esthetic outcomes, pre-implant tooth positioning, treatment sequencing.'],
+      ['SureSmile angle', 'Aligners for pre-restorative and pre-implant tooth movement (space opening, root positioning).'],
+      ['Hero (draft)', '"Position teeth right before you place the implant."'],
+      ['Proof / CTA', 'Case study and planning-workflow demo; contact us.'],
+      ['Signals: known', 'CRM or login attribute, e.g. implant-placing = true (supplied by Dentsply).'],
+      ['Signals: anonymous', 'Pre-implant/restorative page views; UTM from implant campaigns; searches like "aligners before implant".'],
+    ],
+  },
 ];
 
 function polarPoint(centerX, centerY, radius, angleDeg) {
@@ -128,9 +154,34 @@ function renderRadar(svg, intent) {
   svg.append(shape);
 }
 
+function renderProfile(persona) {
+  const box = document.getElementById('persona-profile');
+  box.replaceChildren();
+  (persona.profile || []).forEach(([label, value]) => {
+    const heading = document.createElement('div');
+    heading.className = 'persona-section-label';
+    heading.textContent = label;
+    const text = document.createElement('p');
+    text.className = 'persona-profile-text';
+    text.textContent = value;
+    box.append(heading, text);
+  });
+  if (persona.profile) {
+    const note = document.createElement('p');
+    note.className = 'persona-profile-note';
+    note.textContent = 'Draft hypotheses for validation, not approved messaging. Apply also sets ?interest= so audience sections react.';
+    box.append(note);
+  }
+  // written profiles have no modelled intent data: hide the charts rather than invent numbers
+  document.getElementById('persona-modelled').hidden = Boolean(persona.profile);
+  box.hidden = !persona.profile;
+}
+
 function renderPersona(persona) {
   document.getElementById('persona-name').textContent = persona.name;
   document.getElementById('persona-description').textContent = persona.description;
+  renderProfile(persona);
+  if (persona.profile) return;
   document.getElementById('persona-summary').textContent = persona.summary;
   document.getElementById('persona-metrics').textContent = persona.metrics;
   document.getElementById('persona-trajectory').textContent = persona.trajectory;
@@ -164,6 +215,9 @@ const REGIONS = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI
 // when the plugin config sets "passReferrer": true; that is the authoritative
 // source. Fall back to a same-origin ancestor, then document.referrer.
 // Navigation of window.top IS allowed cross-origin even when reading is not.
+// SureSmile's doctor personas are the ones this demo is about
+const DEFAULT_PERSONA = String(PERSONAS.findIndex((persona) => persona.profile));
+
 function pageContext() {
   let navWin = window;
   try { navWin = window.top || window.parent || window; } catch (e) { navWin = window.parent || window; }
@@ -201,6 +255,8 @@ function buildUrl() {
   url.searchParams.set('li', document.getElementById('persona-loggedin').checked ? 'true' : 'false');
   const region = document.getElementById('persona-region').value;
   if (region) url.searchParams.set('region', region); else url.searchParams.delete('region');
+  // doctor personas also drive the audience sections; the others clear that signal
+  url.searchParams.set('interest', PERSONAS[Number(document.getElementById('persona-select').value)].interest || 'none');
   return url;
 }
 
@@ -209,12 +265,13 @@ function applyToUrl() {
 }
 
 function resetUrl(select, loggedin, region) {
-  select.value = '0';
+  select.value = DEFAULT_PERSONA;
   loggedin.checked = false;
   region.value = '';
-  renderPersona(PERSONAS[0]);
+  renderPersona(PERSONAS[Number(DEFAULT_PERSONA)]);
   const { url } = pageContext();
   ['p', 'li', 'region'].forEach((k) => url.searchParams.delete(k));
+  url.searchParams.set('interest', 'none');
   navigateTo(url);
 }
 
@@ -265,6 +322,7 @@ function init() {
   region.innerHTML = '<option value="">Region (state)</option>'
     + REGIONS.map((c) => `<option value="${c}">${c}</option>`).join('');
 
+  select.value = DEFAULT_PERSONA;
   readParamsIntoControls(select, loggedin, region);
 
   // Control changes only update the palette's own preview card — they do NOT

@@ -17,50 +17,6 @@
       "event": "aem-genai-variations-sidekick"
     },
     {
-      "id": "target",
-      "title": "Target",
-      "url": "https://experience.adobe.com/#/@acsmarketing/target/activities/activityLibrary",
-      "passConfig": true,
-      "environments": [
-        "preview",
-        "live",
-        "edit"
-      ],
-      "includePaths": [
-        "**"
-      ]
-    },
-    {
-      "id": "persona",
-      "title": "Persona",
-      "url": "/tools/persona/persona.html",
-      "isPalette": true,
-      "passReferrer": true,
-      "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
-      "environments": [
-        "preview",
-        "live",
-        "edit",
-        "prod"
-      ],
-      "includePaths": [
-        "**"
-      ]
-    },
-    {
-      "id": "experimentation",
-      "title": "Experimentation",
-      "event": "experimentation",
-      "environments": [
-        "preview",
-        "live",
-        "prod"
-      ],
-      "includePaths": [
-        "**"
-      ]
-    },
-    {
       "id": "insights",
       "title": "Insights",
       "event": "insights",
@@ -83,6 +39,36 @@
       "environments": [
         "preview",
         "live",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
+    },
+    {
+      "id": "experimentation",
+      "title": "Experimentation",
+      "event": "experimentation",
+      "environments": [
+        "preview",
+        "live",
+        "prod"
+      ],
+      "includePaths": [
+        "**"
+      ]
+    },
+    {
+      "id": "persona",
+      "title": "Persona",
+      "url": "/tools/persona/persona.html",
+      "isPalette": true,
+      "passReferrer": true,
+      "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
+      "environments": [
+        "preview",
+        "live",
+        "edit",
         "prod"
       ],
       "includePaths": [
