@@ -29,9 +29,12 @@ function navigate(url) {
   }
 }
 
+// The palette runs on the code origin (.aem.page/.aem.live), while the page being edited may be
+// on the custom domain, which is another origin. Read the page's content from this origin
+// (same content, same path) so the request is not blocked by the browser's cross-origin rules.
 function plainPath(url) {
   const path = url.pathname.endsWith('/') ? `${url.pathname}index` : url.pathname;
-  return `${url.origin}${path.replace(/\.html$/, '')}.plain.html`;
+  return `${window.location.origin}${path.replace(/\.html$/, '')}.plain.html`;
 }
 
 function sectionLabel(section, index) {
