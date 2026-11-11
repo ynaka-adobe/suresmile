@@ -1,3 +1,4 @@
+import { countryOverride } from './audiences.js';
 import { PROFILE_SESSION_KEY, PROFILE_PERMISSION_KEY, clearProfileSession } from './insights-session.js?v=insights-session-2';
 
 function text(value, limit) {
@@ -143,6 +144,14 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     }
   }
 
+  // A ?country= simulation wins over the CDN value everywhere the panel shows a country,
+  // and the real CDN value stays visible so the simulation is never mistaken for the truth.
+  function shownCountry() {
+    const simulated = countryOverride();
+    if (simulated) return `${simulated} (simulated)${profile?.country ? ` · CDN: ${profile.country}` : ''}`;
+    return profile?.country || 'Unavailable';
+  }
+
   function render() {
     const coordinates = profile && profile.latitude !== null && profile.longitude !== null
       ? `${profile.latitude.toFixed(2)}, ${profile.longitude.toFixed(2)}` : 'Unavailable';
@@ -151,7 +160,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
       ['IP address', profile?.ip || 'Unavailable', 'ip'],
       ['City', titleCase(profile?.city) || 'Unavailable', 'city'],
       ['State / region', profile?.region || 'Not returned by the endpoint', 'region'],
-      ['Country', profile?.country || 'Unavailable', 'country'],
+      ['Country', shownCountry(), 'country'],
       ['Coordinates', coordinates, 'coordinates'],
       ['CDN edge (POP)', profile?.pop || 'Not reported', 'pop'],
       ['Data source', profile ? `${source[profile.source]} · approximate` : 'Unavailable', 'source'],
@@ -189,7 +198,7 @@ export default function createVisitorProfile(section, onSummary = () => {}) {
     if (error) location = 'Unavailable';
     else if (granted) location = 'Locating';
     if (profile) {
-      location = [titleCase(profile.city), profile.region, profile.country].filter(Boolean).join(', ')
+      location = [titleCase(profile.city), profile.region, countryOverride() || profile.country].filter(Boolean).join(', ')
         || 'Unavailable';
     }
     onSummary(location, Boolean(profile), profile);
