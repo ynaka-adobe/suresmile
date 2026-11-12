@@ -1,5 +1,58 @@
 import { getMetadata } from './aem.js';
 
+/**
+ * Target offers shown on this page, for Live Analytics and reporting.
+ * at.js announces each request and render on `document`; this listens from the moment the module
+ * loads (before at.js), so nothing is missed even if the insights panel opens later.
+ * Each rendered offer is recorded, its element gets data-target-offer="<mbox>", and
+ * 'suresmile:target-offer' is dispatched. Activity/experience names are only known when the
+ * Target property has response tokens (activity.name, experience.name) enabled.
+ */
+const shownOffers = [];
+const pendingTokens = {};
+
+export function targetOffers() {
+  return shownOffers.slice();
+}
+
+function tokenValue(tokens, name) {
+  return tokens?.find((t) => t && t[name] !== undefined)?.[name];
+}
+
+function offerText(el) {
+  return (el?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 90);
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('at-request-succeeded', (e) => {
+    const { mbox, responseTokens } = e.detail || {};
+    if (mbox && responseTokens?.length) pendingTokens[mbox] = responseTokens;
+  });
+  document.addEventListener('at-content-rendering-succeeded', (e) => {
+    const mbox = e.detail?.mbox || 'page-load';
+    const tokens = pendingTokens[mbox];
+    const el = document.querySelector(`[data-mbox-name="${mbox}"]`)
+      || document.querySelector('.at-element-marker');
+    el?.setAttribute('data-target-offer', mbox);
+    const offer = {
+      mbox,
+      activity: tokenValue(tokens, 'activity.name') || '',
+      experience: tokenValue(tokens, 'experience.name') || '',
+      text: offerText(el),
+      interest: new URLSearchParams(window.location.search).get('interest')
+        || window.sessionStorage?.getItem('suresmile.interest') || '',
+      at: Date.now(),
+    };
+    shownOffers.push(offer);
+    window.suresmileTargetOffers = targetOffers();
+    window.dispatchEvent(new CustomEvent('suresmile:target-offer', { detail: offer }));
+  });
+  document.addEventListener('at-content-rendering-failed', (e) => {
+    // eslint-disable-next-line no-console
+    console.warn('[target] offer did not render', e.detail?.mbox);
+  });
+}
+
 /** AEM Universal Editor iframe; skip Target so at.js does not fight UE/CSP. */
 export function isUePreviewHost(hostname = window.location.hostname) {
   return /\.(?:stage-ue|ue)\.da\.live$/.test(hostname);

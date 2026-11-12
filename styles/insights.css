@@ -562,3 +562,26 @@
   background: var(--brand-neutral-39, #546a7f);
   content: 'Default (no audience matched)';
 }
+
+/* Target offers (scripts/target.js marks the rendered element) */
+.suresmile-show-variants [data-target-offer] {
+  position: relative;
+  outline: 2px dashed var(--brand-orange, #e8710a);
+  outline-offset: -2px;
+}
+
+.suresmile-show-variants [data-target-offer]::after {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 50;
+  padding: 3px 10px;
+  color: #fff;
+  font: 700 11px/1.4 var(--body-font-family, sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--brand-orange, #e8710a);
+  border-radius: 999px;
+  content: 'Target: ' attr(data-target-offer);
+  pointer-events: none;
+}

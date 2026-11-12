@@ -172,6 +172,10 @@ export function matchedVariantId() {
       || section.firstElementChild?.className.split(' ')[0] || 'section';
     return `${block}:${section.dataset.audience}`;
   });
+  // Target offers (scripts/target.js marks the rendered element with data-target-offer)
+  document.querySelectorAll('[data-target-offer]').forEach((el) => {
+    parts.push(`target:${el.dataset.targetOffer}`);
+  });
   return parts.join('_').replace(/[^a-zA-Z0-9:_-]/g, '').slice(0, 64);
 }
 

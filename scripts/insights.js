@@ -247,9 +247,10 @@ export default function initInsights(analytics, session = insightsSession()) {
     hitCount.textContent = `${snapshot.totals.observed} events`;
     pageContext.textContent = `${context.page.name} · ${context.channel.discovery}`;
     componentCard.count.textContent = String(local.components.length);
+    const targetOffers = () => window.suresmileTargetOffers || [];
     const variants = [...document.querySelectorAll('main [data-audience]')];
     personalization.count.textContent = String(
-      variants.filter((el) => el.dataset.audience !== 'default').length,
+      variants.filter((el) => el.dataset.audience !== 'default').length + targetOffers().length,
     );
     const sectionLabel = (el) => el.querySelector('h1, h2, h3')?.textContent.trim().slice(0, 48)
       || el.querySelector('[class*="hero"]')?.className.split(' ')[0] || 'Section';
@@ -260,6 +261,10 @@ export default function initInsights(analytics, session = insightsSession()) {
         ? variants.map((el) => [sectionLabel(el), el.dataset.audience === 'default'
           ? 'Default (no audience matched)' : `Variant: ${el.dataset.audience}`])
         : [['Audience sections', 'None on this page']]),
+      ...(targetOffers().length
+        ? targetOffers().map((o) => [`Target: ${o.activity || o.mbox}`,
+          `${o.experience ? `${o.experience} · ` : ''}${o.text || 'rendered'}`])
+        : [['Target offers', 'None rendered on this page']]),
     ]);
     linkCard.count.textContent = String(local.clicks);
     localCard.count.textContent = String(local.totalEvents);
@@ -345,7 +350,7 @@ export default function initInsights(analytics, session = insightsSession()) {
   }
   analytics.enableLocalDiagnostics();
   analytics.subscribe(render);
-  ['resize', 'online', 'offline'].forEach((name) => {
+  ['resize', 'online', 'offline', 'suresmile:target-offer'].forEach((name) => {
     window.addEventListener(name, () => render(analytics.snapshot()));
   });
   navigator.connection?.addEventListener?.('change', () => render(analytics.snapshot()));
