@@ -24,10 +24,11 @@ async function toggleInsights() {
     return;
   }
   const v = '?v=insights-session-2';
+  const w = '?v=target-offers-1'; // analytics.js and insights.js changed; session module unchanged
   const [{ default: initAnalytics }, session, { default: initInsights }] = await Promise.all([
-    import(`./analytics.js${v}`),
+    import(`./analytics.js${w}`),
     import(`./insights-session.js${v}`),
-    import(`./insights.js${v}`),
+    import(`./insights.js${w}`),
   ]);
   try {
     sessionStorage.setItem(session.INSIGHTS_SESSION_KEY, 'enabled');
