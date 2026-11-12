@@ -14,7 +14,7 @@
 <!-- <meta name="target-mbox-hero-selector" content=".hero.block .hero-inner"/> -->
 <script nonce="aem">
   /* Persona demo profile: capture URL params (p, li, region), persist them,
-     expose to at.js via targetPageParams, and show a demo badge.
+     expose to at.js via targetPageParams.
      Personas: 1 Technical Evaluator, 2 Business Decision Maker,
      3 Procurement Manager, 4 Industry Researcher. */
   (function () {
@@ -52,27 +52,6 @@
         return out;
       };
 
-      /* demo badge (dismissible) */
-      var NAMES = { 1: 'Technical Evaluator', 2: 'Business Decision Maker', 3: 'Procurement Manager', 4: 'Industry Researcher' };
-      document.addEventListener('DOMContentLoaded', function () {
-        var d = window.demoProfile || {};
-        if (!d.persona) return;
-        var el = document.createElement('div');
-        el.setAttribute('data-persona-badge', '');
-        el.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9999;background:#1a1a1a;color:#fff;font:13px/1.3 system-ui,sans-serif;padding:8px 12px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center';
-        var txt = document.createElement('span');
-        txt.textContent = 'Persona ' + d.persona + ': ' + (NAMES[d.persona] || '?')
-          + ' · ' + (d.loggedIn ? 'logged in' : 'guest')
-          + (d.region ? (' · ' + d.region) : '');
-        var btn = document.createElement('button');
-        btn.textContent = '×';
-        btn.setAttribute('aria-label', 'Dismiss persona badge');
-        btn.style.cssText = 'background:none;border:0;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0';
-        btn.addEventListener('click', function () { el.remove(); });
-        el.appendChild(txt);
-        el.appendChild(btn);
-        document.body.appendChild(el);
-      });
     } catch (e) { /* noop */ }
   })();
 </script>

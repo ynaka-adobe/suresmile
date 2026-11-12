@@ -8,11 +8,13 @@ function warnStorage() {
 }
 
 export default function createConsent(onChange) {
-  let preference = null;
+  // Demo site: no consent overlay, so analytics is on (a CMP, if present, still decides).
+  let preference = 'granted';
   let previousFocus;
   try {
     const stored = localStorage.getItem(PREFERENCE_KEY);
-    if (stored === 'granted' || stored === 'denied') preference = stored;
+    // a 'denied' choice saved from the removed overlay is ignored: there is no way to undo it now
+    if (stored === 'granted') preference = stored;
   } catch {
     warnStorage();
   }
@@ -84,7 +86,7 @@ export default function createConsent(onChange) {
     actions.append(button);
   });
   panel.append(heading, description, actions, status);
-  document.body.append(panel, settings);
+  // The panel and the 'Analytics settings' button are intentionally not added to the page.
 
   const open = () => {
     if (hasCMP()) {
