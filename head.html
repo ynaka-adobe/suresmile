@@ -41,6 +41,14 @@
         if (d.persona !== undefined) out['profile.persona'] = d.persona;
         if (d.loggedIn !== undefined) out['profile.loggedIn'] = d.loggedIn;
         if (d.region !== undefined) out['profile.region'] = d.region;
+        /* journey interest (implant | endodontic): same signal scripts/audiences.js uses.
+           Read lazily at request time, so ?interest= and the session value are both current. */
+        try {
+          var qi = (new URLSearchParams(location.search).get('interest') || '').toLowerCase();
+          var interest = ['implant', 'endodontic', 'none'].indexOf(qi) > -1
+            ? qi : sessionStorage.getItem('suresmile.interest');
+          if (interest && interest !== 'none') out['profile.interest'] = interest;
+        } catch (e) { /* noop */ }
         return out;
       };
 
